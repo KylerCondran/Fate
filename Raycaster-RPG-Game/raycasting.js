@@ -749,16 +749,16 @@ function updateGameObjects() {
 function drawGun(ctx) {
     if (state.isShooting) {
         ctx.drawImage(state.gunSprite, 
-            data.projection.width/2 - 25, 
-            data.projection.height - 50,
-            50, 50
+            data.projection.width/2 - 80, 
+            data.projection.height - 160,
+            160, 160
         );
         state.isShooting = false;
     } else {
         ctx.drawImage(state.gunSprite, 
-            data.projection.width/2 - 25, 
-            data.projection.height - 45,
-            50, 50
+            data.projection.width/2 - 80, 
+            data.projection.height - 155,
+            160, 160
         );
     }
 }
