@@ -750,7 +750,7 @@ function drawGun(ctx) {
     if (state.isShooting) {
         ctx.drawImage(state.gunSprite, 
             data.projection.width/2 - 80, 
-            data.projection.height - 160,
+            data.projection.height - 170,
             160, 160
         );
         state.isShooting = false;
