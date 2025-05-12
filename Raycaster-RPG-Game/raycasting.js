@@ -584,79 +584,83 @@ function drawRect(x1, x2, y1, y2, color) {
  * Find the coordinates for all activated sprites and draw it in the projection
  */
 function drawSprites() {
+    // Draw regular sprites
     for(let i = 0; i < data.sprites.length; i++) {
         if(data.sprites[i].active) {
-
-            let sprite = data.sprites[i];
-
-            // Get X and Y coords in relation of the player coords
-            let spriteXRelative = sprite.x + 0.5 - data.player.x;
-            let spriteYRelative = sprite.y + 0.5 - data.player.y;
-
-            // Get angle of the sprite in relation of the player angle
-            let spriteAngleRadians = Math.atan2(spriteYRelative, spriteXRelative);
-            let spriteAngle = radiansToDegrees(spriteAngleRadians) - Math.floor(data.player.angle - data.player.halfFov);
-
-            // Sprite angle checking
-            if(spriteAngle > 360) spriteAngle -= 360;
-            if(spriteAngle < 0) spriteAngle += 360;
-
-            // Three rule to discover the x position of the script
-            let spriteX = Math.floor(spriteAngle * data.projection.width / data.player.fov);
-
-            // SpriteX right position fix
-            if(spriteX > data.projection.width) {
-                spriteX %= data.projection.width;
-                spriteX -= data.projection.width;
-            }
-            
-            // Get the distance of the sprite (Pythagoras theorem)
-            let distance = Math.sqrt(Math.pow(data.player.x - sprite.x, 2) + Math.pow(data.player.y - sprite.y, 2));
-
-            // Calc sprite width and height
-            let spriteHeight = Math.floor(data.projection.halfHeight / distance);
-            let spriteWidth = Math.floor(data.projection.halfWidth / distance);
-
-            // Draw the sprite
-            drawSprite(spriteX, spriteWidth, spriteHeight, sprite);
+            drawSpriteInWorld(data.sprites[i]);
         }
+    }
+    
+    // Draw bullets
+    for(let bullet of state.bullets) {
+        // Create a temporary sprite object for the bullet
+        const bulletSprite = {
+            x: bullet.x,
+            y: bullet.y,
+            width: 4,  // Small size for bullets
+            height: 4,
+            isBullet: true,
+            // Make bullet bright yellow
+            color: new Color(255, 255, 0, 255)
+        };
+        drawSpriteInWorld(bulletSprite);
     }
 }
 
-function drawSprite(xProjection, spriteWidth, spriteHeight, sprite) {
-    // Skip dead monsters
-    if (sprite.isMonster && sprite.health <= 0) {
-        return;
-    }
+// Separate sprite drawing logic into its own function
+function drawSpriteInWorld(sprite) {
+    // Get X and Y coords in relation of the player coords
+    let spriteXRelative = sprite.x + 0.5 - data.player.x;
+    let spriteYRelative = sprite.y + 0.5 - data.player.y;
 
-    // Decrement halfwidth of the sprite to consider the middle of the sprite to draw 
-    xProjection = xProjection - sprite.width;
+    // Get angle of the sprite in relation of the player angle
+    let spriteAngleRadians = Math.atan2(spriteYRelative, spriteXRelative);
+    let spriteAngle = radiansToDegrees(spriteAngleRadians) - Math.floor(data.player.angle - data.player.halfFov);
 
-    // Define the projection incrementers for draw
-    let xIncrementer = (spriteWidth) / sprite.width;
-    let yIncrementer = (spriteHeight * 2) / sprite.height;
+    // Sprite angle checking
+    if(spriteAngle > 360) spriteAngle -= 360;
+    if(spriteAngle < 0) spriteAngle += 360;
 
-    // Iterate sprite width and height
-    for(let spriteX = 0; spriteX < sprite.width; spriteX += 1) {
-        // Define the Y cursor to draw
-        let yProjection = data.projection.halfHeight - spriteHeight;
+    // Three rule to discover the x position of the sprite
+    let spriteX = Math.floor(spriteAngle * data.projection.width / data.player.fov);
 
-        for(let spriteY = 0; spriteY < sprite.height; spriteY++) {
-            let color = sprite.data[spriteX + spriteY * sprite.width];
-            
-            // Skip transparent pixels
-            if (color.r === 255 && color.g === 0 && color.b === 255) continue;
-            
-            drawRect(xProjection, xProjection + xIncrementer, yProjection, yProjection + yIncrementer, color);
-
-            // Increment Y
-            yProjection += yIncrementer;
-        }
-
-        // Increment X
-        xProjection += xIncrementer;
+    // SpriteX right position fix
+    if(spriteX > data.projection.width) {
+        spriteX %= data.projection.width;
+        spriteX -= data.projection.width;
     }
     
+    // Get the distance of the sprite (Pythagoras theorem)
+    let distance = Math.sqrt(Math.pow(data.player.x - sprite.x, 2) + Math.pow(data.player.y - sprite.y, 2));
+
+    // Calc sprite width and height
+    let spriteHeight = Math.floor(data.projection.halfHeight / distance);
+    let spriteWidth = Math.floor(data.projection.halfWidth / distance);    // Draw the sprite
+    if (sprite.isBullet) {
+        drawBulletSprite(spriteX, spriteWidth, spriteHeight, sprite);
+    } else {
+        drawSprite(spriteX, spriteWidth, spriteHeight, sprite);
+    }
+}
+
+// New function to draw bullet sprites
+function drawBulletSprite(xProjection, spriteWidth, spriteHeight, bullet) {
+    // Make bullets smaller than regular sprites
+    spriteWidth = Math.max(2, spriteWidth / 4);
+    spriteHeight = Math.max(2, spriteHeight / 4);
+
+    // Center the bullet
+    xProjection = xProjection - spriteWidth / 2;
+    let yProjection = data.projection.halfHeight - spriteHeight / 2;
+
+    // Draw a simple filled rectangle for the bullet
+    drawRect(
+        xProjection, 
+        xProjection + spriteWidth, 
+        yProjection, 
+        yProjection + spriteHeight, 
+        bullet.color
+    );
 }
 
 class Bullet {
@@ -679,7 +683,12 @@ function handleShooting(e) {
         state.isShooting = true;
         state.lastShot = currentTime;
             
-        const bullet = new Bullet(data.player.x, data.player.y, data.player.angle);
+        // Start the bullet slightly in front of the player in the direction they're facing
+        const bulletStartDistance = 0.5; // How far in front of the player the bullet starts
+        const startX = data.player.x + Math.cos(degreeToRadians(data.player.angle)) * bulletStartDistance;
+        const startY = data.player.y + Math.sin(degreeToRadians(data.player.angle)) * bulletStartDistance;
+        
+        const bullet = new Bullet(startX, startY, data.player.angle);
         state.bullets.push(bullet);
 
         const shootSound = document.getElementById('shoot-sound');
@@ -693,6 +702,14 @@ function updateGameObjects() {
     for (let i = state.bullets.length - 1; i >= 0; i--) {
         const bullet = state.bullets[i];
         bullet.update();
+
+        // Stop bullet if it hits a wall
+        const mapX = Math.floor(bullet.x);
+        const mapY = Math.floor(bullet.y);
+        if (data.map[mapY] && data.map[mapY][mapX] === 2) {
+            state.bullets.splice(i, 1);
+            continue;
+        }
 
         // Check collision with monsters
         for (const monster of state.monsters) {
@@ -731,7 +748,7 @@ function updateGameObjects() {
         }
 
         // Remove bullets that have traveled too far
-        if (Math.abs(bullet.x - data.player.x) > 20 || Math.abs(bullet.y - data.player.y) > 20) {
+        if (state.bullets[i] && (Math.abs(bullet.x - data.player.x) > 20 || Math.abs(bullet.y - data.player.y) > 20)) {
             state.bullets.splice(i, 1);
         }
     }
@@ -761,5 +778,40 @@ function syncMonsterState() {
                 sprite.health = monster.health;
             }
         }
+    }
+}
+
+function drawSprite(xProjection, spriteWidth, spriteHeight, sprite) {
+    // Skip dead monsters
+    if (sprite.isMonster && sprite.health <= 0) {
+        return;
+    }
+
+    // Decrement halfwidth of the sprite to consider the middle of the sprite to draw 
+    xProjection = xProjection - sprite.width;
+
+    // Define the projection incrementers for draw
+    let xIncrementer = (spriteWidth) / sprite.width;
+    let yIncrementer = (spriteHeight * 2) / sprite.height;
+
+    // Iterate sprite width and height
+    for(let spriteX = 0; spriteX < sprite.width; spriteX += 1) {
+        // Define the Y cursor to draw
+        let yProjection = data.projection.halfHeight - spriteHeight;
+
+        for(let spriteY = 0; spriteY < sprite.height; spriteY++) {
+            let color = sprite.data[spriteX + spriteY * sprite.width];
+            
+            // Skip transparent pixels
+            if (color.r === 255 && color.g === 0 && color.b === 255) continue;
+            
+            drawRect(xProjection, xProjection + xIncrementer, yProjection, yProjection + yIncrementer, color);
+
+            // Increment Y
+            yProjection += yIncrementer;
+        }
+
+        // Increment X
+        xProjection += xIncrementer;
     }
 }
