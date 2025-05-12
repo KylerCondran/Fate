@@ -57,8 +57,8 @@ let data = {
         [2,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,2],
 		[2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2],
         [2,0,0,3,0,0,0,0,2,0,2,2,2,0,0,0,0,0,0,2],
-        [2,0,0,0,0,0,0,0,2,0,3,0,2,0,0,0,3,0,0,2],
-        [2,0,0,0,0,0,0,0,2,0,0,0,2,0,0,0,0,0,0,2],
+        [2,0,0,0,0,0,0,0,2,0,0,0,2,0,0,0,3,0,0,2],
+        [2,0,0,0,0,0,0,0,2,0,0,3,2,0,0,0,0,0,0,2],
         [2,0,0,1,0,0,0,0,2,2,0,2,2,0,0,0,1,0,0,2],
         [2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2],
         [2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2],
@@ -702,9 +702,16 @@ function updateGameObjects() {
                 const distance = Math.sqrt(dx * dx + dy * dy);
 
                 if (distance < 0.5) {
-                    monster.health -= 25;
+                    monster.health -= 25;                 
                     if (monster.health <= 0) {
                         monster.isDead = true;
+                        const deathSound = document.getElementById('monster-death');
+                        deathSound.currentTime = 0;
+                        deathSound.play();
+                    } else {
+                        const painSound = document.getElementById('monster-scream-1');
+                        painSound.currentTime = 0;
+                        painSound.play();
                     }
                     state.bullets.splice(i, 1);
                     break;
