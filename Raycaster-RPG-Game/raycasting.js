@@ -709,9 +709,20 @@ function updateGameObjects() {
                         deathSound.currentTime = 0;
                         deathSound.play();
                     } else {
-                        const painSound = document.getElementById('monster-scream-1');
-                        painSound.currentTime = 0;
-                        painSound.play();
+                        var rnd = Math.floor(Math.random() * 3);
+                        if (rnd == 0) {
+                            const painSound1 = document.getElementById('monster-scream-1');
+                            painSound1.currentTime = 0;
+                            painSound1.play();
+                        } else if (rnd == 1) {
+                            const painSound2 = document.getElementById('monster-scream-2');
+                            painSound2.currentTime = 0;
+                            painSound2.play();
+                        } else {
+                            const painSound3 = document.getElementById('monster-scream-3');
+                            painSound3.currentTime = 0;
+                            painSound3.play();
+                        }              
                     }
                     state.bullets.splice(i, 1);
                     break;
