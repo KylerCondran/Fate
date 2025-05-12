@@ -151,7 +151,7 @@ for (let i = 0; i < 19; i++) {
         if (data.map[i][j] == 1) {
             data.sprites.push({ id: "tree", x: j, y: i, width: 8, height: 16, active: false, data: null });
         } else if (data.map[i][j] == 3) {
-            data.sprites.push({ id: "monster-sprite", x: j, y: i, width: 32, height: 32, active: false, data: null, isMonster: true, health: 100 });
+            data.sprites.push({ id: "monster-sprite", x: j, y: i, width: 32, height: 32, active: false, data: null, isMonster: true});
             state.monsters.push({ x: j, y: i, health: 100, isDead: false });
         }
     }
