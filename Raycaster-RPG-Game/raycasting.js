@@ -9,10 +9,6 @@ let state = {
     shootCooldown: 850
 };
 
-// Add monsters to the initial game state
-state.monsters.push({x: 9, y: 5, health: 100, isDead: false});
-state.monsters.push({x: 8, y: 8, health: 100, isDead: false});
-
 // Data
 let data = {
     screen: {
@@ -52,21 +48,21 @@ let data = {
     map: [
         [2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],
         [2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2],
+        [2,0,0,0,0,0,0,0,0,0,0,0,0,0,3,0,0,0,0,2],
+        [2,0,0,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,2],
+        [2,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,2],
+        [2,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,2],
+        [2,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,2],
         [2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2],
-        [2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2],
-        [2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2],
-        [2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2],
-        [2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2],
-        [2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2],
-        [2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2],
+        [2,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,2],
 		[2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2],
-        [2,0,0,0,0,0,0,0,2,0,2,2,2,0,0,0,0,0,0,2],
+        [2,0,0,3,0,0,0,0,2,0,2,2,2,0,0,0,0,0,0,2],
+        [2,0,0,0,0,0,0,0,2,0,3,0,2,0,0,0,3,0,0,2],
         [2,0,0,0,0,0,0,0,2,0,0,0,2,0,0,0,0,0,0,2],
-        [2,0,0,0,0,0,0,0,2,0,0,0,2,0,0,0,0,0,0,2],
-        [2,0,0,0,0,0,0,0,2,2,0,2,2,0,0,0,0,0,0,2],
+        [2,0,0,1,0,0,0,0,2,2,0,2,2,0,0,0,1,0,0,2],
         [2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2],
         [2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2],
-        [2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2],
+        [2,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,1,0,0,2],
         [2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2],
         [2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2],
     ],
@@ -146,40 +142,16 @@ let data = {
             data: null
         }
     ],
-    sprites: [
-        {
-            id: "monster-sprite",
-            x: 9,
-            y: 5,
-            width: 16,
-            height: 32,
-            active: false,
-            data: null,
-            isMonster: true,
-            health: 100
-        },
-        {
-            id: "monster-sprite",
-            x: 8,
-            y: 8,
-            width: 16,
-            height: 32,
-            active: false,
-            data: null,
-            isMonster: true,
-            health: 100
-        }
-    ]
+    sprites: []
 }
 
 // Add initial sprite data programatically based on coordinates on map
-// work in progress, need to disable wall creation if set to these values
 for (let i = 0; i < 18; i++) {
     for (let j = 0; j < 18; j++) {
         if (data.map[i][j] == 1) {
-            data.sprites.push({ id: "tree", x: i, y: j, width: 8, height: 16, active: false, data: null });
+            data.sprites.push({ id: "tree", x: j, y: i, width: 8, height: 16, active: false, data: null });
         } else if (data.map[i][j] == 3) {
-            data.sprites.push({ id: "monster-sprite", x: i, y: j, width: 16, height: 32, active: false, data: null, isMonster: true, health: 100 });
+            data.sprites.push({ id: "monster-sprite", x: j, y: i, width: 16, height: 32, active: false, data: null, isMonster: true, health: 100 });
         }
     }
 }
@@ -259,7 +231,7 @@ function drawFloor(x1, wallHeight, rayAngle) {
         tile = data.map[Math.floor(tiley)][Math.floor(tilex)]
         
         // Get texture
-        texture = data.floorTextures[tile]
+        texture = data.floorTextures[0]
 
         if(!texture) {
             continue
@@ -330,7 +302,7 @@ function rayCasting() {
         
         // Wall finder
         let wall = 0;
-        while(wall == 0) {
+        while(wall != 2) {
             ray.x += rayCos;
             ray.y += raySin;
             wall = data.map[Math.floor(ray.y)][Math.floor(ray.x)];
@@ -382,10 +354,10 @@ function movePlayer() {
         let checkY = Math.floor(newY + playerSin * data.player.radius);
 
         // Collision detection
-        if(data.map[checkY][Math.floor(data.player.x)] == 0) {
+        if(data.map[checkY][Math.floor(data.player.x)] != 2) {
             data.player.y = newY;
         }
-        if(data.map[Math.floor(data.player.y)][checkX] == 0) {
+        if(data.map[Math.floor(data.player.y)][checkX] != 2) {
             data.player.x = newX;
         } 
 
@@ -399,10 +371,10 @@ function movePlayer() {
         let checkY = Math.floor(newY - playerSin * data.player.radius);
 
         // Collision detection
-        if(data.map[checkY][Math.floor(data.player.x)] == 0) {
+        if(data.map[checkY][Math.floor(data.player.x)] != 2) {
             data.player.y = newY;
         }
-        if(data.map[Math.floor(data.player.y)][checkX] == 0) {
+        if(data.map[Math.floor(data.player.y)][checkX] != 2) {
             data.player.x = newX;
         } 
     }
