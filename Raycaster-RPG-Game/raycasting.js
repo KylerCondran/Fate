@@ -146,7 +146,7 @@ let data = {
 }
 
 // Add initial sprite data programatically based on coordinates on map
-for (let i = 0; i < 18; i++) {
+for (let i = 0; i < 19; i++) {
     for (let j = 0; j < 18; j++) {
         if (data.map[i][j] == 1) {
             data.sprites.push({ id: "tree", x: j, y: i, width: 8, height: 16, active: false, data: null });
