@@ -1,4 +1,4 @@
-// Data
+// State
 let state = {
     monsters: [],
     bullets: [],
@@ -10,9 +10,10 @@ let state = {
 };
 
 // Add monsters to the initial game state
-state.monsters.push({x: 5, y: 5, health: 100, isDead: false});
+state.monsters.push({x: 9, y: 5, health: 100, isDead: false});
 state.monsters.push({x: 8, y: 8, health: 100, isDead: false});
 
+// Data
 let data = {
     screen: {
         width: 1500,
@@ -30,7 +31,7 @@ let data = {
         buffer: null
     },
     render: {
-        delay: 30
+        delay: 10
     },
     rayCasting: {
         incrementAngle: null,
@@ -122,7 +123,7 @@ let data = {
             id: "texture2",
             data: null
         },
-				{
+		{
             width: 16,
             height: 16,
             id: "invis",
@@ -147,44 +148,8 @@ let data = {
     ],
     sprites: [
         {
-            id: "tree",
-            x: 18,
-            y: 1,
-            width: 8,
-            height: 16,
-            active: false,
-            data: null
-        },
-        {
-            id: "tree",
-            x: 18,
-            y: 2,
-            width: 8,
-            height: 16,
-            active: false,
-            data: null
-        },
-		{
-            id: "tree",
-            x: 18,
-            y: 3,
-            width: 8,
-            height: 16,
-            active: false,
-            data: null
-        },
-		{
-            id: "tree",
-            x: 18,
-            y: 4,
-            width: 8,
-            height: 16,
-            active: false,
-            data: null
-        },
-        {
             id: "monster-sprite",
-            x: 5,
+            x: 9,
             y: 5,
             width: 16,
             height: 32,
@@ -205,6 +170,18 @@ let data = {
             health: 100
         }
     ]
+}
+
+// Add initial sprite data programatically based on coordinates on map
+// work in progress, need to disable wall creation if set to these values
+for (let i = 0; i < 18; i++) {
+    for (let j = 0; j < 18; j++) {
+        if (data.map[i][j] == 1) {
+            data.sprites.push({ id: "tree", x: i, y: j, width: 8, height: 16, active: false, data: null });
+        } else if (data.map[i][j] == 3) {
+            data.sprites.push({ id: "monster-sprite", x: i, y: j, width: 16, height: 32, active: false, data: null, isMonster: true, health: 100 });
+        }
+    }
 }
 
 // Calculated data
@@ -317,9 +294,9 @@ function main() {
         updateGameObjects();
         syncMonsterState();
         rayCasting();
-        drawSprites();
-        drawGun(screenContext);
+        drawSprites();       
         renderBuffer();
+        drawGun(screenContext);
     }, data.render.delay);
 }
 
