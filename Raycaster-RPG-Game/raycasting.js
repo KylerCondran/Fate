@@ -1,4 +1,18 @@
 // Data
+let state = {
+    monsters: [],
+    bullets: [],
+    gunSprite: document.getElementById('gun-sprite'),
+    monsterSprite: document.getElementById('monster-sprite'),
+    isShooting: false,
+    lastShot: 0,
+    shootCooldown: 500
+};
+
+// Add monsters to the initial game state
+state.monsters.push({x: 5, y: 5, health: 100, isDead: false});
+state.monsters.push({x: 8, y: 8, health: 100, isDead: false});
+
 let data = {
     screen: {
         width: 1500,
@@ -70,6 +84,10 @@ let data = {
         },
         right: {
             code: "ArrowRight",
+            active: false
+        },
+        space: {
+            code: "Space",
             active: false
         }
     },
@@ -163,6 +181,28 @@ let data = {
             height: 16,
             active: false,
             data: null
+        },
+        {
+            id: "monster-sprite",
+            x: 5,
+            y: 5,
+            width: 16,
+            height: 32,
+            active: false,
+            data: null,
+            isMonster: true,
+            health: 100
+        },
+        {
+            id: "monster-sprite",
+            x: 8,
+            y: 8,
+            width: 16,
+            height: 32,
+            active: false,
+            data: null,
+            isMonster: true,
+            health: 100
         }
     ]
 }
@@ -196,22 +236,11 @@ data.projection.buffer = data.projection.imageData.data;
 // Main loop
 let mainLoop = null;
 
-/**
- * Cast degree to radian
- * @param {Number} degree 
- */
 function degreeToRadians(degree) {
     let pi = Math.PI;
     return degree * pi / 180;
 }
 
-/**
- * Color object
- * @param {number} r 
- * @param {number} g 
- * @param {number} b 
- * @param {number} a 
- */
 function Color(r, g, b, a) {
     this.r = r;
     this.g = g;
@@ -219,12 +248,7 @@ function Color(r, g, b, a) {
     this.a = a;
 }
 
-/**
- * Draw pixel on buffer
- * @param {number} x 
- * @param {number} y 
- * @param {RGBA Object} color 
- */
+// Draw Pixel
 function drawPixel(x, y, color) {
     if(color.r == 255 && color.g == 0 && color.b == 255) return;
     let offset = 4 * (Math.floor(x) + Math.floor(y) * data.projection.width);
@@ -234,25 +258,12 @@ function drawPixel(x, y, color) {
     data.projection.buffer[offset+3] = color.a;
 }
 
-/**
- * Draw line in the buffer
- * @param {Number} x 
- * @param {Number} y1 
- * @param {Number} y2 
- * @param {Color} color 
- */
 function drawLine(x1, y1, y2, color) {
     for(let y = y1; y < y2; y++) {
         drawPixel(x1, y, color);
     }
 }
 
-/**
- * Floorcasting
- * @param {*} x1 
- * @param {*} wallHeight 
- * @param {*} rayAngle 
- */
 function drawFloor(x1, wallHeight, rayAngle) {
     start = data.projection.halfHeight + wallHeight + 1;
     directionCos = Math.cos(degreeToRadians(rayAngle))
@@ -288,7 +299,7 @@ function drawFloor(x1, wallHeight, rayAngle) {
 }
 
 // Start
-window.onload = function() {
+window.onload = function () {
     loadTextures();
     loadBackgrounds();
     loadSprites();
@@ -303,10 +314,13 @@ function main() {
         inactiveSprites();
         clearScreen();
         movePlayer();
+        updateGameObjects();
+        syncMonsterState();
         rayCasting();
         drawSprites();
+        drawGun(screenContext);
         renderBuffer();
-    }, data.render.dalay);
+    }, data.render.delay);
 }
 
 /**
@@ -425,6 +439,9 @@ function movePlayer() {
         if(data.player.angle < 0) data.player.angle += 360;
         data.player.angle %= 360;
     } 
+    if (data.key.space.active) {
+        handleShooting();
+    }
 }
 
 /**
@@ -445,6 +462,9 @@ document.addEventListener('keydown', (event) => {
     if(keyCode === data.key.right.code) {
         data.key.right.active = true;
     } 
+    if (keyCode === data.key.space.code) {
+        data.key.space.active = true;
+    }
 });
 
 /**
@@ -465,15 +485,11 @@ document.addEventListener('keyup', (event) => {
     if(keyCode === data.key.right.code) {
         data.key.right.active = false;
     } 
+    if (keyCode === data.key.space.code) {
+        data.key.space.active = false;
+    }
 });
 
-/**
- * Draw texture
- * @param {*} x 
- * @param {*} wallHeight 
- * @param {*} texturePositionX 
- * @param {*} texture 
- */
 function drawTexture(x, wallHeight, texturePositionX, texture) {
     let yIncrementer = (wallHeight * 2) / texture.height;
     let y = data.projection.halfHeight - wallHeight;
@@ -527,10 +543,6 @@ function loadSprites() {
     }
 }
 
-/**
- * Get texture data
- * @param {Object} texture 
- */
 function getTextureData(texture) {
     let image = document.getElementById(texture.id);
     let canvas = document.createElement('canvas');
@@ -542,10 +554,6 @@ function getTextureData(texture) {
     return parseImageData(imageData);
 }
 
-/**
- * Parse image data to a Color array
- * @param {array} imageData 
- */
 function parseImageData(imageData) {
     let colorArray = [];
     for (let i = 0; i < imageData.length; i += 4) {
@@ -583,13 +591,6 @@ function renderFocusLost() {
     screenContext.fillText('CLICK TO FOCUS',data.projection.halfWidth/2,data.projection.halfHeight);
 }
 
-/**
- * Draw the background
- * @param {number} x 
- * @param {number} y1 
- * @param {number} y2 
- * @param {Object} background 
- */
 function drawBackground(x, y1, y2, background) {
     let offset = (data.player.angle + x);
     for(let y = y1; y < y2; y++) {
@@ -600,19 +601,10 @@ function drawBackground(x, y1, y2, background) {
     }
 }
 
-/**
- * Convert radians to degrees
- * @param {number} radians 
- */
 function radiansToDegrees(radians) {
      return 180 * radians / Math.PI;
 }
 
-/**
- * Active sprites in determinate postion
- * @param {number} x 
- * @param {number} y 
- */
 function activeSprites(x, y) {
     for(let i = 0; i < data.sprites.length; i++) {
         if(data.sprites[i].x == Math.floor(x) && data.sprites[i].y == Math.floor(y)) {
@@ -630,14 +622,6 @@ function inactiveSprites() {
     }
 }
 
-/**
- * Draw rect in the buffer
- * @param {number} x1 
- * @param {number} x2 
- * @param {number} y1 
- * @param {number} y2 
- * @param {Color} color 
- */
 function drawRect(x1, x2, y1, y2, color) {
     for(let x = x1; x < x2; x++) {
         if(x < 0) continue;
@@ -689,14 +673,11 @@ function drawSprites() {
     }
 }
 
-/**
- * Draw the sprite in the projeciton position
- * @param {number} xProjection 
- * @param {number} spriteWidth 
- * @param {number} spriteHeight 
- * @param {Object} sprite 
- */
 function drawSprite(xProjection, spriteWidth, spriteHeight, sprite) {
+    // Skip dead monsters
+    if (sprite.isMonster && sprite.health <= 0) {
+        return;
+    }
 
     // Decrement halfwidth of the sprite to consider the middle of the sprite to draw 
     xProjection = xProjection - sprite.width;
@@ -707,12 +688,15 @@ function drawSprite(xProjection, spriteWidth, spriteHeight, sprite) {
 
     // Iterate sprite width and height
     for(let spriteX = 0; spriteX < sprite.width; spriteX += 1) {
-
         // Define the Y cursor to draw
         let yProjection = data.projection.halfHeight - spriteHeight;
 
         for(let spriteY = 0; spriteY < sprite.height; spriteY++) {
             let color = sprite.data[spriteX + spriteY * sprite.width];
+            
+            // Skip transparent pixels
+            if (color.r === 255 && color.g === 0 && color.b === 255) continue;
+            
             drawRect(xProjection, xProjection + xIncrementer, yProjection, yProjection + yIncrementer, color);
 
             // Increment Y
@@ -723,4 +707,91 @@ function drawSprite(xProjection, spriteWidth, spriteHeight, sprite) {
         xProjection += xIncrementer;
     }
     
+}
+
+class Bullet {
+    constructor(x, y, angle) {
+        this.x = x;
+        this.y = y;
+        this.angle = angle;
+        this.speed = 0.2;
+    }
+
+    update() {
+        this.x += Math.cos(degreeToRadians(this.angle)) * this.speed;
+        this.y += Math.sin(degreeToRadians(this.angle)) * this.speed;
+    }
+}
+
+function handleShooting(e) {
+    const currentTime = Date.now();
+    if (currentTime - state.lastShot >= state.shootCooldown) {
+        state.isShooting = true;
+        state.lastShot = currentTime;
+            
+        const bullet = new Bullet(data.player.x, data.player.y, data.player.angle);
+        state.bullets.push(bullet);
+
+        const shootSound = document.getElementById('shoot-sound');
+        shootSound.currentTime = 0;
+        shootSound.play();
+    }
+}
+
+function updateGameObjects() {
+    // Update bullets
+    for (let i = state.bullets.length - 1; i >= 0; i--) {
+        const bullet = state.bullets[i];
+        bullet.update();
+
+        // Check collision with monsters
+        for (const monster of state.monsters) {
+            if (!monster.isDead) {
+                const dx = monster.x - bullet.x;
+                const dy = monster.y - bullet.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+
+                if (distance < 0.5) {
+                    monster.health -= 25;
+                    if (monster.health <= 0) {
+                        monster.isDead = true;
+                    }
+                    state.bullets.splice(i, 1);
+                    break;
+                }
+            }
+        }
+
+        // Remove bullets that have traveled too far
+        if (Math.abs(bullet.x - data.player.x) > 20 || Math.abs(bullet.y - data.player.y) > 20) {
+            state.bullets.splice(i, 1);
+        }
+    }
+}
+
+function drawGun(ctx) {
+    if (state.isShooting) {
+        ctx.drawImage(state.gunSprite, 
+            data.projection.width/2 - 25, 
+            data.projection.height - 50,
+            50, 50
+        );
+        state.isShooting = false;
+    } else {
+        ctx.drawImage(state.gunSprite, 
+            data.projection.width/2 - 25, 
+            data.projection.height - 45,
+            50, 50
+        );
+    }
+}
+
+function syncMonsterState() {
+    for (let monster of state.monsters) {
+        for (let sprite of data.sprites) {
+            if (sprite.isMonster && sprite.x === monster.x && sprite.y === monster.y) {
+                sprite.health = monster.health;
+            }
+        }
+    }
 }
