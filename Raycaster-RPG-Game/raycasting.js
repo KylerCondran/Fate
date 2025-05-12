@@ -600,7 +600,7 @@ function drawSprites() {
             width: 4,  // Small size for bullets
             height: 4,
             isBullet: true,
-            // Make bullet bright yellow
+            // Make bullet yellow
             color: new Color(255, 255, 0, 255)
         };
         drawSpriteInWorld(bulletSprite);
@@ -645,9 +645,10 @@ function drawSpriteInWorld(sprite) {
 
 // New function to draw bullet sprites
 function drawBulletSprite(xProjection, spriteWidth, spriteHeight, bullet) {
-    // Make bullets smaller than regular sprites
-    spriteWidth = Math.max(2, spriteWidth / 4);
-    spriteHeight = Math.max(2, spriteHeight / 4);
+    // Make bullets smaller than regular sprites and always square
+    let size = Math.max(2, Math.min(spriteWidth, spriteHeight) / 4);
+    spriteWidth = size;
+    spriteHeight = size;
 
     // Center the bullet
     xProjection = xProjection - spriteWidth / 2;
