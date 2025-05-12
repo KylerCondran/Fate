@@ -156,7 +156,7 @@ for (let i = 0; i < 19; i++) {
         }
     }
 }
-state.monsters.push({ x: 8, y: 8, health: 100, isDead: false });
+
 // Calculated data
 data.screen.halfWidth = data.screen.width / 2;
 data.screen.halfHeight = data.screen.height / 2;
