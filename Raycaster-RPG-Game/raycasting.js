@@ -6,7 +6,7 @@ let state = {
     monsterSprite: document.getElementById('monster-sprite'),
     isShooting: false,
     lastShot: 0,
-    shootCooldown: 500
+    shootCooldown: 850
 };
 
 // Add monsters to the initial game state
