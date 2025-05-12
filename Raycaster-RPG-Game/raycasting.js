@@ -152,10 +152,11 @@ for (let i = 0; i < 18; i++) {
             data.sprites.push({ id: "tree", x: j, y: i, width: 8, height: 16, active: false, data: null });
         } else if (data.map[i][j] == 3) {
             data.sprites.push({ id: "monster-sprite", x: j, y: i, width: 16, height: 32, active: false, data: null, isMonster: true, health: 100 });
+            state.monsters.push({ x: j, y: i, health: 100, isDead: false });
         }
     }
 }
-
+state.monsters.push({ x: 8, y: 8, health: 100, isDead: false });
 // Calculated data
 data.screen.halfWidth = data.screen.width / 2;
 data.screen.halfHeight = data.screen.height / 2;
