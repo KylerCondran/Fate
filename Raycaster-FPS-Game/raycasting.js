@@ -1,16 +1,11 @@
-// State
-let state = {
-    monsters: [],
+// Unified game state and data object
+let game = {
+    monsters: [], // Each monster will have position, health, sprite, etc.
     bullets: [],
     gunSprite: document.getElementById('gun-sprite'),
-    monsterSprite: document.getElementById('monster-sprite'),
     isShooting: false,
     lastShot: 0,
-    shootCooldown: 850
-};
-
-// Data
-let data = {
+    shootCooldown: 850,
     screen: {
         width: 1500,
         height: 680,
@@ -142,71 +137,61 @@ let data = {
             data: null
         }
     ],
-    sprites: []
+    sprites: [] // Only trees and other non-monster sprites
 }
 
-// Add initial sprite data programatically based on coordinates on map
+// Add initial sprite and monster data programmatically based on coordinates on map
 let monsterIdCounter = 0;
-// Create a map for quick monster-sprite lookup
-state.monsterSpriteMap = new Map();
-
-for (let i = 0; i < 19; i++) {
-    for (let j = 0; j < 18; j++) {
-        if (data.map[i][j] == 1) {
-            data.sprites.push({ id: "tree", x: j, y: i, width: 8, height: 16, active: false, data: null });
-        } else if (data.map[i][j] == 3) {
-            const monsterId = `monster_${monsterIdCounter}`;
-            const sprite = {
-                id: "monster-sprite",
-                x: j,
-                y: i,
-                width: 32,
-                height: 32,
-                active: false,
-                data: null,
-                isMonster: true,
-                monsterId: monsterId
-            };
-            data.sprites.push(sprite);
+for (let i = 0; i < game.map.length; i++) {
+    for (let j = 0; j < game.map[i].length; j++) {
+        if (game.map[i][j] == 1) {
+            // Tree sprite (non-collidable, just drawn)
+            game.sprites.push({ id: "tree", x: j, y: i, width: 8, height: 16, active: false, data: null });
+        } else if (game.map[i][j] == 3) {
+            // Monster object with position, health, and sprite info
             const monster = {
-                id: monsterId,
+                id: `monster_${monsterIdCounter}`,
                 x: j,
                 y: i,
                 health: 100,
-                isDead: false
+                isDead: false,
+                width: 32,
+                height: 32,
+                active: false,
+                data: null // Will be filled with texture data
             };
-            state.monsters.push(monster);
-            state.monsterSpriteMap.set(monsterId, sprite);
+            game.monsters.push(monster);
             monsterIdCounter++;
         }
     }
 }
 
 // Calculated data
-data.screen.halfWidth = data.screen.width / 2;
-data.screen.halfHeight = data.screen.height / 2;
-data.player.halfFov = data.player.fov / 2;
-data.projection.width = data.screen.width / data.screen.scale;
-data.projection.height = data.screen.height / data.screen.scale;
-data.projection.halfWidth = data.projection.width / 2;
-data.projection.halfHeight = data.projection.height / 2;
-data.rayCasting.incrementAngle = data.player.fov / data.projection.width;
+const s = game.screen;
+game.screen.halfWidth = s.width / 2;
+game.screen.halfHeight = s.height / 2;
+game.player.halfFov = game.player.fov / 2;
+game.projection.width = s.width / s.scale;
+game.projection.height = s.height / s.scale;
+game.projection.halfWidth = game.projection.width / 2;
+game.projection.halfHeight = game.projection.height / 2;
+game.rayCasting.incrementAngle = game.player.fov / game.projection.width;
 
 // Canvas
 const screen = document.createElement('canvas');
-screen.width = data.screen.width;
-screen.height = data.screen.height;
+screen.width = game.screen.width;
+screen.height = game.screen.height;
 screen.style.border = "1px solid black";
 document.body.appendChild(screen);
 
 // Canvas context
 const screenContext = screen.getContext("2d");
-screenContext.scale(data.screen.scale, data.screen.scale);
+screenContext.scale(game.screen.scale, game.screen.scale);
 screenContext.imageSmoothingEnabled = false;
 
 // Buffer
-data.projection.imageData = screenContext.createImageData(data.projection.width, data.projection.height);
-data.projection.buffer = data.projection.imageData.data;
+game.projection.imageData = screenContext.createImageData(game.projection.width, game.projection.height);
+game.projection.buffer = game.projection.imageData.data;
 
 // Main loop
 let mainLoop = null;
@@ -226,11 +211,11 @@ function Color(r, g, b, a) {
 // Draw Pixel
 function drawPixel(x, y, color) {
     if (color.r == 255 && color.g == 0 && color.b == 255) return;
-    let offset = 4 * (Math.floor(x) + Math.floor(y) * data.projection.width);
-    data.projection.buffer[offset] = color.r;
-    data.projection.buffer[offset + 1] = color.g;
-    data.projection.buffer[offset + 2] = color.b;
-    data.projection.buffer[offset + 3] = color.a;
+    let offset = 4 * (Math.floor(x) + Math.floor(y) * game.projection.width);
+    game.projection.buffer[offset] = color.r;
+    game.projection.buffer[offset + 1] = color.g;
+    game.projection.buffer[offset + 2] = color.b;
+    game.projection.buffer[offset + 3] = color.a;
 }
 
 function drawLine(x1, y1, y2, color) {
@@ -240,24 +225,24 @@ function drawLine(x1, y1, y2, color) {
 }
 
 function drawFloor(x1, wallHeight, rayAngle) {
-    start = data.projection.halfHeight + wallHeight + 1;
+    start = game.projection.halfHeight + wallHeight + 1;
     directionCos = Math.cos(degreeToRadians(rayAngle))
     directionSin = Math.sin(degreeToRadians(rayAngle))
-    playerAngle = data.player.angle
-    for (y = start; y < data.projection.height; y++) {
+    playerAngle = game.player.angle
+    for (y = start; y < game.projection.height; y++) {
         // Create distance and calculate it
-        distance = data.projection.height / (2 * y - data.projection.height)
+        distance = game.projection.height / (2 * y - game.projection.height)
         // distance = distance * Math.cos(degreeToRadians(playerAngle) - degreeToRadians(rayAngle))
 
         // Get the tile position
         tilex = distance * directionCos
         tiley = distance * directionSin
-        tilex += data.player.x
-        tiley += data.player.y
-        tile = data.map[Math.floor(tiley)][Math.floor(tilex)]
+        tilex += game.player.x
+        tiley += game.player.y
+        tile = game.map[Math.floor(tiley)][Math.floor(tilex)]
 
         // Get texture
-        texture = data.floorTextures[0]
+        texture = game.floorTextures[0]
 
         if (!texture) {
             continue
@@ -290,12 +275,11 @@ function main() {
         clearScreen();
         movePlayer();
         updateGameObjects();
-        syncMonsterState();
         rayCasting();
         drawSprites();
         renderBuffer();
         drawGun(screenContext);
-    }, data.render.delay);
+    }, game.render.delay);
 }
 
 /**
@@ -303,9 +287,9 @@ function main() {
  */
 function renderBuffer() {
     let canvas = document.createElement('canvas');
-    canvas.width = data.projection.width;
-    canvas.height = data.projection.height;
-    canvas.getContext('2d').putImageData(data.projection.imageData, 0, 0);
+    canvas.width = game.projection.width;
+    canvas.height = game.projection.height;
+    canvas.getContext('2d').putImageData(game.projection.imageData, 0, 0);
     screenContext.drawImage(canvas, 0, 0);
 }
 
@@ -313,50 +297,50 @@ function renderBuffer() {
  * Raycasting logic
  */
 function rayCasting() {
-    let rayAngle = data.player.angle - data.player.halfFov;
-    for (let rayCount = 0; rayCount < data.projection.width; rayCount++) {
+    let rayAngle = game.player.angle - game.player.halfFov;
+    for (let rayCount = 0; rayCount < game.projection.width; rayCount++) {
 
         // Ray data
         let ray = {
-            x: data.player.x,
-            y: data.player.y
+            x: game.player.x,
+            y: game.player.y
         }
 
         // Ray path incrementers
-        let rayCos = Math.cos(degreeToRadians(rayAngle)) / data.rayCasting.precision;
-        let raySin = Math.sin(degreeToRadians(rayAngle)) / data.rayCasting.precision;
+        let rayCos = Math.cos(degreeToRadians(rayAngle)) / game.rayCasting.precision;
+        let raySin = Math.sin(degreeToRadians(rayAngle)) / game.rayCasting.precision;
 
         // Wall finder
         let wall = 0;
         while (wall != 2) {
             ray.x += rayCos;
             ray.y += raySin;
-            wall = data.map[Math.floor(ray.y)][Math.floor(ray.x)];
+            wall = game.map[Math.floor(ray.y)][Math.floor(ray.x)];
             activeSprites(ray.x, ray.y);
         }
 
         // Pythagoras theorem
-        let distance = Math.sqrt(Math.pow(data.player.x - ray.x, 2) + Math.pow(data.player.y - ray.y, 2));
+        let distance = Math.sqrt(Math.pow(game.player.x - ray.x, 2) + Math.pow(game.player.y - ray.y, 2));
 
         // Fish eye fix
-        distance = distance * Math.cos(degreeToRadians(rayAngle - data.player.angle));
+        distance = distance * Math.cos(degreeToRadians(rayAngle - game.player.angle));
 
         // Wall height
-        let wallHeight = Math.floor(data.projection.halfHeight / distance);
+        let wallHeight = Math.floor(game.projection.halfHeight / distance);
 
         // Get texture
-        let texture = data.textures[wall - 1];
+        let texture = game.textures[wall - 1];
 
         // Calcule texture position
         let texturePositionX = Math.floor((texture.width * (ray.x + ray.y)) % texture.width);
 
         // Draw
-        drawBackground(rayCount, 0, data.projection.halfHeight - wallHeight, data.backgrounds[0]);
+        drawBackground(rayCount, 0, game.projection.halfHeight - wallHeight, game.backgrounds[0]);
         drawTexture(rayCount, wallHeight, texturePositionX, texture);
         drawFloor(rayCount, wallHeight, rayAngle)
 
         // Increment
-        rayAngle += data.rayCasting.incrementAngle;
+        rayAngle += game.rayCasting.incrementAngle;
     }
 }
 
@@ -364,57 +348,57 @@ function rayCasting() {
  * Clear screen
  */
 function clearScreen() {
-    screenContext.clearRect(0, 0, data.projection.width, data.projection.height);
+    screenContext.clearRect(0, 0, game.projection.width, game.projection.height);
 }
 
 /**
  * Movement
  */
 function movePlayer() {
-    if (data.key.up.active) {
-        let playerCos = Math.cos(degreeToRadians(data.player.angle)) * data.player.speed.movement;
-        let playerSin = Math.sin(degreeToRadians(data.player.angle)) * data.player.speed.movement;
-        let newX = data.player.x + playerCos;
-        let newY = data.player.y + playerSin;
-        let checkX = Math.floor(newX + playerCos * data.player.radius);
-        let checkY = Math.floor(newY + playerSin * data.player.radius);
+    if (game.key.up.active) {
+        let playerCos = Math.cos(degreeToRadians(game.player.angle)) * game.player.speed.movement;
+        let playerSin = Math.sin(degreeToRadians(game.player.angle)) * game.player.speed.movement;
+        let newX = game.player.x + playerCos;
+        let newY = game.player.y + playerSin;
+        let checkX = Math.floor(newX + playerCos * game.player.radius);
+        let checkY = Math.floor(newY + playerSin * game.player.radius);
 
         // Collision detection
-        if (data.map[checkY][Math.floor(data.player.x)] != 2) {
-            data.player.y = newY;
+        if (game.map[checkY][Math.floor(game.player.x)] != 2) {
+            game.player.y = newY;
         }
-        if (data.map[Math.floor(data.player.y)][checkX] != 2) {
-            data.player.x = newX;
+        if (game.map[Math.floor(game.player.y)][checkX] != 2) {
+            game.player.x = newX;
         }
 
     }
-    if (data.key.down.active) {
-        let playerCos = Math.cos(degreeToRadians(data.player.angle)) * data.player.speed.movement;
-        let playerSin = Math.sin(degreeToRadians(data.player.angle)) * data.player.speed.movement;
-        let newX = data.player.x - playerCos;
-        let newY = data.player.y - playerSin;
-        let checkX = Math.floor(newX - playerCos * data.player.radius);
-        let checkY = Math.floor(newY - playerSin * data.player.radius);
+    if (game.key.down.active) {
+        let playerCos = Math.cos(degreeToRadians(game.player.angle)) * game.player.speed.movement;
+        let playerSin = Math.sin(degreeToRadians(game.player.angle)) * game.player.speed.movement;
+        let newX = game.player.x - playerCos;
+        let newY = game.player.y - playerSin;
+        let checkX = Math.floor(newX - playerCos * game.player.radius);
+        let checkY = Math.floor(newY - playerSin * game.player.radius);
 
         // Collision detection
-        if (data.map[checkY][Math.floor(data.player.x)] != 2) {
-            data.player.y = newY;
+        if (game.map[checkY][Math.floor(game.player.x)] != 2) {
+            game.player.y = newY;
         }
-        if (data.map[Math.floor(data.player.y)][checkX] != 2) {
-            data.player.x = newX;
+        if (game.map[Math.floor(game.player.y)][checkX] != 2) {
+            game.player.x = newX;
         }
     }
-    if (data.key.left.active) {
-        data.player.angle -= data.player.speed.rotation;
-        if (data.player.angle < 0) data.player.angle += 360;
-        data.player.angle %= 360;
+    if (game.key.left.active) {
+        game.player.angle -= game.player.speed.rotation;
+        if (game.player.angle < 0) game.player.angle += 360;
+        game.player.angle %= 360;
     }
-    if (data.key.right.active) {
-        data.player.angle += data.player.speed.rotation;
-        if (data.player.angle < 0) data.player.angle += 360;
-        data.player.angle %= 360;
+    if (game.key.right.active) {
+        game.player.angle += game.player.speed.rotation;
+        if (game.player.angle < 0) game.player.angle += 360;
+        game.player.angle %= 360;
     }
-    if (data.key.space.active) {
+    if (game.key.space.active) {
         handleShooting();
     }
 }
@@ -425,20 +409,20 @@ function movePlayer() {
 document.addEventListener('keydown', (event) => {
     let keyCode = event.code;
 
-    if (keyCode === data.key.up.code) {
-        data.key.up.active = true;
+    if (keyCode === game.key.up.code) {
+        game.key.up.active = true;
     }
-    if (keyCode === data.key.down.code) {
-        data.key.down.active = true;
+    if (keyCode === game.key.down.code) {
+        game.key.down.active = true;
     }
-    if (keyCode === data.key.left.code) {
-        data.key.left.active = true;
+    if (keyCode === game.key.left.code) {
+        game.key.left.active = true;
     }
-    if (keyCode === data.key.right.code) {
-        data.key.right.active = true;
+    if (keyCode === game.key.right.code) {
+        game.key.right.active = true;
     }
-    if (keyCode === data.key.space.code) {
-        data.key.space.active = true;
+    if (keyCode === game.key.space.code) {
+        game.key.space.active = true;
     }
 });
 
@@ -448,26 +432,26 @@ document.addEventListener('keydown', (event) => {
 document.addEventListener('keyup', (event) => {
     let keyCode = event.code;
 
-    if (keyCode === data.key.up.code) {
-        data.key.up.active = false;
+    if (keyCode === game.key.up.code) {
+        game.key.up.active = false;
     }
-    if (keyCode === data.key.down.code) {
-        data.key.down.active = false;
+    if (keyCode === game.key.down.code) {
+        game.key.down.active = false;
     }
-    if (keyCode === data.key.left.code) {
-        data.key.left.active = false;
+    if (keyCode === game.key.left.code) {
+        game.key.left.active = false;
     }
-    if (keyCode === data.key.right.code) {
-        data.key.right.active = false;
+    if (keyCode === game.key.right.code) {
+        game.key.right.active = false;
     }
-    if (keyCode === data.key.space.code) {
-        data.key.space.active = false;
+    if (keyCode === game.key.space.code) {
+        game.key.space.active = false;
     }
 });
 
 function drawTexture(x, wallHeight, texturePositionX, texture) {
     let yIncrementer = (wallHeight * 2) / texture.height;
-    let y = data.projection.halfHeight - wallHeight;
+    let y = game.projection.halfHeight - wallHeight;
     let color = null
     for (let i = 0; i < texture.height; i++) {
         if (texture.id) {
@@ -484,14 +468,14 @@ function drawTexture(x, wallHeight, texturePositionX, texture) {
  * Load textures
  */
 function loadTextures() {
-    for (let i = 0; i < data.textures.length; i++) {
-        if (data.textures[i].id) {
-            data.textures[i].data = getTextureData(data.textures[i]);
+    for (let i = 0; i < game.textures.length; i++) {
+        if (game.textures[i].id) {
+            game.textures[i].data = getTextureData(game.textures[i]);
         }
     }
-    for (let i = 0; i < data.floorTextures.length; i++) {
-        if (data.floorTextures[i].id) {
-            data.floorTextures[i].data = getTextureData(data.floorTextures[i]);
+    for (let i = 0; i < game.floorTextures.length; i++) {
+        if (game.floorTextures[i].id) {
+            game.floorTextures[i].data = getTextureData(game.floorTextures[i]);
         }
     }
 }
@@ -500,9 +484,9 @@ function loadTextures() {
  * Load backgrounds
  */
 function loadBackgrounds() {
-    for (let i = 0; i < data.backgrounds.length; i++) {
-        if (data.backgrounds[i].id) {
-            data.backgrounds[i].data = getTextureData(data.backgrounds[i]);
+    for (let i = 0; i < game.backgrounds.length; i++) {
+        if (game.backgrounds[i].id) {
+            game.backgrounds[i].data = getTextureData(game.backgrounds[i]);
         }
     }
 }
@@ -511,9 +495,21 @@ function loadBackgrounds() {
  * Load sprites
  */
 function loadSprites() {
-    for (let i = 0; i < data.sprites.length; i++) {
-        if (data.sprites[i].id) {
-            data.sprites[i].data = getTextureData(data.sprites[i]);
+    for (let i = 0; i < game.sprites.length; i++) {
+        if (game.sprites[i].id) {
+            game.sprites[i].data = getTextureData(game.sprites[i]);
+        }
+    }
+    // Load monster sprite data for all monsters
+    for (let i = 0; i < game.monsters.length; i++) {
+        if (!game.monsters[i].data) {
+            // Use the monster sprite element for all monsters
+            const monsterTexture = {
+                id: 'monster-sprite',
+                width: game.monsters[i].width,
+                height: game.monsters[i].height
+            };
+            game.monsters[i].data = getTextureData(monsterTexture);
         }
     }
 }
@@ -560,14 +556,14 @@ window.addEventListener('blur', function (event) {
  */
 function renderFocusLost() {
     screenContext.fillStyle = 'rgba(0,0,0,0.5)';
-    screenContext.fillRect(0, 0, data.projection.width, data.projection.height);
+    screenContext.fillRect(0, 0, game.projection.width, game.projection.height);
     screenContext.fillStyle = 'white';
     screenContext.font = '10px Lucida Console';
-    screenContext.fillText('CLICK TO FOCUS', data.projection.halfWidth / 2, data.projection.halfHeight);
+    screenContext.fillText('CLICK TO FOCUS', game.projection.halfWidth / 2, game.projection.halfHeight);
 }
 
 function drawBackground(x, y1, y2, background) {
-    let offset = (data.player.angle + x);
+    let offset = (game.player.angle + x);
     for (let y = y1; y < y2; y++) {
         let textureX = Math.floor(offset % background.width);
         let textureY = Math.floor(y % background.height);
@@ -581,27 +577,21 @@ function radiansToDegrees(radians) {
 }
 
 function activeSprites(x, y) {
-    const ACTIVATION_DISTANCE = 1.0; // Distance threshold for sprite activation
-
-    for (let i = 0; i < data.sprites.length; i++) {
-        const sprite = data.sprites[i];
-
-        // Quick bounds check first
+    const ACTIVATION_DISTANCE = 1.0;
+    for (let sprite of game.sprites) {
         const dx = Math.abs(x - sprite.x);
         if (dx > ACTIVATION_DISTANCE) continue;
-
         const dy = Math.abs(y - sprite.y);
         if (dy > ACTIVATION_DISTANCE) continue;
-
-        // For monsters, check if they're dead before activating
-        if (sprite.isMonster) {
-            const monster = state.monsters.find(m => m.id === sprite.monsterId);
-            if (monster && !monster.isDead) {
-                sprite.active = true;
-            }
-        } else {
-            sprite.active = true;
-        }
+        sprite.active = true;
+    }
+    for (let monster of game.monsters) {
+        if (monster.isDead) continue;
+        const dx = Math.abs(x - monster.x);
+        if (dx > ACTIVATION_DISTANCE) continue;
+        const dy = Math.abs(y - monster.y);
+        if (dy > ACTIVATION_DISTANCE) continue;
+        monster.active = true;
     }
 }
 
@@ -609,15 +599,14 @@ function activeSprites(x, y) {
  * Inactive all of the sprites
  */
 function inactiveSprites() {
-    for (let i = 0; i < data.sprites.length; i++) {
-        data.sprites[i].active = false;
-    }
+    for (let sprite of game.sprites) sprite.active = false;
+    for (let monster of game.monsters) monster.active = false;
 }
 
 function drawRect(x1, x2, y1, y2, color) {
     for (let x = x1; x < x2; x++) {
         if (x < 0) continue;
-        if (x > data.projection.width) continue;
+        if (x > game.projection.width) continue;
         drawLine(x, y1, y2, color);
     }
 }
@@ -626,23 +615,27 @@ function drawRect(x1, x2, y1, y2, color) {
  * Find the coordinates for all activated sprites and draw it in the projection
  */
 function drawSprites() {
-    // Draw regular sprites
-    for (let i = 0; i < data.sprites.length; i++) {
-        if (data.sprites[i].active) {
-            drawSpriteInWorld(data.sprites[i]);
+    // Draw trees and other non-monster sprites
+    for (let i = 0; i < game.sprites.length; i++) {
+        const sprite = game.sprites[i];
+        if (sprite.active && sprite.data) {
+            drawSpriteInWorld(sprite);
         }
     }
-
+    // Draw monsters
+    for (let monster of game.monsters) {
+        if (!monster.isDead && monster.active && monster.data) {
+            drawSpriteInWorld(monster);
+        }
+    }
     // Draw bullets
-    for (let bullet of state.bullets) {
-        // Create a temporary sprite object for the bullet
+    for (let bullet of game.bullets) {
         const bulletSprite = {
             x: bullet.x,
             y: bullet.y,
-            width: 4,  // Small size for bullets
+            width: 4,
             height: 4,
             isBullet: true,
-            // Make bullet yellow
             color: new Color(255, 255, 0, 255)
         };
         drawSpriteInWorld(bulletSprite);
@@ -652,32 +645,32 @@ function drawSprites() {
 // Separate sprite drawing logic into its own function
 function drawSpriteInWorld(sprite) {
     // Get X and Y coords in relation of the player coords
-    let spriteXRelative = sprite.x + 0.5 - data.player.x;
-    let spriteYRelative = sprite.y + 0.5 - data.player.y;
+    let spriteXRelative = sprite.x + 0.5 - game.player.x;
+    let spriteYRelative = sprite.y + 0.5 - game.player.y;
 
     // Get angle of the sprite in relation of the player angle
     let spriteAngleRadians = Math.atan2(spriteYRelative, spriteXRelative);
-    let spriteAngle = radiansToDegrees(spriteAngleRadians) - Math.floor(data.player.angle - data.player.halfFov);
+    let spriteAngle = radiansToDegrees(spriteAngleRadians) - Math.floor(game.player.angle - game.player.halfFov);
 
     // Sprite angle checking
     if (spriteAngle > 360) spriteAngle -= 360;
     if (spriteAngle < 0) spriteAngle += 360;
 
     // Three rule to discover the x position of the sprite
-    let spriteX = Math.floor(spriteAngle * data.projection.width / data.player.fov);
+    let spriteX = Math.floor(spriteAngle * game.projection.width / game.player.fov);
 
     // SpriteX right position fix
-    if (spriteX > data.projection.width) {
-        spriteX %= data.projection.width;
-        spriteX -= data.projection.width;
+    if (spriteX > game.projection.width) {
+        spriteX %= game.projection.width;
+        spriteX -= game.projection.width;
     }
 
     // Get the distance of the sprite (Pythagoras theorem)
-    let distance = Math.sqrt(Math.pow(data.player.x - sprite.x, 2) + Math.pow(data.player.y - sprite.y, 2));
+    let distance = Math.sqrt(Math.pow(game.player.x - sprite.x, 2) + Math.pow(game.player.y - sprite.y, 2));
 
     // Calc sprite width and height
-    let spriteHeight = Math.floor(data.projection.halfHeight / distance);
-    let spriteWidth = Math.floor(data.projection.halfWidth / distance);    // Draw the sprite
+    let spriteHeight = Math.floor(game.projection.halfHeight / distance);
+    let spriteWidth = Math.floor(game.projection.halfWidth / distance);    // Draw the sprite
     if (sprite.isBullet) {
         drawBulletSprite(spriteX, spriteWidth, spriteHeight, sprite);
     } else {
@@ -694,7 +687,7 @@ function drawBulletSprite(xProjection, spriteWidth, spriteHeight, bullet) {
 
     // Center the bullet
     xProjection = xProjection - spriteWidth / 2;
-    let yProjection = data.projection.halfHeight - spriteHeight / 2;
+    let yProjection = game.projection.halfHeight - spriteHeight / 2;
 
     // Draw a simple filled rectangle for the bullet
     drawRect(
@@ -708,19 +701,22 @@ function drawBulletSprite(xProjection, spriteWidth, spriteHeight, bullet) {
 
 function drawSprite(xProjection, spriteWidth, spriteHeight, sprite) {
     // Early bounds check for the entire sprite
-    if (xProjection + spriteWidth < 0 || xProjection >= data.projection.width) return;
+    if (xProjection + spriteWidth < 0 || xProjection >= game.projection.width) return;
+
+    // Only draw if sprite has valid texture data
+    if (!sprite.data) return;
 
     // Precalculate texture step sizes
     const texStepX = sprite.width / spriteWidth;
     const texStepY = sprite.height / spriteHeight;
 
     // Get Y position for sprite (center it vertically)
-    const yProjection = data.projection.halfHeight - spriteHeight / 2;
+    const yProjection = game.projection.halfHeight - spriteHeight / 2;
 
     // Clamp drawing bounds to screen edges
     const startX = Math.max(0, Math.floor(xProjection));
-    const endX = Math.min(data.projection.width, Math.ceil(xProjection + spriteWidth));
-    const endY = Math.min(data.projection.height - yProjection, spriteHeight);
+    const endX = Math.min(game.projection.width, Math.ceil(xProjection + spriteWidth));
+    const endY = Math.min(game.projection.height - yProjection, spriteHeight);
 
     // For each vertical line of the sprite
     for (let stripe = startX - Math.floor(xProjection); stripe < spriteWidth && startX + stripe < endX; stripe++) {
@@ -733,7 +729,7 @@ function drawSprite(xProjection, spriteWidth, spriteHeight, sprite) {
             const color = sprite.data[texX + texY * sprite.width];
 
             // Only draw visible pixels
-            if (color.r !== 255 || color.g !== 0 || color.b !== 255) {
+            if (color && (color.r !== 255 || color.g !== 0 || color.b !== 255)) {
                 drawPixel(xPos, yProjection + y, color);
             }
         }
@@ -756,17 +752,17 @@ class Bullet {
 
 function handleShooting(e) {
     const currentTime = Date.now();
-    if (currentTime - state.lastShot >= state.shootCooldown) {
-        state.isShooting = true;
-        state.lastShot = currentTime;
+    if (currentTime - game.lastShot >= game.shootCooldown) {
+        game.isShooting = true;
+        game.lastShot = currentTime;
 
         // Start the bullet slightly in front of the player in the direction they're facing
         const bulletStartDistance = 0.5; // How far in front of the player the bullet starts
-        const startX = data.player.x + Math.cos(degreeToRadians(data.player.angle)) * bulletStartDistance;
-        const startY = data.player.y + Math.sin(degreeToRadians(data.player.angle)) * bulletStartDistance;
+        const startX = game.player.x + Math.cos(degreeToRadians(game.player.angle)) * bulletStartDistance;
+        const startY = game.player.y + Math.sin(degreeToRadians(game.player.angle)) * bulletStartDistance;
 
-        const bullet = new Bullet(startX, startY, data.player.angle);
-        state.bullets.push(bullet);
+        const bullet = new Bullet(startX, startY, game.player.angle);
+        game.bullets.push(bullet);
 
         const shootSound = document.getElementById('shoot-sound');
         shootSound.currentTime = 0;
@@ -776,26 +772,23 @@ function handleShooting(e) {
 
 function updateGameObjects() {
     // Update bullets
-    for (let i = state.bullets.length - 1; i >= 0; i--) {
-        const bullet = state.bullets[i];
+    for (let i = game.bullets.length - 1; i >= 0; i--) {
+        const bullet = game.bullets[i];
         bullet.update();
-
         // Stop bullet if it hits a wall
         const mapX = Math.floor(bullet.x);
         const mapY = Math.floor(bullet.y);
-        if (data.map[mapY] && data.map[mapY][mapX] === 2) {
-            state.bullets.splice(i, 1);
+        if (game.map[mapY] && game.map[mapY][mapX] === 2) {
+            game.bullets.splice(i, 1);
             continue;
         }
-
-        // Check collision with monsters
-        for (const monster of state.monsters) {
+        // Check collision with monsters only
+        for (const monster of game.monsters) {
             if (!monster.isDead) {
                 const dx = monster.x - bullet.x;
                 const dy = monster.y - bullet.y;
-                const distance = Math.sqrt(dx * dx + dy * dy);
-
-                if (distance < 0.5) {
+                const distance = dx * dx + dy * dy;
+                if (distance < 0.25) { // Use squared distance for perf
                     monster.health -= 25;
                     if (monster.health <= 0) {
                         monster.isDead = true;
@@ -818,42 +811,35 @@ function updateGameObjects() {
                             painSound3.play();
                         }
                     }
-                    state.bullets.splice(i, 1);
+                    game.bullets.splice(i, 1);
                     break;
                 }
             }
         }
-
         // Remove bullets that have traveled too far
-        if (state.bullets[i] && (Math.abs(bullet.x - data.player.x) > 20 || Math.abs(bullet.y - data.player.y) > 20)) {
-            state.bullets.splice(i, 1);
+        if (game.bullets[i] && ((bullet.x - game.player.x) ** 2 + (bullet.y - game.player.y) ** 2 > 400)) {
+            game.bullets.splice(i, 1);
         }
     }
-
     // Update monster positions
-    for (let monster of state.monsters) {
+    for (let monster of game.monsters) {
         if (!monster.isDead) {
-            // Calculate direction to player
-            const dx = data.player.x - monster.x;
-            const dy = data.player.y - monster.y;
+            const dx = game.player.x - monster.x;
+            const dy = game.player.y - monster.y;
             const distance = Math.sqrt(dx * dx + dy * dy);
-
-            // Only move if player is within range
             if (distance > 0.5 && distance < 10) {
-                // Calculate normalized direction
-                const moveSpeed = 0.02; // Slower than player
-                const dirX = (dx / distance) * moveSpeed;
-                const dirY = (dy / distance) * moveSpeed;
-
+                const moveSpeed = 0.02;
+                const invDist = 1 / distance;
+                const dirX = dx * invDist * moveSpeed;
+                const dirY = dy * invDist * moveSpeed;
                 // Try to move in X direction
                 const newX = monster.x + dirX;
-                if (data.map[Math.floor(monster.y)][Math.floor(newX)] !== 2) {
+                if (game.map[Math.floor(monster.y)][Math.floor(newX)] !== 2) {
                     monster.x = newX;
                 }
-
                 // Try to move in Y direction
                 const newY = monster.y + dirY;
-                if (data.map[Math.floor(newY)][Math.floor(monster.x)] !== 2) {
+                if (game.map[Math.floor(newY)][Math.floor(monster.x)] !== 2) {
                     monster.y = newY;
                 }
             }
@@ -862,32 +848,18 @@ function updateGameObjects() {
 }
 
 function drawGun(ctx) {
-    if (state.isShooting) {
-        ctx.drawImage(state.gunSprite,
-            data.projection.width / 2 - 80,
-            data.projection.height - 170,
+    if (game.isShooting) {
+        ctx.drawImage(game.gunSprite,
+            game.projection.width / 2 - 80,
+            game.projection.height - 170,
             160, 160
         );
-        state.isShooting = false;
+        game.isShooting = false;
     } else {
-        ctx.drawImage(state.gunSprite,
-            data.projection.width / 2 - 80,
-            data.projection.height - 155,
+        ctx.drawImage(game.gunSprite,
+            game.projection.width / 2 - 80,
+            game.projection.height - 155,
             160, 160
         );
-    }
-}
-
-function syncMonsterState() {
-    // Update sprite positions using the cached lookup
-    for (let monster of state.monsters) {
-        const monsterSprite = state.monsterSpriteMap.get(monster.id);
-        if (monsterSprite) {
-            monsterSprite.x = monster.x;
-            monsterSprite.y = monster.y;
-            if (monster.isDead) {
-                monsterSprite.active = false;
-            }
-        }
     }
 }
