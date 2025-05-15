@@ -645,8 +645,14 @@ function drawSprites() {
 // Separate sprite drawing logic into its own function
 function drawSpriteInWorld(sprite) {
     // Get X and Y coords in relation of the player coords
-    let spriteXRelative = sprite.x + 0.5 - game.player.x;
-    let spriteYRelative = sprite.y + 0.5 - game.player.y;
+    let spriteXRelative, spriteYRelative;
+    if (sprite.isBullet) {
+        spriteXRelative = sprite.x - game.player.x;
+        spriteYRelative = sprite.y - game.player.y;
+    } else {
+        spriteXRelative = sprite.x + 0.5 - game.player.x;
+        spriteYRelative = sprite.y + 0.5 - game.player.y;
+    }
 
     // Get angle of the sprite in relation of the player angle
     let spriteAngleRadians = Math.atan2(spriteYRelative, spriteXRelative);
