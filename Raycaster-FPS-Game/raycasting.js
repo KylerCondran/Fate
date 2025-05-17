@@ -4,6 +4,7 @@ let game = {
     bullets: [],
     gunSprite: document.getElementById('gun-sprite'),
     isShooting: false,
+    equippedWeapon: 2,
     lastShot: 0,
     shootCooldown: 850,
     screen: {
@@ -88,6 +89,10 @@ let game = {
         },
         two: {
             code: "Digit2",
+            active: false
+        },
+        three: {
+            code: "Digit3",
             active: false
         }
     },
@@ -410,12 +415,19 @@ function movePlayer() {
         handleShooting();
     }
     if (game.key.one.active) {
-        game.gunSprite = document.getElementById('gun-sprite');
-        game.shootCooldown = 850;
+        game.gunSprite = document.getElementById('knife-sprite');
+        game.shootCooldown = 600;
+        game.equippedWeapon = 1;
     }
     if (game.key.two.active) {
+        game.gunSprite = document.getElementById('gun-sprite');
+        game.shootCooldown = 850;
+        game.equippedWeapon = 2;
+    }
+    if (game.key.three.active) {
         game.gunSprite = document.getElementById('machinegun-sprite');
         game.shootCooldown = 400;
+        game.equippedWeapon = 3;
     }
 }
 
@@ -446,6 +458,9 @@ document.addEventListener('keydown', (event) => {
     if (keyCode === game.key.two.code) {
         game.key.two.active = true;
     }
+    if (keyCode === game.key.three.code) {
+        game.key.three.active = true;
+    }
 });
 
 /**
@@ -474,6 +489,9 @@ document.addEventListener('keyup', (event) => {
     }
     if (keyCode === game.key.two.code) {
         game.key.two.active = false;
+    }
+    if (keyCode === game.key.three.code) {
+        game.key.three.active = false;
     }
 });
 
@@ -706,7 +724,9 @@ function drawSpriteInWorld(sprite) {
     let spriteHeight = Math.floor(game.projection.halfHeight / distance);
     let spriteWidth = Math.floor(game.projection.halfWidth / distance);    // Draw the sprite
     if (sprite.isBullet) {
-        drawBulletSprite(spriteX, spriteWidth, spriteHeight, sprite);
+        if (game.equippedWeapon != 1) {
+            drawBulletSprite(spriteX, spriteWidth, spriteHeight, sprite);
+        }      
     } else {
         drawSprite(spriteX, spriteWidth, spriteHeight, sprite);
     }
@@ -798,9 +818,15 @@ function handleShooting(e) {
         const bullet = new Bullet(startX, startY, game.player.angle);
         game.bullets.push(bullet);
 
-        const shootSound = document.getElementById('shoot-sound');
-        shootSound.currentTime = 0;
-        shootSound.play();
+        if (game.equippedWeapon == 1) {
+            const knifeSound = document.getElementById('knife-sound');
+            knifeSound.currentTime = 0;
+            knifeSound.play();
+        } else {
+            const shootSound = document.getElementById('shoot-sound');
+            shootSound.currentTime = 0;
+            shootSound.play();
+        }
     }
 }
 
@@ -851,8 +877,14 @@ function updateGameObjects() {
             }
         }
         // Remove bullets that have traveled too far
-        if (game.bullets[i] && ((bullet.x - game.player.x) ** 2 + (bullet.y - game.player.y) ** 2 > 400)) {
-            game.bullets.splice(i, 1);
+        if (game.equippedWeapon == 1) {
+            if (game.bullets[i] && ((bullet.x - game.player.x) ** 2 + (bullet.y - game.player.y) ** 2 > 1)) {
+                game.bullets.splice(i, 1);
+            }
+        } else {
+            if (game.bullets[i] && ((bullet.x - game.player.x) ** 2 + (bullet.y - game.player.y) ** 2 > 400)) {
+                game.bullets.splice(i, 1);
+            }
         }
     }
     // Update monster positions
