@@ -81,6 +81,14 @@ let game = {
         space: {
             code: "Space",
             active: false
+        },
+        one: {
+            code: "Digit1",
+            active: false
+        },
+        two: {
+            code: "Digit2",
+            active: false
         }
     },
     textures: [
@@ -401,6 +409,14 @@ function movePlayer() {
     if (game.key.space.active) {
         handleShooting();
     }
+    if (game.key.one.active) {
+        game.gunSprite = document.getElementById('gun-sprite');
+        game.shootCooldown = 850;
+    }
+    if (game.key.two.active) {
+        game.gunSprite = document.getElementById('machinegun-sprite');
+        game.shootCooldown = 400;
+    }
 }
 
 /**
@@ -424,6 +440,12 @@ document.addEventListener('keydown', (event) => {
     if (keyCode === game.key.space.code) {
         game.key.space.active = true;
     }
+    if (keyCode === game.key.one.code) {
+        game.key.one.active = true;
+    }
+    if (keyCode === game.key.two.code) {
+        game.key.two.active = true;
+    }
 });
 
 /**
@@ -446,6 +468,12 @@ document.addEventListener('keyup', (event) => {
     }
     if (keyCode === game.key.space.code) {
         game.key.space.active = false;
+    }
+    if (keyCode === game.key.one.code) {
+        game.key.one.active = false;
+    }
+    if (keyCode === game.key.two.code) {
+        game.key.two.active = false;
     }
 });
 
