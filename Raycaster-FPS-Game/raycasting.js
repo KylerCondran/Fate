@@ -8,8 +8,8 @@ let game = {
     lastShot: 0,
     shootCooldown: 850,
     screen: {
-        width: 1500,
-        height: 680,
+        width: window.innerWidth,
+        height: window.innerHeight,
         halfWidth: null,
         halfHeight: null,
         scale: 4
