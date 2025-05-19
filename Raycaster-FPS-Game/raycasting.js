@@ -43,7 +43,7 @@ let game = {
     },
     map: [
         [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
-        [2, 0, 0, 0, 0, 2, 0, 0, 0, 2, 2, 2, 0, 0, 0, 0, 0, 3, 0, 2],
+        [2, 0, 0, 0, 0, 2, 0, 0, 0, 2, 2, 2, 0, 0, 0, 0, 0, 4, 0, 2],
         [2, 0, 0, 0, 0, 2, 1, 0, 0, 1, 2, 2, 0, 1, 0, 0, 1, 0, 0, 2],
         [2, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 2],
         [2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 2, 0, 2],
@@ -54,14 +54,14 @@ let game = {
         [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 2, 0, 0, 0, 0, 2],
         [2, 0, 0, 0, 0, 0, 2, 0, 2, 0, 2, 2, 2, 2, 0, 1, 0, 0, 0, 2],
         [2, 0, 0, 0, 0, 0, 2, 0, 2, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 2],
-        [2, 2, 0, 0, 0, 2, 2, 0, 2, 0, 0, 3, 2, 0, 0, 0, 0, 0, 0, 2],
+        [2, 2, 0, 0, 0, 2, 2, 0, 2, 0, 0, 4, 2, 0, 0, 0, 0, 0, 0, 2],
         [2, 2, 2, 2, 2, 2, 2, 0, 2, 2, 0, 2, 2, 2, 2, 2, 0, 2, 2, 2],
         [2, 2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
         [2, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
         [2, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 1, 0, 0, 2],
-        [2, 3, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 3, 2],
+        [2, 4, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 3, 2],
         [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
-    ],
+    ], // 0 is empty space, 1 is a tree, 2 is a wall, 3 is a monster, 4 is a lion
     key: {
         up: {
             code: "ArrowUp",
@@ -164,6 +164,8 @@ for (let i = 0; i < game.map.length; i++) {
             // Monster object with position, health, and sprite info
             const monster = {
                 id: `monster_${monsterIdCounter}`,
+                skin: 'monster-sprite',
+                type: 'monster',
                 x: j,
                 y: i,
                 health: 100,
@@ -174,6 +176,23 @@ for (let i = 0; i < game.map.length; i++) {
                 data: null // Will be filled with texture data
             };
             game.monsters.push(monster);
+            monsterIdCounter++;
+        } else if (game.map[i][j] == 4) {
+            // Lion object with position, health, and sprite info
+            const lion = {
+                id: `monster_${monsterIdCounter}`,
+                skin: 'lion-sprite',
+                type: 'lion',
+                x: j,
+                y: i,
+                health: 100,
+                isDead: false,
+                width: 32,
+                height: 32,
+                active: false,
+                data: null // Will be filled with texture data
+            };
+            game.monsters.push(lion);
             monsterIdCounter++;
         }
     }
@@ -551,7 +570,7 @@ function loadSprites() {
         if (!game.monsters[i].data) {
             // Use the monster sprite element for all monsters
             const monsterTexture = {
-                id: 'monster-sprite',
+                id: game.monsters[i].skin,
                 width: game.monsters[i].width,
                 height: game.monsters[i].height
             };
@@ -852,21 +871,21 @@ function updateGameObjects() {
                     monster.health -= 25;
                     if (monster.health <= 0) {
                         monster.isDead = true;
-                        const deathSound = document.getElementById('monster-death');
+                        const deathSound = document.getElementById(`${monster.type}-death`);
                         deathSound.currentTime = 0;
                         deathSound.play();
                     } else {
                         var rnd = Math.floor(Math.random() * 3);
                         if (rnd == 0) {
-                            const painSound1 = document.getElementById('monster-scream-1');
+                            const painSound1 = document.getElementById(`${monster.type}-scream-1`);
                             painSound1.currentTime = 0;
                             painSound1.play();
                         } else if (rnd == 1) {
-                            const painSound2 = document.getElementById('monster-scream-2');
+                            const painSound2 = document.getElementById(`${monster.type}-scream-2`);
                             painSound2.currentTime = 0;
                             painSound2.play();
                         } else {
-                            const painSound3 = document.getElementById('monster-scream-3');
+                            const painSound3 = document.getElementById(`${monster.type}-scream-3`);
                             painSound3.currentTime = 0;
                             painSound3.play();
                         }
