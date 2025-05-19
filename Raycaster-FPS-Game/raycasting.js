@@ -54,14 +54,14 @@ let game = {
         [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 2, 0, 0, 0, 0, 2],
         [2, 0, 0, 0, 0, 0, 2, 0, 2, 0, 2, 2, 2, 2, 0, 1, 0, 0, 0, 2],
         [2, 0, 0, 0, 0, 0, 2, 0, 2, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 2],
-        [2, 2, 0, 0, 0, 2, 2, 0, 2, 0, 0, 4, 2, 0, 0, 0, 0, 0, 0, 2],
+        [2, 2, 0, 0, 0, 2, 2, 0, 2, 0, 0, 5, 2, 0, 0, 0, 0, 0, 0, 2],
         [2, 2, 2, 2, 2, 2, 2, 0, 2, 2, 0, 2, 2, 2, 2, 2, 0, 2, 2, 2],
         [2, 2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
         [2, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
         [2, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 1, 0, 0, 2],
-        [2, 4, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 3, 2],
+        [2, 5, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 4, 2],
         [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
-    ], // 0 is empty space, 1 is a tree, 2 is a wall, 3 is a monster, 4 is a lion
+    ], // 0 is empty space, 1 is a tree, 2 is a wall, 3 is a monster, 4 is a lion, 5 is a tiger
     key: {
         up: {
             code: "ArrowUp",
@@ -193,6 +193,23 @@ for (let i = 0; i < game.map.length; i++) {
                 data: null // Will be filled with texture data
             };
             game.monsters.push(lion);
+            monsterIdCounter++;
+        } else if (game.map[i][j] == 5) {
+            // Tiger object with position, health, and sprite info
+            const tiger = {
+                id: `monster_${monsterIdCounter}`,
+                skin: 'tiger-sprite',
+                type: 'lion',
+                x: j,
+                y: i,
+                health: 100,
+                isDead: false,
+                width: 32,
+                height: 32,
+                active: false,
+                data: null // Will be filled with texture data
+            };
+            game.monsters.push(tiger);
             monsterIdCounter++;
         }
     }
