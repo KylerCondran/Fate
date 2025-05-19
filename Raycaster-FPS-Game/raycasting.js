@@ -59,9 +59,9 @@ let game = {
         [2, 2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
         [2, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
         [2, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 1, 0, 0, 2],
-        [2, 5, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 4, 2],
+        [2, 5, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 6, 2],
         [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
-    ], // 0 is empty space, 1 is a tree, 2 is a wall, 3 is a monster, 4 is a lion, 5 is a tiger
+    ], // 0 is empty space, 1 is a tree, 2 is a wall, 3 is a monster, 4 is a lion, 5 is a tiger, 6 is a bear
     key: {
         up: {
             code: "ArrowUp",
@@ -210,6 +210,23 @@ for (let i = 0; i < game.map.length; i++) {
                 data: null // Will be filled with texture data
             };
             game.monsters.push(tiger);
+            monsterIdCounter++;
+        } else if (game.map[i][j] == 6) {
+            // Bear object with position, health, and sprite info
+            const bear = {
+                id: `monster_${monsterIdCounter}`,
+                skin: 'bear-sprite',
+                type: 'bear',
+                x: j,
+                y: i,
+                health: 250,
+                isDead: false,
+                width: 32,
+                height: 32,
+                active: false,
+                data: null // Will be filled with texture data
+            };
+            game.monsters.push(bear);
             monsterIdCounter++;
         }
     }
