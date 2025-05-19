@@ -185,7 +185,7 @@ for (let i = 0; i < game.map.length; i++) {
                 type: 'lion',
                 x: j,
                 y: i,
-                health: 100,
+                health: 150,
                 isDead: false,
                 width: 32,
                 height: 32,
