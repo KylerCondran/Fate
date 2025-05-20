@@ -142,6 +142,12 @@ let game = {
             data: null
         }
     ],
+    bulletTexture: {
+        id: 'bullet-sprite',
+        width: 54,
+        height: 54,
+        data: null
+    },
     backgrounds: [
         {
             width: 360,
@@ -152,13 +158,6 @@ let game = {
     ],
     sprites: [] // Only trees and other non-monster sprites
 };
-
-game.bulletTexture = {
-    id: 'bullet-sprite',
-    width: 54,
-    height: 54,
-    data: null
-}
 
 // Add initial sprite and monster data programmatically based on coordinates on map
 let monsterIdCounter = 0;
