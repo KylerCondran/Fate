@@ -165,7 +165,7 @@ for (let i = 0; i < game.map.length; i++) {
     for (let j = 0; j < game.map[i].length; j++) {
         if (game.map[i][j] == 1) {
             // Tree sprite (non-collidable, just drawn)
-            game.sprites.push({ id: "tree", x: j, y: i, width: 8, height: 16, active: false, data: null });
+            game.sprites.push({ id: "tree-sprite", x: j, y: i, width: 8, height: 16, active: false, data: null });
         } else if (game.map[i][j] == 3) {
             // Monster object with position, health, and sprite info
             const monster = {
@@ -939,6 +939,8 @@ function updateGameObjects() {
                         const deathSound = document.getElementById(`${monster.type}-death`);
                         deathSound.currentTime = 0;
                         deathSound.play();
+                        game.sprites.push({ id: 'bones-sprite', x: monster.x, y: monster.y, width: 32, height: 32, active: false, data: null });
+                        loadSprites();
                     } else {
                         var rnd = Math.floor(Math.random() * 3);
                         if (rnd == 0) {
