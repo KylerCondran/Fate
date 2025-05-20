@@ -152,9 +152,6 @@ let game = {
     ],
     sprites: [] // Only trees and other non-monster sprites
 };
-// Add bullet texture to game object
-// Bullet texture will be loaded from img/bullet.png
-// We'll use 16x16 for bullet sprite
 
 game.bulletTexture = {
     id: 'bullet-sprite',
