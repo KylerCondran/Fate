@@ -151,6 +151,16 @@ let game = {
         }
     ],
     sprites: [] // Only trees and other non-monster sprites
+};
+// Add bullet texture to game object
+// Bullet texture will be loaded from img/bullet.png
+// We'll use 16x16 for bullet sprite
+
+game.bulletTexture = {
+    id: 'bullet-sprite',
+    width: 54,
+    height: 54,
+    data: null
 }
 
 // Add initial sprite and monster data programmatically based on coordinates on map
@@ -168,7 +178,7 @@ for (let i = 0; i < game.map.length; i++) {
                 type: 'monster',
                 x: j,
                 y: i,
-                health: 100,
+                health: 200,
                 isDead: false,
                 width: 32,
                 height: 32,
@@ -611,6 +621,10 @@ function loadSprites() {
             game.monsters[i].data = getTextureData(monsterTexture);
         }
     }
+    // Load bullet sprite texture
+    if (!game.bulletTexture.data) {
+        game.bulletTexture.data = getTextureData(game.bulletTexture);
+    }
 }
 
 function getTextureData(texture) {
@@ -774,36 +788,57 @@ function drawSpriteInWorld(sprite) {
     let distance = Math.sqrt(Math.pow(game.player.x - sprite.x, 2) + Math.pow(game.player.y - sprite.y, 2));
 
     // Calc sprite width and height
-    let spriteHeight = Math.floor(game.projection.halfHeight / distance);
-    let spriteWidth = Math.floor(game.projection.halfWidth / distance);    // Draw the sprite
+    let spriteHeight, spriteWidth;
     if (sprite.isBullet) {
-        if (game.equippedWeapon != 1) {
-            drawBulletSprite(spriteX, spriteWidth, spriteHeight, sprite);
-        }      
+        // Make bullet size scale with distance, but keep it visible and not too large
+        // Use a larger base size for bullet, and clamp minimum distance for larger/closer start
+        const baseBulletSize = 0.25; // larger for closer start
+        const minDistance = 0.5; // clamp so bullet is always visible and large when just fired
+        const effectiveDistance = Math.max(distance, minDistance);
+        spriteHeight = Math.max(4, Math.floor(game.projection.halfHeight * baseBulletSize / effectiveDistance));
+        spriteWidth = Math.max(4, Math.floor(game.projection.halfWidth * baseBulletSize / effectiveDistance));
+        if (game.equippedWeapon == 1) {
+            // Knife: don't draw bullet
+            return;
+        }
+        drawBulletSprite(spriteX, spriteWidth, spriteHeight, sprite);
     } else {
+        spriteHeight = Math.floor(game.projection.halfHeight / distance);
+        spriteWidth = Math.floor(game.projection.halfWidth / distance);
         drawSprite(spriteX, spriteWidth, spriteHeight, sprite);
     }
 }
 
 // New function to draw bullet sprites
 function drawBulletSprite(xProjection, spriteWidth, spriteHeight, bullet) {
-    // Make bullets smaller than regular sprites and always square
-    let size = Math.max(2, Math.min(spriteWidth, spriteHeight) / 4);
-    spriteWidth = size;
-    spriteHeight = size;
-
+    // Use bullet sprite texture instead of a filled rectangle
+    const texture = game.bulletTexture;
+    if (!texture.data) return;
+    // Clamp sprite size
+    spriteWidth = Math.max(4, Math.min(spriteWidth, texture.width));
+    spriteHeight = Math.max(4, Math.min(spriteHeight, texture.height));
     // Center the bullet
     xProjection = xProjection - spriteWidth / 2;
     let yProjection = game.projection.halfHeight - spriteHeight / 2;
-
-    // Draw a simple filled rectangle for the bullet
-    drawRect(
-        xProjection,
-        xProjection + spriteWidth,
-        yProjection,
-        yProjection + spriteHeight,
-        bullet.color
-    );
+    // Precalculate texture step sizes
+    const texStepX = texture.width / spriteWidth;
+    const texStepY = texture.height / spriteHeight;
+    // Clamp drawing bounds to screen edges
+    const startX = Math.max(0, Math.floor(xProjection));
+    const endX = Math.min(game.projection.width, Math.ceil(xProjection + spriteWidth));
+    const endY = Math.min(game.projection.height - yProjection, spriteHeight);
+    for (let stripe = startX - Math.floor(xProjection); stripe < spriteWidth && startX + stripe < endX; stripe++) {
+        const xPos = startX + stripe;
+        const texX = Math.floor(stripe * texStepX);
+        for (let y = 0; y < endY; y++) {
+            const texY = Math.floor(y * texStepY);
+            const color = texture.data[texX + texY * texture.width];
+            // Skip fully transparent pixels (alpha = 0) or magenta pixels
+            if (color && color.a > 0 && !(color.r === 255 && color.g === 0 && color.b === 255)) {
+                drawPixel(xPos, yProjection + y, color);
+            }
+        }
+    }
 }
 
 function drawSprite(xProjection, spriteWidth, spriteHeight, sprite) {
