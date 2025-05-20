@@ -627,7 +627,7 @@ function getTextureData(texture) {
 function parseImageData(imageData) {
     let colorArray = [];
     for (let i = 0; i < imageData.length; i += 4) {
-        colorArray.push(new Color(imageData[i], imageData[i + 1], imageData[i + 2], 255));
+        colorArray.push(new Color(imageData[i], imageData[i + 1], imageData[i + 2], imageData[i + 3]));
     }
     return colorArray;
 }
@@ -835,8 +835,8 @@ function drawSprite(xProjection, spriteWidth, spriteHeight, sprite) {
             const texY = Math.floor(y * texStepY);
             const color = sprite.data[texX + texY * sprite.width];
 
-            // Only draw visible pixels
-            if (color && (color.r !== 255 || color.g !== 0 || color.b !== 255)) {
+            // Skip fully transparent pixels (alpha = 0) or magenta pixels
+            if (color && color.a > 0 && !(color.r === 255 && color.g === 0 && color.b === 255)) {
                 drawPixel(xPos, yProjection + y, color);
             }
         }
