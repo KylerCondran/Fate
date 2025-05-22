@@ -94,6 +94,10 @@ let game = {
         three: {
             code: "Digit3",
             active: false
+        },
+        four: {
+            code: "Digit4",
+            active: false
         }
     },
     textures: [
@@ -176,8 +180,8 @@ for (let i = 0; i < game.map.length; i++) {
                 y: i,
                 health: 50,
                 isDead: false,
-                width: 32,
-                height: 32,
+                width: 484,
+                height: 499,
                 active: false,
                 data: null // Will be filled with texture data
             };
@@ -193,8 +197,8 @@ for (let i = 0; i < game.map.length; i++) {
                 y: i,
                 health: 150,
                 isDead: false,
-                width: 32,
-                height: 32,
+                width: 665,
+                height: 725,
                 active: false,
                 data: null // Will be filled with texture data
             };
@@ -210,8 +214,8 @@ for (let i = 0; i < game.map.length; i++) {
                 y: i,
                 health: 100,
                 isDead: false,
-                width: 32,
-                height: 32,
+                width: 256,
+                height: 201,
                 active: false,
                 data: null // Will be filled with texture data
             };
@@ -227,8 +231,8 @@ for (let i = 0; i < game.map.length; i++) {
                 y: i,
                 health: 250,
                 isDead: false,
-                width: 32,
-                height: 32,
+                width: 220,
+                height: 237,
                 active: false,
                 data: null // Will be filled with texture data
             };
@@ -244,8 +248,8 @@ for (let i = 0; i < game.map.length; i++) {
                 y: i,
                 health: 550,
                 isDead: false,
-                width: 64,
-                height: 64,
+                width: 326,
+                height: 384,
                 active: false,
                 data: null // Will be filled with texture data
             };
@@ -505,6 +509,11 @@ function movePlayer() {
         game.shootCooldown = 400;
         game.equippedWeapon = 3;
     }
+    if (game.key.four.active) {
+        game.gunSprite = document.getElementById('yetipistol-sprite');
+        game.shootCooldown = 850;
+        game.equippedWeapon = 4;
+    }
 }
 
 /**
@@ -537,6 +546,9 @@ document.addEventListener('keydown', (event) => {
     if (keyCode === game.key.three.code) {
         game.key.three.active = true;
     }
+    if (keyCode === game.key.four.code) {
+        game.key.four.active = true;
+    }
 });
 
 /**
@@ -568,6 +580,9 @@ document.addEventListener('keyup', (event) => {
     }
     if (keyCode === game.key.three.code) {
         game.key.three.active = false;
+    }
+    if (keyCode === game.key.four.code) {
+        game.key.four.active = false;
     }
 });
 
@@ -956,7 +971,7 @@ function updateGameObjects() {
                         const deathSound = document.getElementById(`${monster.audio}-death`);
                         deathSound.currentTime = 0;
                         deathSound.play();
-                        game.sprites.push({ id: 'bones-sprite', x: monster.x, y: monster.y, width: 32, height: 32, active: false, data: null });
+                        game.sprites.push({ id: 'bones-sprite', x: monster.x, y: monster.y, width: 256, height: 256, active: false, data: null });
                         loadSprites();
                     } else {
                         var rnd = Math.floor(Math.random() * 3);
