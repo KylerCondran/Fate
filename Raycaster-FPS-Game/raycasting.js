@@ -170,8 +170,8 @@ for (let i = 0; i < game.map.length; i++) {
             // Monster object with position, health, and sprite info
             const monster = {
                 id: `monster_${monsterIdCounter}`,
-                skin: 'monster-sprite',
-                type: 'monster',
+                skin: 'imp-sprite',
+                type: 'imp',
                 x: j,
                 y: i,
                 health: 50,
@@ -961,15 +961,15 @@ function updateGameObjects() {
                     } else {
                         var rnd = Math.floor(Math.random() * 3);
                         if (rnd == 0) {
-                            const painSound1 = document.getElementById(`${monster.type}-scream-1`);
+                            const painSound1 = document.getElementById(`${monster.type}-pain-1`);
                             painSound1.currentTime = 0;
                             painSound1.play();
                         } else if (rnd == 1) {
-                            const painSound2 = document.getElementById(`${monster.type}-scream-2`);
+                            const painSound2 = document.getElementById(`${monster.type}-pain-2`);
                             painSound2.currentTime = 0;
                             painSound2.play();
                         } else {
-                            const painSound3 = document.getElementById(`${monster.type}-scream-3`);
+                            const painSound3 = document.getElementById(`${monster.type}-pain-3`);
                             painSound3.currentTime = 0;
                             painSound3.play();
                         }
