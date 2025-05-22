@@ -171,7 +171,7 @@ for (let i = 0; i < game.map.length; i++) {
             const monster = {
                 id: `monster_${monsterIdCounter}`,
                 skin: 'imp-sprite',
-                type: 'imp',
+                audio: 'imp',
                 x: j,
                 y: i,
                 health: 50,
@@ -188,7 +188,7 @@ for (let i = 0; i < game.map.length; i++) {
             const lion = {
                 id: `monster_${monsterIdCounter}`,
                 skin: 'lion-sprite',
-                type: 'lion',
+                audio: 'bigcat',
                 x: j,
                 y: i,
                 health: 150,
@@ -205,7 +205,7 @@ for (let i = 0; i < game.map.length; i++) {
             const tiger = {
                 id: `monster_${monsterIdCounter}`,
                 skin: 'tiger-sprite',
-                type: 'lion',
+                audio: 'bigcat',
                 x: j,
                 y: i,
                 health: 100,
@@ -222,7 +222,7 @@ for (let i = 0; i < game.map.length; i++) {
             const bear = {
                 id: `monster_${monsterIdCounter}`,
                 skin: 'bear-sprite',
-                type: 'bear',
+                audio: 'bear',
                 x: j,
                 y: i,
                 health: 250,
@@ -239,7 +239,7 @@ for (let i = 0; i < game.map.length; i++) {
             const yeti = {
                 id: `monster_${monsterIdCounter}`,
                 skin: 'yeti-sprite',
-                type: 'bear',
+                audio: 'bear',
                 x: j,
                 y: i,
                 health: 550,
@@ -953,7 +953,7 @@ function updateGameObjects() {
                     monster.health -= 25;
                     if (monster.health <= 0) {
                         monster.isDead = true;
-                        const deathSound = document.getElementById(`${monster.type}-death`);
+                        const deathSound = document.getElementById(`${monster.audio}-death`);
                         deathSound.currentTime = 0;
                         deathSound.play();
                         game.sprites.push({ id: 'bones-sprite', x: monster.x, y: monster.y, width: 32, height: 32, active: false, data: null });
@@ -961,15 +961,15 @@ function updateGameObjects() {
                     } else {
                         var rnd = Math.floor(Math.random() * 3);
                         if (rnd == 0) {
-                            const painSound1 = document.getElementById(`${monster.type}-pain-1`);
+                            const painSound1 = document.getElementById(`${monster.audio}-pain-1`);
                             painSound1.currentTime = 0;
                             painSound1.play();
                         } else if (rnd == 1) {
-                            const painSound2 = document.getElementById(`${monster.type}-pain-2`);
+                            const painSound2 = document.getElementById(`${monster.audio}-pain-2`);
                             painSound2.currentTime = 0;
                             painSound2.play();
                         } else {
-                            const painSound3 = document.getElementById(`${monster.type}-pain-3`);
+                            const painSound3 = document.getElementById(`${monster.audio}-pain-3`);
                             painSound3.currentTime = 0;
                             painSound3.play();
                         }
