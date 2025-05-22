@@ -54,14 +54,14 @@ let game = {
         [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 2, 0, 0, 0, 0, 2],
         [2, 0, 0, 0, 0, 0, 2, 0, 2, 0, 2, 2, 2, 2, 0, 1, 0, 0, 0, 2],
         [2, 0, 0, 0, 0, 0, 2, 0, 2, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 2],
-        [2, 2, 0, 0, 0, 2, 2, 0, 2, 0, 0, 5, 2, 0, 0, 0, 0, 0, 0, 2],
+        [2, 2, 0, 0, 0, 2, 2, 0, 2, 0, 0, 5, 2, 3, 0, 0, 0, 0, 0, 2],
         [2, 2, 2, 2, 2, 2, 2, 0, 2, 2, 0, 2, 2, 2, 2, 2, 0, 2, 2, 2],
         [2, 2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
         [2, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
         [2, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 1, 0, 0, 2],
-        [2, 6, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 3, 2],
+        [2, 6, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 7, 2],
         [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
-    ], // 0 is empty space, 1 is a tree, 2 is a wall, 3 is a monster, 4 is a lion, 5 is a tiger, 6 is a bear
+    ], // 0 is empty space, 1 is a tree, 2 is a wall, 3 is a monster, 4 is a lion, 5 is a tiger, 6 is a bear, 7 is a yeti
     key: {
         up: {
             code: "ArrowUp",
@@ -174,7 +174,7 @@ for (let i = 0; i < game.map.length; i++) {
                 type: 'monster',
                 x: j,
                 y: i,
-                health: 200,
+                health: 50,
                 isDead: false,
                 width: 32,
                 height: 32,
@@ -233,6 +233,23 @@ for (let i = 0; i < game.map.length; i++) {
                 data: null // Will be filled with texture data
             };
             game.monsters.push(bear);
+            monsterIdCounter++;
+        } else if (game.map[i][j] == 7) {
+            // Yeti object with position, health, and sprite info
+            const yeti = {
+                id: `monster_${monsterIdCounter}`,
+                skin: 'yeti-sprite',
+                type: 'bear',
+                x: j,
+                y: i,
+                health: 550,
+                isDead: false,
+                width: 64,
+                height: 64,
+                active: false,
+                data: null // Will be filled with texture data
+            };
+            game.monsters.push(yeti);
             monsterIdCounter++;
         }
     }
