@@ -148,6 +148,12 @@ let game = {
     ],
     bulletTexture: {
         id: 'bullet-sprite',
+        width: 5454,
+        height: 54,
+        data: null
+    },
+    laserTexture: {
+        id: 'laser-sprite',
         width: 54,
         height: 54,
         data: null
@@ -511,7 +517,7 @@ function movePlayer() {
     }
     if (game.key.four.active) {
         game.gunSprite = document.getElementById('yetipistol-sprite');
-        game.shootCooldown = 850;
+        game.shootCooldown = 600;
         game.equippedWeapon = 4;
     }
 }
@@ -652,6 +658,10 @@ function loadSprites() {
     // Load bullet sprite texture
     if (!game.bulletTexture.data) {
         game.bulletTexture.data = getTextureData(game.bulletTexture);
+    }
+    // Load laser sprite texture
+    if (!game.laserTexture.data) {
+        game.laserTexture.data = getTextureData(game.laserTexture);
     }
 }
 
@@ -840,7 +850,12 @@ function drawSpriteInWorld(sprite) {
 // New function to draw bullet sprites
 function drawBulletSprite(xProjection, spriteWidth, spriteHeight, bullet) {
     // Use bullet sprite texture instead of a filled rectangle
-    const texture = game.bulletTexture;
+    let texture;
+    if (game.equippedWeapon == 4) {
+        texture = game.laserTexture;
+    } else {
+        texture = game.bulletTexture;
+    }
     if (!texture.data) return;
     // Clamp sprite size
     spriteWidth = Math.max(4, Math.min(spriteWidth, texture.width));
@@ -938,6 +953,10 @@ function handleShooting(e) {
             const knifeSound = document.getElementById('knife-sound');
             knifeSound.currentTime = 0;
             knifeSound.play();
+        } else if (game.equippedWeapon == 4) {
+            const laserSound = document.getElementById('laser-sound');
+            laserSound.currentTime = 0;
+            laserSound.play();
         } else {
             const shootSound = document.getElementById('shoot-sound');
             shootSound.currentTime = 0;
