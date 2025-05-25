@@ -8,7 +8,7 @@ let game = {
     ammo: 0,
     rocketammo: 0,
     lastShot: 0,
-    shootCooldown: 850,
+    shootCooldown: 600,
     weaponunlocked: {
         knife: true,
         pistol: false,
