@@ -484,65 +484,29 @@ function movePlayer() {
         if (game.map[Math.floor(game.player.y)][checkX] != 2) {
             game.player.x = newX;
         }
+        // Ammo pickup
         if (game.map[Math.floor(game.player.y)][Math.floor(game.player.x)] == 8) {
             game.map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
-            const pickupSound = document.getElementById('pickup-sound');
-            pickupSound.currentTime = 0;
-            pickupSound.play();
+            itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
             game.ammo += 8;
-            let spritenum = 0;
-            for (let sprite of game.sprites) {
-                if (sprite.x == Math.floor(game.player.x) && sprite.y == Math.floor(game.player.y)) {
-                    game.sprites.splice(spritenum, 1);
-                    break;
-                }
-                spritenum++;
-            }
         }
+        // Pistol pickup
         if (game.map[Math.floor(game.player.y)][Math.floor(game.player.x)] == 9) {
             game.map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
-            const pickupSound = document.getElementById('pickup-sound');
-            pickupSound.currentTime = 0;
-            pickupSound.play();
+            itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
             game.weaponunlocked.pistol = true;
-            let spritenum = 0;
-            for (let sprite of game.sprites) {
-                if (sprite.x == Math.floor(game.player.x) && sprite.y == Math.floor(game.player.y)) {
-                    game.sprites.splice(spritenum, 1);
-                    break;
-                }
-                spritenum++;
-            }
         }
+        // Machinegun pickup
         if (game.map[Math.floor(game.player.y)][Math.floor(game.player.x)] == 10) {
             game.map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
-            const pickupSound = document.getElementById('pickup-sound');
-            pickupSound.currentTime = 0;
-            pickupSound.play();
+            itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
             game.weaponunlocked.machinegun = true;
-            let spritenum = 0;
-            for (let sprite of game.sprites) {
-                if (sprite.x == Math.floor(game.player.x) && sprite.y == Math.floor(game.player.y)) {
-                    game.sprites.splice(spritenum, 1);
-                    break;
-                }
-                spritenum++;
-            }
         }
+        // Yeti pistol pickup
         if (game.map[Math.floor(game.player.y)][Math.floor(game.player.x)] == 11) {
             game.map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
-            const pickupSound = document.getElementById('pickup-sound');
-            pickupSound.currentTime = 0;
-            pickupSound.play();
+            itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
             game.weaponunlocked.yetipistol = true;
-            let spritenum = 0;
-            for (let sprite of game.sprites) {
-                if (sprite.x == Math.floor(game.player.x) && sprite.y == Math.floor(game.player.y)) {
-                    game.sprites.splice(spritenum, 1);
-                    break;
-                }
-                spritenum++;
-            }
         }
     }
     if (game.key.down.active) {
@@ -560,65 +524,29 @@ function movePlayer() {
         if (game.map[Math.floor(game.player.y)][checkX] != 2) {
             game.player.x = newX;
         }
+        // Ammo pickup
         if (game.map[Math.floor(game.player.y)][Math.floor(game.player.x)] == 8) {
             game.map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
-            const pickupSound = document.getElementById('pickup-sound');
-            pickupSound.currentTime = 0;
-            pickupSound.play();
+            itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
             game.ammo += 8;
-            let spritenum = 0;
-            for (let sprite of game.sprites) {
-                if (sprite.x == Math.floor(game.player.x) && sprite.y == Math.floor(game.player.y)) {
-                    game.sprites.splice(spritenum, 1);
-                    break;
-                }
-                spritenum++;
-            }
         }
+        // Pistol pickup
         if (game.map[Math.floor(game.player.y)][Math.floor(game.player.x)] == 9) {
             game.map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
-            const pickupSound = document.getElementById('pickup-sound');
-            pickupSound.currentTime = 0;
-            pickupSound.play();
+            itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
             game.weaponunlocked.pistol = true;
-            let spritenum = 0;
-            for (let sprite of game.sprites) {
-                if (sprite.x == Math.floor(game.player.x) && sprite.y == Math.floor(game.player.y)) {
-                    game.sprites.splice(spritenum, 1);
-                    break;
-                }
-                spritenum++;
-            }
         }
+        // Machinegun pickup
         if (game.map[Math.floor(game.player.y)][Math.floor(game.player.x)] == 10) {
             game.map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
-            const pickupSound = document.getElementById('pickup-sound');
-            pickupSound.currentTime = 0;
-            pickupSound.play();
+            itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
             game.weaponunlocked.machinegun = true;
-            let spritenum = 0;
-            for (let sprite of game.sprites) {
-                if (sprite.x == Math.floor(game.player.x) && sprite.y == Math.floor(game.player.y)) {
-                    game.sprites.splice(spritenum, 1);
-                    break;
-                }
-                spritenum++;
-            }
         }
+        // Yeti pistol pickup
         if (game.map[Math.floor(game.player.y)][Math.floor(game.player.x)] == 11) {
             game.map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
-            const pickupSound = document.getElementById('pickup-sound');
-            pickupSound.currentTime = 0;
-            pickupSound.play();
+            itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
             game.weaponunlocked.yetipistol = true;
-            let spritenum = 0;
-            for (let sprite of game.sprites) {
-                if (sprite.x == Math.floor(game.player.x) && sprite.y == Math.floor(game.player.y)) {
-                    game.sprites.splice(spritenum, 1);
-                    break;
-                }
-                spritenum++;
-            }
         }
     }
     if (game.key.left.active) {
@@ -725,6 +653,20 @@ document.addEventListener('keyup', (event) => {
         game.key.four.active = false;
     }
 });
+
+function itemPickup(ycoords, xcoords) {
+    const pickupSound = document.getElementById('pickup-sound');
+    pickupSound.currentTime = 0;
+    pickupSound.play();    
+    let spritenum = 0;
+    for (let sprite of game.sprites) {
+        if (sprite.x == xcoords && sprite.y == ycoords) {
+            game.sprites.splice(spritenum, 1);
+            break;
+        }
+        spritenum++;
+    }
+}
 
 function drawTexture(x, wallHeight, texturePositionX, texture) {
     let yIncrementer = (wallHeight * 2) / texture.height;
