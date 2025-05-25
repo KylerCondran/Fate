@@ -42,6 +42,6 @@ Here are some Youtube videos on the mechanics of creating your own Raycaster:<br
 See our contributing guide at [CONTRIBUTING.md](../master/CONTRIBUTING.md).
 
 ## Copyright and License
->The [MIT License](https://github.com/KylerCondran/Raycaster-FPS-Game/blob/master/LICENSE)
+>The [MIT License](https://github.com/KylerCondran/Raycaster-FPS-Game/blob/master/LICENSE.txt)
 >
 >Copyright (c) 2025 Kyler Condran
