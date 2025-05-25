@@ -1,5 +1,6 @@
 // Unified game state and data object
 let game = {
+    currentLevel: 0,
     monsters: [], // Each monster will have position, health, sprite, etc.
     sprites: [], // Only trees and other non-monster sprites
     bullets: [],
@@ -57,27 +58,57 @@ let game = {
             rotation: 1.5
         }
     },
-    map: [
-        [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
-        [2, 0, 0, 0, 0, 2, 0, 0, 0, 2, 2, 2, 0, 0, 0, 0, 0, 4, 0, 2],
-        [2, 0, 0, 0, 0, 2, 1, 0, 0, 1, 2, 2, 0, 1, 0, 0, 1, 8, 0, 2],
-        [2, 0, 0, 0, 1, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
-        [2, 2, 2, 2, 0, 9, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 2, 0, 2],
-        [2, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 2, 2, 2, 0, 2, 0, 2, 2, 2],
-        [2, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 2],
-        [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 2],
-        [2, 0, 8, 0, 0, 1, 0, 0, 0, 0, 0, 2, 0, 0, 12, 2, 0, 0, 0, 2],
-        [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 2],
-        [2, 0, 0, 0, 0, 0, 2, 0, 2, 0, 2, 2, 2, 2, 2, 2, 0, 13, 0, 2],
-        [2, 0, 13, 0, 0, 0, 2, 0, 2, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 2],
-        [2, 2, 0, 0, 0, 2, 2, 0, 2, 0, 0, 5, 2, 3, 8, 0, 0, 0, 0, 2],
-        [2, 2, 2, 2, 2, 2, 2, 0, 2, 2, 0, 2, 2, 2, 2, 2, 0, 2, 2, 2],
-        [2, 2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
-        [2, 0, 8, 1, 0, 0, 0, 1, 0, 2, 0, 0, 0, 0, 11, 0, 0, 0, 0, 2],
-        [2, 0, 0, 0, 10, 0, 0, 0, 0, 2, 0, 8, 0, 0, 0, 0, 1, 0, 0, 2],
-        [2, 6, 0, 0, 0, 0, 13, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 7, 2],
-        [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
-    ], // 0 is empty space, 1 is a tree, 2 is a wall, 3 is a monster, 4 is a lion, 5 is a tiger, 6 is a bear, 7 is a yeti, 8 is ammo, 9 is pistolpickup, 10 is machinegunpickup, 11 is yetipistolpickup, 12 is rocketlauncherpickup, 13 is rocketammo
+    //level legend: 0 is empty space, 1 is a tree, 2 is a wall, 3 is a monster, 4 is a lion, 5 is a tiger, 6 is a bear, 7 is a yeti, 8 is ammo, 9 is pistolpickup, 10 is machinegunpickup, 11 is yetipistolpickup, 12 is rocketlauncherpickup, 13 is rocketammo
+    levels: [
+        {
+            name: "Level 1",
+            map: [
+                [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+                [2, 0, 0, 0, 0, 2, 0, 0, 0, 2, 2, 2, 0, 0, 0, 0, 0, 4, 0, 2],
+                [2, 0, 0, 0, 0, 2, 1, 0, 0, 1, 2, 2, 0, 1, 0, 0, 1, 8, 0, 2],
+                [2, 0, 0, 0, 1, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 2, 2, 2, 0, 9, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 2, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 2, 2, 2, 0, 2, 0, 2, 2, 2],
+                [2, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 2],
+                [2, 0, 8, 0, 0, 1, 0, 0, 0, 0, 0, 2, 0, 0, 12, 2, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 2, 0, 2, 0, 2, 2, 2, 2, 2, 2, 0, 13, 0, 2],
+                [2, 0, 13, 0, 0, 0, 2, 0, 2, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 2],
+                [2, 2, 0, 0, 0, 2, 2, 0, 2, 0, 0, 5, 2, 3, 8, 0, 0, 0, 0, 2],
+                [2, 2, 2, 2, 2, 2, 2, 0, 2, 2, 0, 2, 2, 2, 2, 2, 0, 2, 2, 2],
+                [2, 2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 8, 1, 0, 0, 0, 1, 0, 2, 0, 0, 0, 0, 11, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 10, 0, 0, 0, 0, 2, 0, 8, 0, 0, 0, 0, 1, 0, 0, 2],
+                [2, 6, 0, 0, 0, 0, 13, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 7, 2],
+                [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+            ]
+        },
+        {
+            name: "Level 2",
+            map: [
+                [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+                [2, 0, 0, 0, 0, 2, 0, 0, 0, 2, 2, 2, 0, 0, 0, 0, 0, 3, 0, 2],
+                [2, 0, 0, 0, 0, 2, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 13, 0, 2],
+                [2, 0, 0, 0, 0, 0, 13, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 2, 2, 2, 0, 12, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 2, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 0, 2, 0, 2, 2, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 13, 2, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 2, 0, 2, 0, 2, 2, 2, 2, 2, 2, 0, 13, 0, 2],
+                [2, 0, 13, 0, 0, 0, 2, 0, 2, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 2],
+                [2, 2, 0, 0, 0, 2, 2, 0, 2, 0, 0, 3, 2, 3, 13, 0, 0, 0, 0, 2],
+                [2, 2, 2, 2, 2, 2, 2, 0, 2, 2, 0, 2, 2, 2, 2, 2, 0, 2, 2, 2],
+                [2, 2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 13, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 13, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 13, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 3, 0, 0, 0, 0, 13, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 3, 2],
+                [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+            ]
+        }
+    ],
     key: {
         up: {
             code: "ArrowUp",
@@ -194,117 +225,205 @@ let game = {
     ]
 };
 
-// Add initial sprite and monster data programmatically based on coordinates on map
-let monsterIdCounter = 0;
-for (let i = 0; i < game.map.length; i++) {
-    for (let j = 0; j < game.map[i].length; j++) {
-        if (game.map[i][j] == 1) {
-            // Tree sprite (non-collidable, just drawn)
-            game.sprites.push({ id: "tree-sprite", x: j, y: i, width: 8, height: 16, active: false, data: null });
-        } else if (game.map[i][j] == 3) {
-            // Monster object with position, health, and sprite info
-            const monster = {
-                id: `monster_${monsterIdCounter}`,
-                type: 'imp',
-                skin: 'imp-sprite',
-                audio: 'imp',
-                x: j,
-                y: i,
-                health: 50,
-                isDead: false,
-                width: 484,
-                height: 499,
-                active: false,
-                data: null // Will be filled with texture data
-            };
-            game.monsters.push(monster);
-            monsterIdCounter++;
-        } else if (game.map[i][j] == 4) {
-            // Lion object with position, health, and sprite info
-            const lion = {
-                id: `monster_${monsterIdCounter}`,
-                type: 'lion',
-                skin: 'lion-sprite',
-                audio: 'bigcat',
-                x: j,
-                y: i,
-                health: 150,
-                isDead: false,
-                width: 665,
-                height: 725,
-                active: false,
-                data: null // Will be filled with texture data
-            };
-            game.monsters.push(lion);
-            monsterIdCounter++;
-        } else if (game.map[i][j] == 5) {
-            // Tiger object with position, health, and sprite info
-            const tiger = {
-                id: `monster_${monsterIdCounter}`,
-                type: 'tiger',
-                skin: 'tiger-sprite',
-                audio: 'bigcat',
-                x: j,
-                y: i,
-                health: 100,
-                isDead: false,
-                width: 256,
-                height: 201,
-                active: false,
-                data: null // Will be filled with texture data
-            };
-            game.monsters.push(tiger);
-            monsterIdCounter++;
-        } else if (game.map[i][j] == 6) {
-            // Bear object with position, health, and sprite info
-            const bear = {
-                id: `monster_${monsterIdCounter}`,
-                type: 'bear',
-                skin: 'bear-sprite',
-                audio: 'bear',
-                x: j,
-                y: i,
-                health: 250,
-                isDead: false,
-                width: 220,
-                height: 237,
-                active: false,
-                data: null // Will be filled with texture data
-            };
-            game.monsters.push(bear);
-            monsterIdCounter++;
-        } else if (game.map[i][j] == 7) {
-            // Yeti object with position, health, and sprite info
-            const yeti = {
-                id: `monster_${monsterIdCounter}`,
-                type: 'yeti',
-                skin: 'yeti-sprite',
-                audio: 'bear',
-                x: j,
-                y: i,
-                health: 550,
-                isDead: false,
-                width: 326,
-                height: 384,
-                active: false,
-                data: null // Will be filled with texture data
-            };
-            game.monsters.push(yeti);
-            monsterIdCounter++;
-        } else if (game.map[i][j] == 8) {
-            game.sprites.push({ id: "ammo-sprite", x: j, y: i, width: 100, height: 81, active: false, data: null });
-        } else if (game.map[i][j] == 9) {
-            game.sprites.push({ id: "pistolpickup-sprite", x: j, y: i, width: 34, height: 19, active: false, data: null });
-        } else if (game.map[i][j] == 10) {
-            game.sprites.push({ id: "machinegunpickup-sprite", x: j, y: i, width: 49, height: 30, active: false, data: null });
-        } else if (game.map[i][j] == 11) {
-            game.sprites.push({ id: "yetipistolpickup-sprite", x: j, y: i, width: 50, height: 33, active: false, data: null });
-        } else if (game.map[i][j] == 12) {
-            game.sprites.push({ id: "rocketlauncherpickup-sprite", x: j, y: i, width: 80, height: 17, active: false, data: null });
-        } else if (game.map[i][j] == 13) {
-            game.sprites.push({ id: "rocketammo-sprite", x: j, y: i, width: 35, height: 18, active: false, data: null });
+// Create start screen overlay
+function createStartScreen() {
+    let overlay = document.createElement('div');
+    overlay.id = 'start-screen-overlay';
+    overlay.style.position = 'fixed';
+    overlay.style.left = '0';
+    overlay.style.top = '0';
+    overlay.style.width = '100vw';
+    overlay.style.height = '100vh';
+    overlay.style.background = 'rgba(0,0,0,0.85)';
+    overlay.style.display = 'flex';
+    overlay.style.flexDirection = 'column';
+    overlay.style.justifyContent = 'center';
+    overlay.style.alignItems = 'center';
+    overlay.style.zIndex = '9999';
+    overlay.innerHTML = `
+        <h1 style="color: #fff; font-family: 'Lucida Console', monospace; font-size: 2.5em; margin-bottom: 1em;">Raycaster FPS</h1>
+        <div id="level-buttons" style="display: flex; flex-direction: column; gap: 1em;"></div>
+        <p style="color: #aaa; margin-top: 2em; font-family: 'Lucida Console', monospace;">Use arrow keys to move, 1-5 to switch weapons, Space to shoot.</p>
+    `;
+    document.body.appendChild(overlay);
+    // Add level buttons
+    const btnContainer = overlay.querySelector('#level-buttons');
+    game.levels.forEach((level, idx) => {
+        let btn = document.createElement('button');
+        btn.textContent = level.name;
+        btn.style.padding = '1em 2em';
+        btn.style.fontSize = '1.2em';
+        btn.style.fontFamily = "'Lucida Console', monospace";
+        btn.style.cursor = 'pointer';
+        btn.onclick = () => {
+            startLevel(idx);
+        };
+        btnContainer.appendChild(btn);
+    });
+}
+
+// Remove start screen overlay
+function removeStartScreen() {
+    const overlay = document.getElementById('start-screen-overlay');
+    if (overlay) overlay.remove();
+}
+
+// Load a level by index
+function startLevel(levelIdx) {
+    removeStartScreen();
+    loadLevel(levelIdx);
+    // Start the game loop if not running
+    if (!mainLoop) main();
+}
+
+// Load map and reset game state for a level
+function loadLevel(levelIdx) {
+    // Stop game loop if running
+    if (mainLoop) {
+        clearInterval(mainLoop);
+        mainLoop = null;
+    }
+    game.currentLevel = levelIdx;
+    // Reset game state
+    //let level = game.levels[levelIdx];
+    //game.levels[game.currentLevel].map = JSON.parse(JSON.stringify(level.map)); // Deep copy
+    // Reset player position (center of map)
+    game.player.x = 2;
+    game.player.y = 2;
+    game.player.angle = 0;
+    // Reset inventory
+    game.ammo = 0;
+    game.rocketammo = 0;
+    game.weaponunlocked = {
+        knife: true,
+        pistol: false,
+        machinegun: false,
+        yetipistol: false,
+        rocketlauncher: false
+    };
+    game.equippedWeapon = 1;
+    game.weaponSprite = document.getElementById('knife-sprite');
+    // Clear monsters and sprites
+    game.monsters = [];
+    game.sprites = [];
+    // Rebuild monsters and sprites from map
+    let monsterIdCounter = 0;
+    for (let i = 0; i < game.levels[levelIdx].map.length; i++) {
+        for (let j = 0; j < game.levels[levelIdx].map[i].length; j++) {
+            if (game.levels[levelIdx].map[i][j] == 1) {
+                game.sprites.push({ id: "tree-sprite", x: j, y: i, width: 8, height: 16, active: false, data: null });
+            } else if (game.levels[levelIdx].map[i][j] == 3) {
+                const monster = {
+                    id: `monster_${monsterIdCounter}`,
+                    type: 'imp',
+                    skin: 'imp-sprite',
+                    audio: 'imp',
+                    x: j,
+                    y: i,
+                    health: 50,
+                    isDead: false,
+                    width: 484,
+                    height: 499,
+                    active: false,
+                    data: null
+                };
+                game.monsters.push(monster);
+                monsterIdCounter++;
+            } else if (game.levels[levelIdx].map[i][j] == 4) {
+                const lion = {
+                    id: `monster_${monsterIdCounter}`,
+                    type: 'lion',
+                    skin: 'lion-sprite',
+                    audio: 'bigcat',
+                    x: j,
+                    y: i,
+                    health: 150,
+                    isDead: false,
+                    width: 665,
+                    height: 725,
+                    active: false,
+                    data: null
+                };
+                game.monsters.push(lion);
+                monsterIdCounter++;
+            } else if (game.levels[levelIdx].map[i][j] == 5) {
+                const tiger = {
+                    id: `monster_${monsterIdCounter}`,
+                    type: 'tiger',
+                    skin: 'tiger-sprite',
+                    audio: 'bigcat',
+                    x: j,
+                    y: i,
+                    health: 100,
+                    isDead: false,
+                    width: 256,
+                    height: 201,
+                    active: false,
+                    data: null
+                };
+                game.monsters.push(tiger);
+                monsterIdCounter++;
+            } else if (game.levels[levelIdx].map[i][j] == 6) {
+                const bear = {
+                    id: `monster_${monsterIdCounter}`,
+                    type: 'bear',
+                    skin: 'bear-sprite',
+                    audio: 'bear',
+                    x: j,
+                    y: i,
+                    health: 250,
+                    isDead: false,
+                    width: 220,
+                    height: 237,
+                    active: false,
+                    data: null
+                };
+                game.monsters.push(bear);
+                monsterIdCounter++;
+            } else if (game.levels[levelIdx].map[i][j] == 7) {
+                const yeti = {
+                    id: `monster_${monsterIdCounter}`,
+                    type: 'yeti',
+                    skin: 'yeti-sprite',
+                    audio: 'bear',
+                    x: j,
+                    y: i,
+                    health: 550,
+                    isDead: false,
+                    width: 326,
+                    height: 384,
+                    active: false,
+                    data: null
+                };
+                game.monsters.push(yeti);
+                monsterIdCounter++;
+            } else if (game.levels[levelIdx].map[i][j] == 8) {
+                game.sprites.push({ id: "ammo-sprite", x: j, y: i, width: 100, height: 81, active: false, data: null });
+            } else if (game.levels[levelIdx].map[i][j] == 9) {
+                game.sprites.push({ id: "pistolpickup-sprite", x: j, y: i, width: 34, height: 19, active: false, data: null });
+            } else if (game.levels[levelIdx].map[i][j] == 10) {
+                game.sprites.push({ id: "machinegunpickup-sprite", x: j, y: i, width: 49, height: 30, active: false, data: null });
+            } else if (game.levels[levelIdx].map[i][j] == 11) {
+                game.sprites.push({ id: "yetipistolpickup-sprite", x: j, y: i, width: 50, height: 33, active: false, data: null });
+            } else if (game.levels[levelIdx].map[i][j] == 12) {
+                game.sprites.push({ id: "rocketlauncherpickup-sprite", x: j, y: i, width: 80, height: 17, active: false, data: null });
+            } else if (game.levels[levelIdx].map[i][j] == 13) {
+                game.sprites.push({ id: "rocketammo-sprite", x: j, y: i, width: 35, height: 18, active: false, data: null });
+            }
         }
     }
+    // Reload textures and sprites
+    loadTextures();
+    loadBackgrounds();
+    loadSprites();
+}
+
+// Show start screen on page load
+window.onload = function () {
+    createStartScreen();
+    loadTextures();
+    loadBackgrounds();
+    loadSprites();
 }
 
 // Calculated data
@@ -380,7 +499,7 @@ function drawFloor(x1, wallHeight, rayAngle) {
         tiley = distance * directionSin
         tilex += game.player.x
         tiley += game.player.y
-        tile = game.map[Math.floor(tiley)][Math.floor(tilex)]
+        tile = game.levels[game.currentLevel].map[Math.floor(tiley)][Math.floor(tilex)]
 
         // Get texture
         texture = game.floorTextures[0]
@@ -397,14 +516,6 @@ function drawFloor(x1, wallHeight, rayAngle) {
         color = texture.data[texture_x + texture_y * texture.width];
         drawPixel(x1, y, color)
     }
-}
-
-// Start
-window.onload = function () {
-    loadTextures();
-    loadBackgrounds();
-    loadSprites();
-    main();
 }
 
 /**
@@ -456,7 +567,7 @@ function rayCasting() {
         while (wall != 2) {
             ray.x += rayCos;
             ray.y += raySin;
-            wall = game.map[Math.floor(ray.y)][Math.floor(ray.x)];
+            wall = game.levels[game.currentLevel].map[Math.floor(ray.y)][Math.floor(ray.x)];
             activeSprites(ray.x, ray.y);
         }
 
@@ -505,45 +616,45 @@ function movePlayer() {
         let checkY = Math.floor(newY + playerSin * game.player.radius);
 
         // Collision detection
-        if (game.map[checkY][Math.floor(game.player.x)] != 2) {
+        if (game.levels[game.currentLevel].map[checkY][Math.floor(game.player.x)] != 2) {
             game.player.y = newY;
         }
-        if (game.map[Math.floor(game.player.y)][checkX] != 2) {
+        if (game.levels[game.currentLevel].map[Math.floor(game.player.y)][checkX] != 2) {
             game.player.x = newX;
         }
         // Ammo pickup
-        if (game.map[Math.floor(game.player.y)][Math.floor(game.player.x)] == 8) {
-            game.map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
+        if (game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] == 8) {
+            game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
             itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
             game.ammo += 8;
         }
         // Pistol pickup
-        if (game.map[Math.floor(game.player.y)][Math.floor(game.player.x)] == 9) {
-            game.map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
+        if (game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] == 9) {
+            game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
             itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
             game.weaponunlocked.pistol = true;
         }
         // Machinegun pickup
-        if (game.map[Math.floor(game.player.y)][Math.floor(game.player.x)] == 10) {
-            game.map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
+        if (game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] == 10) {
+            game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
             itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
             game.weaponunlocked.machinegun = true;
         }
         // Yeti pistol pickup
-        if (game.map[Math.floor(game.player.y)][Math.floor(game.player.x)] == 11) {
-            game.map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
+        if (game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] == 11) {
+            game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
             itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
             game.weaponunlocked.yetipistol = true;
         }
         // Rocket launcher pickup
-        if (game.map[Math.floor(game.player.y)][Math.floor(game.player.x)] == 12) {
-            game.map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
+        if (game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] == 12) {
+            game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
             itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
             game.weaponunlocked.rocketlauncher = true;
         }
         // Rocket ammo pickup
-        if (game.map[Math.floor(game.player.y)][Math.floor(game.player.x)] == 13) {
-            game.map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
+        if (game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] == 13) {
+            game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
             itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
             game.rocketammo += 4;
         }
@@ -557,45 +668,45 @@ function movePlayer() {
         let checkY = Math.floor(newY - playerSin * game.player.radius);
 
         // Collision detection
-        if (game.map[checkY][Math.floor(game.player.x)] != 2) {
+        if (game.levels[game.currentLevel].map[checkY][Math.floor(game.player.x)] != 2) {
             game.player.y = newY;
         }
-        if (game.map[Math.floor(game.player.y)][checkX] != 2) {
+        if (game.levels[game.currentLevel].map[Math.floor(game.player.y)][checkX] != 2) {
             game.player.x = newX;
         }
         // Ammo pickup
-        if (game.map[Math.floor(game.player.y)][Math.floor(game.player.x)] == 8) {
-            game.map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
+        if (game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] == 8) {
+            game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
             itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
             game.ammo += 8;
         }
         // Pistol pickup
-        if (game.map[Math.floor(game.player.y)][Math.floor(game.player.x)] == 9) {
-            game.map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
+        if (game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] == 9) {
+            game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
             itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
             game.weaponunlocked.pistol = true;
         }
         // Machinegun pickup
-        if (game.map[Math.floor(game.player.y)][Math.floor(game.player.x)] == 10) {
-            game.map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
+        if (game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] == 10) {
+            game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
             itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
             game.weaponunlocked.machinegun = true;
         }
         // Yeti pistol pickup
-        if (game.map[Math.floor(game.player.y)][Math.floor(game.player.x)] == 11) {
-            game.map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
+        if (game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] == 11) {
+            game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
             itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
             game.weaponunlocked.yetipistol = true;
         }
         // Rocket launcher pickup
-        if (game.map[Math.floor(game.player.y)][Math.floor(game.player.x)] == 12) {
-            game.map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
+        if (game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] == 12) {
+            game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
             itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
             game.weaponunlocked.rocketlauncher = true;
         }
         // Rocket ammo pickup
-        if (game.map[Math.floor(game.player.y)][Math.floor(game.player.x)] == 13) {
-            game.map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
+        if (game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] == 13) {
+            game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
             itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
             game.rocketammo += 4;
         }
@@ -1093,15 +1204,18 @@ function handleShooting(e) {
     if (currentTime - game.lastShot >= game.shootCooldown) {
         game.isShooting = true;
         game.lastShot = currentTime;
+
         if ((game.equippedWeapon == 2 || game.equippedWeapon == 3) && game.ammo <= 0 || ((game.equippedWeapon == 5) && game.rocketammo <= 0)){
             playSound('gunclick-sound');
             return;
         }
+
         // Start the bullet slightly in front of the player in the direction they're facing
         const startX = game.player.x + Math.cos(degreeToRadians(game.player.angle)) * game.bulletStartDistance;
         const startY = game.player.y + Math.sin(degreeToRadians(game.player.angle)) * game.bulletStartDistance;
         const bullet = new Bullet(startX, startY, game.player.angle);
         game.bullets.push(bullet);
+
         if (game.equippedWeapon == 1) {
             playSound('knife-sound');
         } else if (game.equippedWeapon == 4) {
@@ -1125,7 +1239,7 @@ function updateGameObjects() {
         // Stop bullet if it hits a wall
         const mapX = Math.floor(bullet.x);
         const mapY = Math.floor(bullet.y);
-        if (game.map[mapY] && game.map[mapY][mapX] === 2) {
+        if (game.levels[game.currentLevel].map[mapY] && game.levels[game.currentLevel].map[mapY][mapX] === 2) {
             if (game.equippedWeapon == 5) playSound('explosion-sound');
             bulletsToRemove.add(i);
             continue;
@@ -1154,7 +1268,7 @@ function updateGameObjects() {
                         } else {
                             monster.health -= 25;
                         }
-                    }
+                    }                
                     if (monster.health <= 0) {
                         monster.isDead = true;
                         playSound(`${monster.audio}-death`);
@@ -1195,12 +1309,12 @@ function updateGameObjects() {
                 const dirY = dy * invDist * game.monsterMoveSpeed;
                 // Try to move in X direction
                 const newX = monster.x + dirX;
-                if (game.map[Math.floor(monster.y)][Math.floor(newX)] !== 2) {
+                if (game.levels[game.currentLevel].map[Math.floor(monster.y)][Math.floor(newX)] !== 2) {
                     monster.x = newX;
                 }
                 // Try to move in Y direction
                 const newY = monster.y + dirY;
-                if (game.map[Math.floor(newY)][Math.floor(monster.x)] !== 2) {
+                if (game.levels[game.currentLevel].map[Math.floor(newY)][Math.floor(monster.x)] !== 2) {
                     monster.y = newY;
                 }
             }
