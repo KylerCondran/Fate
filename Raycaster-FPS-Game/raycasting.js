@@ -45,12 +45,12 @@ let game = {
         [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
         [2, 0, 0, 0, 0, 2, 0, 0, 0, 2, 2, 2, 0, 0, 0, 0, 0, 4, 0, 2],
         [2, 0, 0, 0, 0, 2, 1, 0, 0, 1, 2, 2, 0, 1, 0, 0, 1, 0, 0, 2],
-        [2, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 2],
+        [2, 0, 0, 0, 1, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 2],
         [2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 2, 0, 2],
         [2, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 2, 2, 2, 0, 2, 0, 2, 2, 2],
         [2, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 1, 0, 0, 0, 0, 2],
         [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 2],
-        [2, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 2],
+        [2, 0, 8, 0, 0, 1, 0, 0, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 2],
         [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 2, 0, 0, 0, 0, 2],
         [2, 0, 0, 0, 0, 0, 2, 0, 2, 0, 2, 2, 2, 2, 0, 1, 0, 0, 0, 2],
         [2, 0, 0, 0, 0, 0, 2, 0, 2, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 2],
@@ -61,7 +61,7 @@ let game = {
         [2, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 1, 0, 0, 2],
         [2, 6, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 7, 2],
         [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
-    ], // 0 is empty space, 1 is a tree, 2 is a wall, 3 is a monster, 4 is a lion, 5 is a tiger, 6 is a bear, 7 is a yeti
+    ], // 0 is empty space, 1 is a tree, 2 is a wall, 3 is a monster, 4 is a lion, 5 is a tiger, 6 is a bear, 7 is a yeti, 8 is ammo
     key: {
         up: {
             code: "ArrowUp",
@@ -261,6 +261,8 @@ for (let i = 0; i < game.map.length; i++) {
             };
             game.monsters.push(yeti);
             monsterIdCounter++;
+        } else if (game.map[i][j] == 8) {
+            game.sprites.push({ id: "ammo-sprite", x: j, y: i, width: 100, height: 81, active: false, data: null });
         }
     }
 }
@@ -469,7 +471,19 @@ function movePlayer() {
         if (game.map[Math.floor(game.player.y)][checkX] != 2) {
             game.player.x = newX;
         }
-
+        if (game.map[Math.floor(game.player.y)][Math.floor(game.player.x)] == 8) {
+            const pickupSound = document.getElementById('pickup-sound');
+            pickupSound.currentTime = 0;
+            pickupSound.play();
+            game.map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
+            let spritenum = 0;
+            for (let sprite of game.sprites) {
+                if (sprite.x == Math.floor(game.player.x) && sprite.y == Math.floor(game.player.y)) {
+                    game.sprites.splice(spritenum, 1);
+                }
+                spritenum++;
+            }
+        }
     }
     if (game.key.down.active) {
         let playerCos = Math.cos(degreeToRadians(game.player.angle)) * game.player.speed.movement;
@@ -485,6 +499,19 @@ function movePlayer() {
         }
         if (game.map[Math.floor(game.player.y)][checkX] != 2) {
             game.player.x = newX;
+        }
+        if (game.map[Math.floor(game.player.y)][Math.floor(game.player.x)] == 8) {
+            const pickupSound = document.getElementById('pickup-sound');
+            pickupSound.currentTime = 0;
+            pickupSound.play();
+            game.map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
+            let spritenum = 0;
+            for (let sprite of game.sprites) {
+                if (sprite.x == Math.floor(game.player.x) && sprite.y == Math.floor(game.player.y)) {
+                    game.sprites.splice(spritenum, 1);
+                }
+                spritenum++;
+            }
         }
     }
     if (game.key.left.active) {
