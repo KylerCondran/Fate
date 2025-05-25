@@ -187,6 +187,7 @@ for (let i = 0; i < game.map.length; i++) {
             // Monster object with position, health, and sprite info
             const monster = {
                 id: `monster_${monsterIdCounter}`,
+                type: 'imp',
                 skin: 'imp-sprite',
                 audio: 'imp',
                 x: j,
@@ -204,6 +205,7 @@ for (let i = 0; i < game.map.length; i++) {
             // Lion object with position, health, and sprite info
             const lion = {
                 id: `monster_${monsterIdCounter}`,
+                type: 'lion',
                 skin: 'lion-sprite',
                 audio: 'bigcat',
                 x: j,
@@ -221,6 +223,7 @@ for (let i = 0; i < game.map.length; i++) {
             // Tiger object with position, health, and sprite info
             const tiger = {
                 id: `monster_${monsterIdCounter}`,
+                type: 'tiger',
                 skin: 'tiger-sprite',
                 audio: 'bigcat',
                 x: j,
@@ -238,6 +241,7 @@ for (let i = 0; i < game.map.length; i++) {
             // Bear object with position, health, and sprite info
             const bear = {
                 id: `monster_${monsterIdCounter}`,
+                type: 'bear',
                 skin: 'bear-sprite',
                 audio: 'bear',
                 x: j,
@@ -255,6 +259,7 @@ for (let i = 0; i < game.map.length; i++) {
             // Yeti object with position, health, and sprite info
             const yeti = {
                 id: `monster_${monsterIdCounter}`,
+                type: 'yeti',
                 skin: 'yeti-sprite',
                 audio: 'bear',
                 x: j,
@@ -1068,7 +1073,23 @@ function updateGameObjects() {
                 const dy = monster.y - bullet.y;
                 const distance = dx * dx + dy * dy;
                 if (distance < 0.25) { // Use squared distance for perf
-                    monster.health -= 25;
+                    if (monster.type == 'yeti') {
+                        if (game.equippedWeapon != 4) {
+                            const yetilaughSound = document.getElementById('yeti-laugh');
+                            yetilaughSound.currentTime = 0;
+                            yetilaughSound.play();
+                            game.bullets.splice(i, 1);
+                            break;
+                        } else {
+                            monster.health -= 75;
+                        }
+                    } else {
+                        if (game.equippedWeapon == 4) {
+                            monster.health -= 75;
+                        } else {
+                            monster.health -= 25;
+                        }
+                    }                
                     if (monster.health <= 0) {
                         monster.isDead = true;
                         const deathSound = document.getElementById(`${monster.audio}-death`);
