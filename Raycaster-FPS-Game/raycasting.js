@@ -6,13 +6,15 @@ let game = {
     isShooting: false,
     equippedWeapon: 1,
     ammo: 0,
+    rocketammo: 0,
     lastShot: 0,
     shootCooldown: 850,
     weaponunlocked: {
         knife: true,
         pistol: false,
         machinegun: false,
-        yetipistol: false
+        yetipistol: false,
+        rocketlauncher: false
     },
     screen: {
         width: window.innerWidth,
@@ -55,20 +57,20 @@ let game = {
         [2, 0, 0, 0, 1, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 2],
         [2, 2, 2, 2, 0, 9, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 2, 0, 2],
         [2, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 2, 2, 2, 0, 2, 0, 2, 2, 2],
-        [2, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 1, 0, 0, 0, 0, 2],
-        [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 2],
-        [2, 0, 8, 0, 0, 1, 0, 0, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 2],
-        [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 2, 0, 0, 0, 0, 2],
-        [2, 0, 0, 0, 0, 0, 2, 0, 2, 0, 2, 2, 2, 2, 0, 1, 0, 0, 0, 2],
-        [2, 0, 0, 0, 0, 0, 2, 0, 2, 0, 0, 0, 2, 0, 8, 0, 0, 0, 0, 2],
+        [2, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 2],
+        [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 2],
+        [2, 0, 8, 0, 0, 1, 0, 0, 0, 0, 0, 2, 0, 12, 0, 2, 0, 0, 0, 2],
+        [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 2],
+        [2, 0, 0, 0, 0, 0, 2, 0, 2, 0, 2, 2, 2, 2, 2, 2, 0, 13, 0, 2],
+        [2, 0, 13, 0, 0, 0, 2, 0, 2, 0, 0, 0, 2, 0, 8, 0, 0, 0, 0, 2],
         [2, 2, 0, 0, 0, 2, 2, 0, 2, 0, 0, 5, 2, 3, 0, 0, 0, 0, 0, 2],
         [2, 2, 2, 2, 2, 2, 2, 0, 2, 2, 0, 2, 2, 2, 2, 2, 0, 2, 2, 2],
         [2, 2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
         [2, 0, 8, 1, 0, 0, 0, 1, 0, 2, 0, 0, 0, 0, 11, 0, 0, 0, 0, 2],
         [2, 0, 0, 0, 10, 0, 0, 0, 0, 2, 0, 8, 0, 0, 0, 0, 1, 0, 0, 2],
-        [2, 6, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 7, 2],
+        [2, 6, 0, 0, 0, 0, 13, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 7, 2],
         [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
-    ], // 0 is empty space, 1 is a tree, 2 is a wall, 3 is a monster, 4 is a lion, 5 is a tiger, 6 is a bear, 7 is a yeti, 8 is ammo, 9 is pistolpickup, 10 is machinegunpickup, 11 is yetipistolpickup
+    ], // 0 is empty space, 1 is a tree, 2 is a wall, 3 is a monster, 4 is a lion, 5 is a tiger, 6 is a bear, 7 is a yeti, 8 is ammo, 9 is pistolpickup, 10 is machinegunpickup, 11 is yetipistolpickup, 12 is rocketlauncherpickup, 13 is rocketammo
     key: {
         up: {
             code: "ArrowUp",
@@ -104,6 +106,10 @@ let game = {
         },
         four: {
             code: "Digit4",
+            active: false
+        },
+        five: {
+            code: "Digit5",
             active: false
         }
     },
@@ -163,6 +169,12 @@ let game = {
         id: 'laser-sprite',
         width: 54,
         height: 54,
+        data: null
+    },
+    rocketTexture: {
+        id: 'rocket-sprite',
+        width: 16,
+        height: 23,
         data: null
     },
     backgrounds: [
@@ -281,6 +293,10 @@ for (let i = 0; i < game.map.length; i++) {
             game.sprites.push({ id: "machinegunpickup-sprite", x: j, y: i, width: 49, height: 30, active: false, data: null });
         } else if (game.map[i][j] == 11) {
             game.sprites.push({ id: "yetipistolpickup-sprite", x: j, y: i, width: 50, height: 33, active: false, data: null });
+        } else if (game.map[i][j] == 12) {
+            game.sprites.push({ id: "rocketlauncherpickup-sprite", x: j, y: i, width: 80, height: 17, active: false, data: null });
+        } else if (game.map[i][j] == 13) {
+            game.sprites.push({ id: "rocketammo-sprite", x: j, y: i, width: 35, height: 18, active: false, data: null });
         }
     }
 }
@@ -513,6 +529,18 @@ function movePlayer() {
             itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
             game.weaponunlocked.yetipistol = true;
         }
+        // Rocket launcher pickup
+        if (game.map[Math.floor(game.player.y)][Math.floor(game.player.x)] == 12) {
+            game.map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
+            itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
+            game.weaponunlocked.rocketlauncher = true;
+        }
+        // Rocket ammo pickup
+        if (game.map[Math.floor(game.player.y)][Math.floor(game.player.x)] == 13) {
+            game.map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
+            itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
+            game.rocketammo += 4;
+        }
     }
     if (game.key.down.active) {
         let playerCos = Math.cos(degreeToRadians(game.player.angle)) * game.player.speed.movement;
@@ -553,6 +581,18 @@ function movePlayer() {
             itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
             game.weaponunlocked.yetipistol = true;
         }
+        // Rocket launcher pickup
+        if (game.map[Math.floor(game.player.y)][Math.floor(game.player.x)] == 12) {
+            game.map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
+            itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
+            game.weaponunlocked.rocketlauncher = true;
+        }
+        // Rocket ammo pickup
+        if (game.map[Math.floor(game.player.y)][Math.floor(game.player.x)] == 13) {
+            game.map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
+            itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
+            game.rocketammo += 4;
+        }
     }
     if (game.key.left.active) {
         game.player.angle -= game.player.speed.rotation;
@@ -586,6 +626,11 @@ function movePlayer() {
         game.gunSprite = document.getElementById('yetipistol-sprite');
         game.shootCooldown = 600;
         game.equippedWeapon = 4;
+    }
+    if (game.key.five.active && game.weaponunlocked.rocketlauncher == true) {
+        game.gunSprite = document.getElementById('rocketlauncher-sprite');
+        game.shootCooldown = 1200;
+        game.equippedWeapon = 5;
     }
 }
 
@@ -622,6 +667,9 @@ document.addEventListener('keydown', (event) => {
     if (keyCode === game.key.four.code) {
         game.key.four.active = true;
     }
+    if (keyCode === game.key.five.code) {
+        game.key.five.active = true;
+    }
 });
 
 /**
@@ -656,6 +704,9 @@ document.addEventListener('keyup', (event) => {
     }
     if (keyCode === game.key.four.code) {
         game.key.four.active = false;
+    }
+    if (keyCode === game.key.five.code) {
+        game.key.five.active = false;
     }
 });
 
@@ -743,6 +794,10 @@ function loadSprites() {
     // Load laser sprite texture
     if (!game.laserTexture.data) {
         game.laserTexture.data = getTextureData(game.laserTexture);
+    }
+    // Load rocket sprite texture
+    if (!game.rocketTexture.data) {
+        game.rocketTexture.data = getTextureData(game.rocketTexture);
     }
 }
 
@@ -934,6 +989,8 @@ function drawBulletSprite(xProjection, spriteWidth, spriteHeight, bullet) {
     let texture;
     if (game.equippedWeapon == 4) {
         texture = game.laserTexture;
+    } else if (game.equippedWeapon == 5) {
+        texture = game.rocketTexture;
     } else {
         texture = game.bulletTexture;
     }
@@ -1022,7 +1079,7 @@ function handleShooting(e) {
         game.isShooting = true;
         game.lastShot = currentTime;
 
-        if ((game.equippedWeapon == 2 || game.equippedWeapon == 3) && game.ammo == 0) {
+        if ((game.equippedWeapon == 2 || game.equippedWeapon == 3) && game.ammo <= 0 || ((game.equippedWeapon == 5) && game.rocketammo <= 0)){
             const gunclickSound = document.getElementById('gunclick-sound');
             gunclickSound.currentTime = 0;
             gunclickSound.play();
@@ -1045,6 +1102,11 @@ function handleShooting(e) {
             const laserSound = document.getElementById('laser-sound');
             laserSound.currentTime = 0;
             laserSound.play();
+        } else if (game.equippedWeapon == 5) {
+            const rocketlaunchSound = document.getElementById('rocketlaunch-sound');
+            rocketlaunchSound.currentTime = 0;
+            rocketlaunchSound.play();
+            game.rocketammo--;
         } else {
             const shootSound = document.getElementById('shoot-sound');
             shootSound.currentTime = 0;
@@ -1064,6 +1126,11 @@ function updateGameObjects() {
         const mapY = Math.floor(bullet.y);
         if (game.map[mapY] && game.map[mapY][mapX] === 2) {
             game.bullets.splice(i, 1);
+            if (game.equippedWeapon == 5) {
+                const explosionSound = document.getElementById('explosion-sound');
+                explosionSound.currentTime = 0;
+                explosionSound.play();
+            }
             continue;
         }
         // Check collision with monsters only
@@ -1086,6 +1153,11 @@ function updateGameObjects() {
                     } else {
                         if (game.equippedWeapon == 4) {
                             monster.health -= 75;
+                        } else if (game.equippedWeapon == 5) {
+                            const explosionSound = document.getElementById('explosion-sound');
+                            explosionSound.currentTime = 0;
+                            explosionSound.play();
+                            monster.health -= 150;
                         } else {
                             monster.health -= 25;
                         }
@@ -1121,6 +1193,13 @@ function updateGameObjects() {
         // Remove bullets that have traveled too far
         if (game.equippedWeapon == 1) {
             if (game.bullets[i] && ((bullet.x - game.player.x) ** 2 + (bullet.y - game.player.y) ** 2 > 1)) {
+                game.bullets.splice(i, 1);
+            }
+        } else if (game.equippedWeapon == 5) {
+            if (game.bullets[i] && ((bullet.x - game.player.x) ** 2 + (bullet.y - game.player.y) ** 2 > 400)) {
+                const explosionSound = document.getElementById('explosion-sound');
+                explosionSound.currentTime = 0;
+                explosionSound.play();
                 game.bullets.splice(i, 1);
             }
         } else {
