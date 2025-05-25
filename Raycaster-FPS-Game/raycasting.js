@@ -2,11 +2,18 @@
 let game = {
     monsters: [], // Each monster will have position, health, sprite, etc.
     bullets: [],
-    gunSprite: document.getElementById('gun-sprite'),
+    gunSprite: document.getElementById('knife-sprite'),
     isShooting: false,
-    equippedWeapon: 2,
+    equippedWeapon: 1,
+    ammo: 0,
     lastShot: 0,
     shootCooldown: 850,
+    weaponunlocked: {
+        knife: true,
+        pistol: false,
+        machinegun: false,
+        yetipistol: false
+    },
     screen: {
         width: window.innerWidth,
         height: window.innerHeight,
@@ -44,24 +51,24 @@ let game = {
     map: [
         [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
         [2, 0, 0, 0, 0, 2, 0, 0, 0, 2, 2, 2, 0, 0, 0, 0, 0, 4, 0, 2],
-        [2, 0, 0, 0, 0, 2, 1, 0, 0, 1, 2, 2, 0, 1, 0, 0, 1, 0, 0, 2],
+        [2, 0, 0, 0, 0, 2, 1, 0, 0, 1, 2, 2, 0, 1, 0, 0, 1, 8, 0, 2],
         [2, 0, 0, 0, 1, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 2],
-        [2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 2, 0, 2],
+        [2, 2, 2, 2, 0, 9, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 2, 0, 2],
         [2, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 2, 2, 2, 0, 2, 0, 2, 2, 2],
         [2, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 1, 0, 0, 0, 0, 2],
         [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 2],
         [2, 0, 8, 0, 0, 1, 0, 0, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 2],
         [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 2, 0, 0, 0, 0, 2],
         [2, 0, 0, 0, 0, 0, 2, 0, 2, 0, 2, 2, 2, 2, 0, 1, 0, 0, 0, 2],
-        [2, 0, 0, 0, 0, 0, 2, 0, 2, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 2],
+        [2, 0, 0, 0, 0, 0, 2, 0, 2, 0, 0, 0, 2, 0, 8, 0, 0, 0, 0, 2],
         [2, 2, 0, 0, 0, 2, 2, 0, 2, 0, 0, 5, 2, 3, 0, 0, 0, 0, 0, 2],
         [2, 2, 2, 2, 2, 2, 2, 0, 2, 2, 0, 2, 2, 2, 2, 2, 0, 2, 2, 2],
         [2, 2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
-        [2, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
-        [2, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 1, 0, 0, 2],
+        [2, 0, 8, 1, 0, 0, 0, 1, 0, 2, 0, 0, 0, 0, 11, 0, 0, 0, 0, 2],
+        [2, 0, 0, 0, 10, 0, 0, 0, 0, 2, 0, 8, 0, 0, 0, 0, 1, 0, 0, 2],
         [2, 6, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 7, 2],
         [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
-    ], // 0 is empty space, 1 is a tree, 2 is a wall, 3 is a monster, 4 is a lion, 5 is a tiger, 6 is a bear, 7 is a yeti, 8 is ammo
+    ], // 0 is empty space, 1 is a tree, 2 is a wall, 3 is a monster, 4 is a lion, 5 is a tiger, 6 is a bear, 7 is a yeti, 8 is ammo, 9 is pistolpickup, 10 is machinegunpickup, 11 is yetipistolpickup
     key: {
         up: {
             code: "ArrowUp",
@@ -263,6 +270,12 @@ for (let i = 0; i < game.map.length; i++) {
             monsterIdCounter++;
         } else if (game.map[i][j] == 8) {
             game.sprites.push({ id: "ammo-sprite", x: j, y: i, width: 100, height: 81, active: false, data: null });
+        } else if (game.map[i][j] == 9) {
+            game.sprites.push({ id: "pistolpickup-sprite", x: j, y: i, width: 34, height: 19, active: false, data: null });
+        } else if (game.map[i][j] == 10) {
+            game.sprites.push({ id: "machinegunpickup-sprite", x: j, y: i, width: 49, height: 30, active: false, data: null });
+        } else if (game.map[i][j] == 11) {
+            game.sprites.push({ id: "yetipistolpickup-sprite", x: j, y: i, width: 50, height: 33, active: false, data: null });
         }
     }
 }
@@ -472,14 +485,61 @@ function movePlayer() {
             game.player.x = newX;
         }
         if (game.map[Math.floor(game.player.y)][Math.floor(game.player.x)] == 8) {
+            game.map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
             const pickupSound = document.getElementById('pickup-sound');
             pickupSound.currentTime = 0;
             pickupSound.play();
-            game.map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
+            game.ammo += 8;
             let spritenum = 0;
             for (let sprite of game.sprites) {
                 if (sprite.x == Math.floor(game.player.x) && sprite.y == Math.floor(game.player.y)) {
                     game.sprites.splice(spritenum, 1);
+                    break;
+                }
+                spritenum++;
+            }
+        }
+        if (game.map[Math.floor(game.player.y)][Math.floor(game.player.x)] == 9) {
+            game.map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
+            const pickupSound = document.getElementById('pickup-sound');
+            pickupSound.currentTime = 0;
+            pickupSound.play();
+            game.weaponunlocked.pistol = true;
+            let spritenum = 0;
+            for (let sprite of game.sprites) {
+                if (sprite.x == Math.floor(game.player.x) && sprite.y == Math.floor(game.player.y)) {
+                    game.sprites.splice(spritenum, 1);
+                    break;
+                }
+                spritenum++;
+            }
+        }
+        if (game.map[Math.floor(game.player.y)][Math.floor(game.player.x)] == 10) {
+            game.map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
+            const pickupSound = document.getElementById('pickup-sound');
+            pickupSound.currentTime = 0;
+            pickupSound.play();
+            game.weaponunlocked.machinegun = true;
+            let spritenum = 0;
+            for (let sprite of game.sprites) {
+                if (sprite.x == Math.floor(game.player.x) && sprite.y == Math.floor(game.player.y)) {
+                    game.sprites.splice(spritenum, 1);
+                    break;
+                }
+                spritenum++;
+            }
+        }
+        if (game.map[Math.floor(game.player.y)][Math.floor(game.player.x)] == 11) {
+            game.map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
+            const pickupSound = document.getElementById('pickup-sound');
+            pickupSound.currentTime = 0;
+            pickupSound.play();
+            game.weaponunlocked.yetipistol = true;
+            let spritenum = 0;
+            for (let sprite of game.sprites) {
+                if (sprite.x == Math.floor(game.player.x) && sprite.y == Math.floor(game.player.y)) {
+                    game.sprites.splice(spritenum, 1);
+                    break;
                 }
                 spritenum++;
             }
@@ -501,14 +561,61 @@ function movePlayer() {
             game.player.x = newX;
         }
         if (game.map[Math.floor(game.player.y)][Math.floor(game.player.x)] == 8) {
+            game.map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
             const pickupSound = document.getElementById('pickup-sound');
             pickupSound.currentTime = 0;
             pickupSound.play();
-            game.map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
+            game.ammo += 8;
             let spritenum = 0;
             for (let sprite of game.sprites) {
                 if (sprite.x == Math.floor(game.player.x) && sprite.y == Math.floor(game.player.y)) {
                     game.sprites.splice(spritenum, 1);
+                    break;
+                }
+                spritenum++;
+            }
+        }
+        if (game.map[Math.floor(game.player.y)][Math.floor(game.player.x)] == 9) {
+            game.map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
+            const pickupSound = document.getElementById('pickup-sound');
+            pickupSound.currentTime = 0;
+            pickupSound.play();
+            game.weaponunlocked.pistol = true;
+            let spritenum = 0;
+            for (let sprite of game.sprites) {
+                if (sprite.x == Math.floor(game.player.x) && sprite.y == Math.floor(game.player.y)) {
+                    game.sprites.splice(spritenum, 1);
+                    break;
+                }
+                spritenum++;
+            }
+        }
+        if (game.map[Math.floor(game.player.y)][Math.floor(game.player.x)] == 10) {
+            game.map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
+            const pickupSound = document.getElementById('pickup-sound');
+            pickupSound.currentTime = 0;
+            pickupSound.play();
+            game.weaponunlocked.machinegun = true;
+            let spritenum = 0;
+            for (let sprite of game.sprites) {
+                if (sprite.x == Math.floor(game.player.x) && sprite.y == Math.floor(game.player.y)) {
+                    game.sprites.splice(spritenum, 1);
+                    break;
+                }
+                spritenum++;
+            }
+        }
+        if (game.map[Math.floor(game.player.y)][Math.floor(game.player.x)] == 11) {
+            game.map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
+            const pickupSound = document.getElementById('pickup-sound');
+            pickupSound.currentTime = 0;
+            pickupSound.play();
+            game.weaponunlocked.yetipistol = true;
+            let spritenum = 0;
+            for (let sprite of game.sprites) {
+                if (sprite.x == Math.floor(game.player.x) && sprite.y == Math.floor(game.player.y)) {
+                    game.sprites.splice(spritenum, 1);
+                    break;
                 }
                 spritenum++;
             }
@@ -525,24 +632,24 @@ function movePlayer() {
         game.player.angle %= 360;
     }
     if (game.key.space.active) {
-        handleShooting();
+        handleShooting();  
     }
-    if (game.key.one.active) {
+    if (game.key.one.active && game.weaponunlocked.knife == true) {
         game.gunSprite = document.getElementById('knife-sprite');
         game.shootCooldown = 600;
         game.equippedWeapon = 1;
     }
-    if (game.key.two.active) {
+    if (game.key.two.active && game.weaponunlocked.pistol == true) {
         game.gunSprite = document.getElementById('gun-sprite');
         game.shootCooldown = 850;
         game.equippedWeapon = 2;
     }
-    if (game.key.three.active) {
+    if (game.key.three.active && game.weaponunlocked.machinegun == true) {
         game.gunSprite = document.getElementById('machinegun-sprite');
         game.shootCooldown = 400;
         game.equippedWeapon = 3;
     }
-    if (game.key.four.active) {
+    if (game.key.four.active && game.weaponunlocked.yetipistol == true) {
         game.gunSprite = document.getElementById('yetipistol-sprite');
         game.shootCooldown = 600;
         game.equippedWeapon = 4;
@@ -968,6 +1075,13 @@ function handleShooting(e) {
         game.isShooting = true;
         game.lastShot = currentTime;
 
+        if ((game.equippedWeapon == 2 || game.equippedWeapon == 3) && game.ammo == 0) {
+            const gunclickSound = document.getElementById('gunclick-sound');
+            gunclickSound.currentTime = 0;
+            gunclickSound.play();
+            return;
+        }
+
         // Start the bullet slightly in front of the player in the direction they're facing
         const bulletStartDistance = 0.5; // How far in front of the player the bullet starts
         const startX = game.player.x + Math.cos(degreeToRadians(game.player.angle)) * bulletStartDistance;
@@ -988,6 +1102,7 @@ function handleShooting(e) {
             const shootSound = document.getElementById('shoot-sound');
             shootSound.currentTime = 0;
             shootSound.play();
+            game.ammo--;
         }
     }
 }
