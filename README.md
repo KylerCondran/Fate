@@ -24,6 +24,26 @@ git clone https://github.com/KylerCondran/Raycaster-FPS-Game.git
    
 3. Copy The Files To The Web Server Root Directory
 
+## Weapons
+
+<ul>
+  <li>Knife</li>
+  <li>Pistol</li>
+  <li>Machine Gun</li>
+  <li>Yeti Pistol</li>
+  <li>Rocket Launcher</li>
+</ul>
+
+## Monsters
+
+<ul>
+  <li>Imps</li>
+  <li>Lions</li>
+  <li>Tigers</li>
+  <li>Bears</li>
+  <li>Yetis</li>
+</ul>
+
 ## Inspiration
 
 I have always been a fan of 3D MS-DOS FPS games like Wolfenstein and DOOM and with my background in software development I wanted to attempt to create something today that the geniuses of 1995 were able to create back then with less advanced software and hardware. I used AI tools like image generation and AI coding agents on some parts of this project to help me overcome my own shortcomings in the areas of mathematics and artistic design.
