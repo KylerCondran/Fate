@@ -110,9 +110,9 @@ let game = {
                 [2, 3, 0, 0, 0, 0, 13, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 3, 2],
                 [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
             ],
-            floor: 0,
+            floor: 1,
             wall: 2,
-            background: 0
+            background: 1
         }
     ],
     key: {
@@ -201,6 +201,12 @@ let game = {
             height: 16,
             id: "floor-texture",
             data: null
+        },
+        {
+            width: 16,
+            height: 16,
+            id: "lava-texture",
+            data: null
         }
     ],
     bulletTexture: {
@@ -226,6 +232,12 @@ let game = {
             width: 360,
             height: 60,
             id: "background",
+            data: null
+        },
+        {
+            width: 360,
+            height: 60,
+            id: "night",
             data: null
         }
     ]
@@ -607,7 +619,7 @@ function rayCasting() {
         let texturePositionX = Math.floor((texture.width * (ray.x + ray.y)) % texture.width);
 
         // Draw
-        drawBackground(rayCount, 0, game.projection.halfHeight - wallHeight, game.backgrounds[0]);
+        drawBackground(rayCount, 0, game.projection.halfHeight - wallHeight, game.backgrounds[game.levels[game.currentLevel].background]);
         drawTexture(rayCount, wallHeight, texturePositionX, texture);
         drawFloor(rayCount, wallHeight, rayAngle)
 
