@@ -82,7 +82,10 @@ let game = {
                 [2, 0, 0, 0, 10, 0, 0, 0, 0, 2, 0, 8, 0, 0, 0, 0, 1, 0, 0, 2],
                 [2, 6, 0, 0, 0, 0, 13, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 7, 2],
                 [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
-            ]
+            ],
+            floor: 0,
+            wall: 1,
+            background: 0
         },
         {
             name: "Level 2",
@@ -106,7 +109,10 @@ let game = {
                 [2, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 13, 0, 0, 0, 0, 0, 0, 0, 2],
                 [2, 3, 0, 0, 0, 0, 13, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 3, 2],
                 [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
-            ]
+            ],
+            floor: 0,
+            wall: 2,
+            background: 0
         }
     ],
     key: {
@@ -502,7 +508,7 @@ function drawFloor(x1, wallHeight, rayAngle) {
         tile = game.levels[game.currentLevel].map[Math.floor(tiley)][Math.floor(tilex)]
 
         // Get texture
-        texture = game.floorTextures[0]
+        texture = game.floorTextures[game.levels[game.currentLevel].floor]
 
         if (!texture) {
             continue
@@ -581,7 +587,7 @@ function rayCasting() {
         let wallHeight = Math.floor(game.projection.halfHeight / distance);
 
         // Get texture
-        let texture = game.textures[wall - 1];
+        let texture = game.textures[game.levels[game.currentLevel].wall];
 
         // Calcule texture position
         let texturePositionX = Math.floor((texture.width * (ray.x + ray.y)) % texture.width);
