@@ -2,6 +2,8 @@
 
 This is a game I am developing with a working title of 'Fate'. It is a 3D Environment Raycasting FPS Game Engine built on pure JavaScript. Hunt And Shoot Monsters. Arrow Keys To Move, Space To Shoot. 1 - 5 To Swap Weapons.
 
+<img src="https://repository-images.githubusercontent.com/981807393/4cb9db2b-ae98-4ab3-abb3-62a6e15d6368" title="Raycaster-FPS-Game">
+
 <p align="center">
   <a href="https://github.com/KylerCondran/Raycaster-FPS-Game/issues/new">Report bug</a>
   ·
@@ -21,6 +23,26 @@ git clone https://github.com/KylerCondran/Raycaster-FPS-Game.git
 2. Setup An IIS Web Server To Host The Files
    
 3. Copy The Files To The Web Server Root Directory
+
+## Weapons
+
+<ul>
+  <li>Knife</li>
+  <li>Pistol</li>
+  <li>Machine Gun</li>
+  <li>Yeti Pistol</li>
+  <li>Rocket Launcher</li>
+</ul>
+
+## Monsters
+
+<ul>
+  <li>Imps</li>
+  <li>Lions</li>
+  <li>Tigers</li>
+  <li>Bears</li>
+  <li>Yetis</li>
+</ul>
 
 ## Inspiration
 
