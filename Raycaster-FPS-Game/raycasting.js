@@ -316,105 +316,119 @@ function loadLevel(levelIdx) {
     let monsterIdCounter = 0;
     for (let i = 0; i < game.levels[levelIdx].map.length; i++) {
         for (let j = 0; j < game.levels[levelIdx].map[i].length; j++) {
-            if (game.levels[levelIdx].map[i][j] == 1) {
-                game.sprites.push({ id: "tree-sprite", x: j, y: i, width: 8, height: 16, active: false, data: null });
-            } else if (game.levels[levelIdx].map[i][j] == 3) {
-                const monster = {
-                    id: `monster_${monsterIdCounter}`,
-                    type: 'imp',
-                    skin: 'imp-sprite',
-                    audio: 'imp',
-                    x: j,
-                    y: i,
-                    health: 50,
-                    isDead: false,
-                    width: 484,
-                    height: 499,
-                    active: false,
-                    data: null
-                };
-                game.monsters.push(monster);
-                monsterIdCounter++;
-            } else if (game.levels[levelIdx].map[i][j] == 4) {
-                const lion = {
-                    id: `monster_${monsterIdCounter}`,
-                    type: 'lion',
-                    skin: 'lion-sprite',
-                    audio: 'bigcat',
-                    x: j,
-                    y: i,
-                    health: 150,
-                    isDead: false,
-                    width: 665,
-                    height: 725,
-                    active: false,
-                    data: null
-                };
-                game.monsters.push(lion);
-                monsterIdCounter++;
-            } else if (game.levels[levelIdx].map[i][j] == 5) {
-                const tiger = {
-                    id: `monster_${monsterIdCounter}`,
-                    type: 'tiger',
-                    skin: 'tiger-sprite',
-                    audio: 'bigcat',
-                    x: j,
-                    y: i,
-                    health: 100,
-                    isDead: false,
-                    width: 256,
-                    height: 201,
-                    active: false,
-                    data: null
-                };
-                game.monsters.push(tiger);
-                monsterIdCounter++;
-            } else if (game.levels[levelIdx].map[i][j] == 6) {
-                const bear = {
-                    id: `monster_${monsterIdCounter}`,
-                    type: 'bear',
-                    skin: 'bear-sprite',
-                    audio: 'bear',
-                    x: j,
-                    y: i,
-                    health: 250,
-                    isDead: false,
-                    width: 220,
-                    height: 237,
-                    active: false,
-                    data: null
-                };
-                game.monsters.push(bear);
-                monsterIdCounter++;
-            } else if (game.levels[levelIdx].map[i][j] == 7) {
-                const yeti = {
-                    id: `monster_${monsterIdCounter}`,
-                    type: 'yeti',
-                    skin: 'yeti-sprite',
-                    audio: 'bear',
-                    x: j,
-                    y: i,
-                    health: 550,
-                    isDead: false,
-                    width: 326,
-                    height: 384,
-                    active: false,
-                    data: null
-                };
-                game.monsters.push(yeti);
-                monsterIdCounter++;
-            } else if (game.levels[levelIdx].map[i][j] == 8) {
-                game.sprites.push({ id: "ammo-sprite", x: j, y: i, width: 100, height: 81, active: false, data: null });
-            } else if (game.levels[levelIdx].map[i][j] == 9) {
-                game.sprites.push({ id: "pistolpickup-sprite", x: j, y: i, width: 34, height: 19, active: false, data: null });
-            } else if (game.levels[levelIdx].map[i][j] == 10) {
-                game.sprites.push({ id: "machinegunpickup-sprite", x: j, y: i, width: 49, height: 30, active: false, data: null });
-            } else if (game.levels[levelIdx].map[i][j] == 11) {
-                game.sprites.push({ id: "yetipistolpickup-sprite", x: j, y: i, width: 50, height: 33, active: false, data: null });
-            } else if (game.levels[levelIdx].map[i][j] == 12) {
-                game.sprites.push({ id: "rocketlauncherpickup-sprite", x: j, y: i, width: 80, height: 17, active: false, data: null });
-            } else if (game.levels[levelIdx].map[i][j] == 13) {
-                game.sprites.push({ id: "rocketammo-sprite", x: j, y: i, width: 35, height: 18, active: false, data: null });
+            switch (game.levels[levelIdx].map[i][j]) {
+                case 1:
+                    game.sprites.push({ id: "tree-sprite", x: j, y: i, width: 8, height: 16, active: false, data: null });
+                    break;
+                case 3:
+                    const imp = {
+                        id: `monster_${monsterIdCounter}`,
+                        type: 'imp',
+                        skin: 'imp-sprite',
+                        audio: 'imp',
+                        x: j,
+                        y: i,
+                        health: 50,
+                        isDead: false,
+                        width: 484,
+                        height: 499,
+                        active: false,
+                        data: null
+                    };
+                    game.monsters.push(imp);
+                    monsterIdCounter++;
+                    break;
+                case 4:
+                    const lion = {
+                        id: `monster_${monsterIdCounter}`,
+                        type: 'lion',
+                        skin: 'lion-sprite',
+                        audio: 'bigcat',
+                        x: j,
+                        y: i,
+                        health: 150,
+                        isDead: false,
+                        width: 665,
+                        height: 725,
+                        active: false,
+                        data: null
+                    };
+                    game.monsters.push(lion);
+                    monsterIdCounter++;
+                    break;
+                case 5:
+                    const tiger = {
+                        id: `monster_${monsterIdCounter}`,
+                        type: 'tiger',
+                        skin: 'tiger-sprite',
+                        audio: 'bigcat',
+                        x: j,
+                        y: i,
+                        health: 100,
+                        isDead: false,
+                        width: 256,
+                        height: 201,
+                        active: false,
+                        data: null
+                    };
+                    game.monsters.push(tiger);
+                    monsterIdCounter++;
+                    break;
+                case 6:
+                    const bear = {
+                        id: `monster_${monsterIdCounter}`,
+                        type: 'bear',
+                        skin: 'bear-sprite',
+                        audio: 'bear',
+                        x: j,
+                        y: i,
+                        health: 250,
+                        isDead: false,
+                        width: 220,
+                        height: 237,
+                        active: false,
+                        data: null
+                    };
+                    game.monsters.push(bear);
+                    monsterIdCounter++;
+                    break;
+                case 7:
+                    const yeti = {
+                        id: `monster_${monsterIdCounter}`,
+                        type: 'yeti',
+                        skin: 'yeti-sprite',
+                        audio: 'bear',
+                        x: j,
+                        y: i,
+                        health: 550,
+                        isDead: false,
+                        width: 326,
+                        height: 384,
+                        active: false,
+                        data: null
+                    };
+                    game.monsters.push(yeti);
+                    monsterIdCounter++;
+                    break;
+                case 8:
+                    game.sprites.push({ id: "ammo-sprite", x: j, y: i, width: 100, height: 81, active: false, data: null });
+                    break;
+                case 9:
+                    game.sprites.push({ id: "pistolpickup-sprite", x: j, y: i, width: 34, height: 19, active: false, data: null });
+                    break;
+                case 10:
+                    game.sprites.push({ id: "machinegunpickup-sprite", x: j, y: i, width: 49, height: 30, active: false, data: null });
+                    break;
+                case 11:
+                    game.sprites.push({ id: "yetipistolpickup-sprite", x: j, y: i, width: 50, height: 33, active: false, data: null });
+                    break;
+                case 12:
+                    game.sprites.push({ id: "rocketlauncherpickup-sprite", x: j, y: i, width: 80, height: 17, active: false, data: null });
+                    break;
+                case 13:
+                    game.sprites.push({ id: "rocketammo-sprite", x: j, y: i, width: 35, height: 18, active: false, data: null });
+                    break;
+                default:
             }
         }
     }
