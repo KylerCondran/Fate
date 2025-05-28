@@ -199,7 +199,7 @@ let game = {
     ],
     bulletTexture: {
         id: 'bullet-sprite',
-        width: 5454,
+        width: 54,
         height: 54,
         data: null
     },
