@@ -199,7 +199,7 @@ let game = {
         {
             width: 16,
             height: 16,
-            id: "floor-texture",
+            id: "grass-texture",
             data: null
         },
         {
@@ -231,7 +231,7 @@ let game = {
         {
             width: 360,
             height: 60,
-            id: "background",
+            id: "sunny",
             data: null
         },
         {
