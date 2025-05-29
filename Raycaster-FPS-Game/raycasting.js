@@ -111,7 +111,7 @@ let game = {
                 [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
             ],
             floor: 5,
-            wall: 1,
+            wall: 7,
             background: 0
         },
         {
@@ -291,6 +291,12 @@ let game = {
             width: 16,
             height: 16,
             id: "lava-texture",
+            data: null
+        },
+        {
+            width: 16,
+            height: 16,
+            id: "woods-texture",
             data: null
         }
     ],
