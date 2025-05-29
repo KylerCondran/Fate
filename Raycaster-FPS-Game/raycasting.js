@@ -139,7 +139,7 @@ let game = {
             ],
             floor: 4,
             wall: 4,
-            background: 0
+            background: 2
         },
         {
             name: "Heaven",
@@ -323,6 +323,12 @@ let game = {
             width: 360,
             height: 60,
             id: "night",
+            data: null
+        },
+        {
+            width: 360,
+            height: 60,
+            id: "snowy",
             data: null
         }
     ]
