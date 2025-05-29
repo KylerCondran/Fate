@@ -164,8 +164,8 @@ let game = {
                 [2, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
                 [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
             ],
-            floor: 5,
-            wall: 1,
+            floor: 8,
+            wall: 8,
             background: 0
         },
         {
@@ -298,6 +298,12 @@ let game = {
             height: 16,
             id: "woods-texture",
             data: null
+        },
+        {
+            width: 16,
+            height: 16,
+            id: "cloud",
+            data: null
         }
     ],
     bulletTexture: {
@@ -427,11 +433,17 @@ function loadLevel(levelIdx) {
         for (let j = 0; j < game.levels[levelIdx].map[i].length; j++) {
             switch (game.levels[levelIdx].map[i][j]) {
                 case 1:
-                    if (game.currentLevel == 2) {
-                        game.sprites.push({ id: "snowytree-sprite", x: j, y: i, width: 552, height: 552, active: false, data: null });
-                    } else {
-                        game.sprites.push({ id: "tree-sprite", x: j, y: i, width: 8, height: 16, active: false, data: null });
-                    }          
+                    switch (game.currentLevel) {
+                        case 2:
+                            game.sprites.push({ id: "snowytree-sprite", x: j, y: i, width: 552, height: 552, active: false, data: null });
+                            break;
+                        case 3:
+                            game.sprites.push({ id: "pillar-sprite", x: j, y: i, width: 320, height: 640, active: false, data: null });
+                            break;
+                        default:
+                            game.sprites.push({ id: "tree-sprite", x: j, y: i, width: 8, height: 16, active: false, data: null });
+                            break;
+                    }
                     break;
                 case 3:
                     const imp = {
