@@ -83,7 +83,7 @@ let game = {
                 [2, 3, 0, 0, 0, 0, 13, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 3, 2],
                 [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
             ],
-            floor: 1,
+            floor: 6,
             wall: 2,
             background: 1
         },
@@ -110,12 +110,12 @@ let game = {
                 [2, 6, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 4, 2],
                 [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
             ],
-            floor: 0,
+            floor: 5,
             wall: 1,
             background: 0
         },
         {
-            name: "Antarctica",
+            name: "Arctic",
             map: [
                 [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
                 [2, 0, 0, 0, 0, 2, 0, 0, 0, 2, 2, 2, 0, 0, 0, 0, 0, 7, 0, 2],
@@ -137,8 +137,8 @@ let game = {
                 [2, 7, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 7, 2],
                 [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
             ],
-            floor: 0,
-            wall: 1,
+            floor: 4,
+            wall: 4,
             background: 0
         },
         {
@@ -164,7 +164,7 @@ let game = {
                 [2, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
                 [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
             ],
-            floor: 0,
+            floor: 5,
             wall: 1,
             background: 0
         },
@@ -191,7 +191,7 @@ let game = {
                 [2, 6, 0, 0, 0, 0, 13, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 7, 2],
                 [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
             ],
-            floor: 0,
+            floor: 5,
             wall: 1,
             background: 0
         }
@@ -274,9 +274,13 @@ let game = {
             height: 16,
             id: "invis",
             data: null
-        }
-    ],
-    floorTextures: [
+        },
+        {
+            width: 16,
+            height: 16,
+            id: "ice",
+            data: null
+        },
         {
             width: 16,
             height: 16,
@@ -615,7 +619,7 @@ function drawFloor(x1, wallHeight, rayAngle) {
         tile = game.levels[game.currentLevel].map[Math.floor(tiley)][Math.floor(tilex)]
 
         // Get texture
-        texture = game.floorTextures[game.levels[game.currentLevel].floor]
+        texture = game.textures[game.levels[game.currentLevel].floor]
 
         if (!texture) {
             continue
@@ -987,11 +991,6 @@ function loadTextures() {
     for (let i = 0; i < game.textures.length; i++) {
         if (game.textures[i].id) {
             game.textures[i].data = getTextureData(game.textures[i]);
-        }
-    }
-    for (let i = 0; i < game.floorTextures.length; i++) {
-        if (game.floorTextures[i].id) {
-            game.floorTextures[i].data = getTextureData(game.floorTextures[i]);
         }
     }
 }
