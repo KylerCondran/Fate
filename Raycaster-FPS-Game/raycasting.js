@@ -421,7 +421,11 @@ function loadLevel(levelIdx) {
         for (let j = 0; j < game.levels[levelIdx].map[i].length; j++) {
             switch (game.levels[levelIdx].map[i][j]) {
                 case 1:
-                    game.sprites.push({ id: "tree-sprite", x: j, y: i, width: 8, height: 16, active: false, data: null });
+                    if (game.currentLevel == 2) {
+                        game.sprites.push({ id: "snowytree-sprite", x: j, y: i, width: 552, height: 552, active: false, data: null });
+                    } else {
+                        game.sprites.push({ id: "tree-sprite", x: j, y: i, width: 8, height: 16, active: false, data: null });
+                    }          
                     break;
                 case 3:
                     const imp = {
