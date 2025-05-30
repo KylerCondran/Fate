@@ -18,7 +18,6 @@ let game = {
     monsterMoveSpeed: 0.02,
     activationDistance: 1.0,
     monsterIdCounter: 0,
-    killedMonsterCount: 0,
     weaponunlocked: {
         knife: true,
         pistol: false,
@@ -429,7 +428,6 @@ function loadLevel(levelIdx) {
     game.sprites = [];
     // Rebuild monsters and sprites from map
     game.monsterIdCounter = 0;
-    game.killedMonsterCount = 0;
     for (let i = 0; i < game.levels[levelIdx].map.length; i++) {
         for (let j = 0; j < game.levels[levelIdx].map[i].length; j++) {
             switch (game.levels[levelIdx].map[i][j]) {
@@ -673,6 +671,11 @@ function main() {
         clearScreen();
         movePlayer();
         updateGameObjects();
+        // WIN CONDITION: all monsters dead
+        if (game.monsters.length > 0 && game.monsters.every(monster => monster.isDead)) {
+            endGame();
+            return;
+        }
         rayCasting();
         drawSprites();
         renderBuffer();
@@ -1414,7 +1417,6 @@ function updateGameObjects() {
                         monster.isDead = true;
                         playSound(`${monster.audio}-death`);
                         game.sprites.push({ id: 'bones-sprite', x: monster.x, y: monster.y, width: 256, height: 256, active: false, data: null });
-                        game.killedMonsterCount++;
                         loadSprites();
                     } else {
                         var rnd = Math.floor(Math.random() * 3);
@@ -1479,4 +1481,44 @@ function drawGun(ctx) {
             160, 160
         );
     }
+}
+
+// === WIN SCREEN ===
+function createWinScreen() {
+    let overlay = document.createElement('div');
+    overlay.id = 'win-screen-overlay';
+    overlay.style.position = 'fixed';
+    overlay.style.left = '0';
+    overlay.style.top = '0';
+    overlay.style.width = '100vw';
+    overlay.style.height = '100vh';
+    overlay.style.background = 'rgba(0,0,0,0.92)';
+    overlay.style.display = 'flex';
+    overlay.style.flexDirection = 'column';
+    overlay.style.justifyContent = 'center';
+    overlay.style.alignItems = 'center';
+    overlay.style.zIndex = '10000';
+    overlay.innerHTML = `
+        <h1 style="color: #fff; font-family: 'Lucida Console', monospace; font-size: 2.5em; margin-bottom: 1em;">You Win!</h1>
+        <p style="color: #aaa; font-family: 'Lucida Console', monospace; font-size: 1.2em;">All monsters defeated!</p>
+    `;
+    document.body.appendChild(overlay);
+}
+
+function removeWinScreen() {
+    const overlay = document.getElementById('win-screen-overlay');
+    if (overlay) overlay.remove();
+}
+
+// End game and show win screen, then return to start screen
+function endGame() {
+    if (mainLoop) {
+        clearInterval(mainLoop);
+        mainLoop = null;
+    }
+    createWinScreen();
+    setTimeout(() => {
+        removeWinScreen();
+        createStartScreen();
+    }, 5000);
 }
