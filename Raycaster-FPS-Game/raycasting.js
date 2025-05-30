@@ -18,7 +18,7 @@ let game = {
     monsterMoveSpeed: 0.02,
     activationDistance: 1.0,
     monsterIdCounter: 0,
-    weaponunlocked: {
+    weaponsUnlocked: {
         knife: true,
         pistol: false,
         machinegun: false,
@@ -84,6 +84,7 @@ let game = {
                 [2, 3, 0, 0, 0, 0, 13, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 3, 2],
                 [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
             ],
+            unlocked: true,
             floor: 6,
             wall: 2,
             background: 1
@@ -111,6 +112,7 @@ let game = {
                 [2, 6, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 4, 2],
                 [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
             ],
+            unlocked: false,
             floor: 5,
             wall: 7,
             background: 0
@@ -138,6 +140,7 @@ let game = {
                 [2, 7, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 7, 2],
                 [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
             ],
+            unlocked: false,
             floor: 4,
             wall: 4,
             background: 2
@@ -165,6 +168,7 @@ let game = {
                 [2, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
                 [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
             ],
+            unlocked: false,
             floor: 8,
             wall: 8,
             background: 0
@@ -192,6 +196,7 @@ let game = {
                 [2, 6, 0, 0, 0, 0, 13, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 7, 2],
                 [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
             ],
+            unlocked: false,
             floor: 5,
             wall: 1,
             background: 0
@@ -375,6 +380,9 @@ function createStartScreen() {
         btn.textContent = level.name;
         btn.style.padding = '1em 2em';
         btn.style.fontSize = '1.2em';
+        if (game.levels[idx].unlocked == false) {
+            btn.disabled = true;
+        }      
         btn.style.fontFamily = "'Lucida Console', monospace";
         btn.style.cursor = 'pointer';
         btn.onclick = () => {
@@ -414,7 +422,7 @@ function loadLevel(levelIdx) {
     // Reset inventory
     game.ammo = 0;
     game.rocketammo = 0;
-    game.weaponunlocked = {
+    game.weaponsUnlocked = {
         knife: true,
         pistol: false,
         machinegun: false,
@@ -781,25 +789,25 @@ function movePlayer() {
         if (game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] == 9) {
             game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
             itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
-            game.weaponunlocked.pistol = true;
+            game.weaponsUnlocked.pistol = true;
         }
         // Machinegun pickup
         if (game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] == 10) {
             game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
             itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
-            game.weaponunlocked.machinegun = true;
+            game.weaponsUnlocked.machinegun = true;
         }
         // Yeti pistol pickup
         if (game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] == 11) {
             game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
             itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
-            game.weaponunlocked.yetipistol = true;
+            game.weaponsUnlocked.yetipistol = true;
         }
         // Rocket launcher pickup
         if (game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] == 12) {
             game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
             itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
-            game.weaponunlocked.rocketlauncher = true;
+            game.weaponsUnlocked.rocketlauncher = true;
         }
         // Rocket ammo pickup
         if (game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] == 13) {
@@ -833,25 +841,25 @@ function movePlayer() {
         if (game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] == 9) {
             game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
             itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
-            game.weaponunlocked.pistol = true;
+            game.weaponsUnlocked.pistol = true;
         }
         // Machinegun pickup
         if (game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] == 10) {
             game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
             itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
-            game.weaponunlocked.machinegun = true;
+            game.weaponsUnlocked.machinegun = true;
         }
         // Yeti pistol pickup
         if (game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] == 11) {
             game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
             itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
-            game.weaponunlocked.yetipistol = true;
+            game.weaponsUnlocked.yetipistol = true;
         }
         // Rocket launcher pickup
         if (game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] == 12) {
             game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
             itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
-            game.weaponunlocked.rocketlauncher = true;
+            game.weaponsUnlocked.rocketlauncher = true;
         }
         // Rocket ammo pickup
         if (game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] == 13) {
@@ -873,27 +881,27 @@ function movePlayer() {
     if (game.key.space.active) {
         handleShooting();  
     }
-    if (game.key.one.active && game.weaponunlocked.knife == true) {
+    if (game.key.one.active && game.weaponsUnlocked.knife == true) {
         game.weaponSprite = document.getElementById('knife-sprite');
         game.shootCooldown = 600;
         game.equippedWeapon = 1;
     }
-    if (game.key.two.active && game.weaponunlocked.pistol == true) {
+    if (game.key.two.active && game.weaponsUnlocked.pistol == true) {
         game.weaponSprite = document.getElementById('gun-sprite');
         game.shootCooldown = 850;
         game.equippedWeapon = 2;
     }
-    if (game.key.three.active && game.weaponunlocked.machinegun == true) {
+    if (game.key.three.active && game.weaponsUnlocked.machinegun == true) {
         game.weaponSprite = document.getElementById('machinegun-sprite');
         game.shootCooldown = 400;
         game.equippedWeapon = 3;
     }
-    if (game.key.four.active && game.weaponunlocked.yetipistol == true) {
+    if (game.key.four.active && game.weaponsUnlocked.yetipistol == true) {
         game.weaponSprite = document.getElementById('yetipistol-sprite');
         game.shootCooldown = 600;
         game.equippedWeapon = 4;
     }
-    if (game.key.five.active && game.weaponunlocked.rocketlauncher == true) {
+    if (game.key.five.active && game.weaponsUnlocked.rocketlauncher == true) {
         game.weaponSprite = document.getElementById('rocketlauncher-sprite');
         game.shootCooldown = 1200;
         game.equippedWeapon = 5;
@@ -1517,6 +1525,9 @@ function endGame() {
         mainLoop = null;
     }
     createWinScreen();
+    if (game.currentLevel != game.levels.length - 1) {
+        game.levels[game.currentLevel + 1].unlocked = true;
+    }   
     setTimeout(() => {
         removeWinScreen();
         createStartScreen();
