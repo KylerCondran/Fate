@@ -937,54 +937,57 @@ function movePlayer() {
         if (game.levels[game.currentLevel].map[Math.floor(game.player.y)][checkX] != 2) {
             game.player.x = newX;
         }
-        // Ammo pickup
-        if (game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] == 8) {
-            game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
-            itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
-            game.ammo += 8;
-            game.pickupCollected++;
-        }
-        // Pistol pickup
-        if (game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] == 9) {
-            game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
-            itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
-            game.weaponsUnlocked.pistol = true;
-            game.pickupCollected++;
-        }
-        // Machinegun pickup
-        if (game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] == 10) {
-            game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
-            itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
-            game.weaponsUnlocked.machinegun = true;
-            game.pickupCollected++;
-        }
-        // Yeti pistol pickup
-        if (game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] == 11) {
-            game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
-            itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
-            game.weaponsUnlocked.yetipistol = true;
-            game.pickupCollected++;
-        }
-        // Rocket launcher pickup
-        if (game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] == 12) {
-            game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
-            itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
-            game.weaponsUnlocked.rocketlauncher = true;
-            game.pickupCollected++;
-        }
-        // Rocket ammo pickup
-        if (game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] == 13) {
-            game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
-            itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
-            game.rocketammo += 4;
-            game.pickupCollected++;
-        }
-        // Scepter pickup
-        if (game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] == 14) {
-            game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
-            itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
-            game.weaponsUnlocked.scepter = true;
-            game.pickupCollected++;
+        // Check for pickups
+        switch (game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)]) {
+            // Ammo pickup
+            case 8:
+                game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
+                itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
+                game.ammo += 8;
+                game.pickupCollected++;
+                break;
+            // Pistol pickup
+            case 9:
+                game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
+                itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
+                game.weaponsUnlocked.pistol = true;
+                game.pickupCollected++;
+                break;
+            // Machinegun pickup
+            case 10:
+                game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
+                itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
+                game.weaponsUnlocked.machinegun = true;
+                game.pickupCollected++;
+                break;
+            // Yeti pistol pickup
+            case 11:
+                game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
+                itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
+                game.weaponsUnlocked.yetipistol = true;
+                game.pickupCollected++;
+                break;
+            // Rocket launcher pickup
+            case 12:
+                game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
+                itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
+                game.weaponsUnlocked.rocketlauncher = true;
+                game.pickupCollected++;
+                break;
+            // Rocket ammo pickup
+            case 13:
+                game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
+                itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
+                game.rocketammo += 4;
+                game.pickupCollected++;
+                break;
+            // Scepter pickup
+            case 14:
+                game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
+                itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
+                game.weaponsUnlocked.scepter = true;
+                game.pickupCollected++;
+                break;
         }
     }
     if (game.key.down.active) {
@@ -1002,54 +1005,58 @@ function movePlayer() {
         if (game.levels[game.currentLevel].map[Math.floor(game.player.y)][checkX] != 2) {
             game.player.x = newX;
         }
-        // Ammo pickup
-        if (game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] == 8) {
-            game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
-            itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
-            game.ammo += 8;
-            game.pickupCollected++;
-        }
-        // Pistol pickup
-        if (game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] == 9) {
-            game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
-            itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
-            game.weaponsUnlocked.pistol = true;
-            game.pickupCollected++;
-        }
-        // Machinegun pickup
-        if (game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] == 10) {
-            game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
-            itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
-            game.weaponsUnlocked.machinegun = true;
-            game.pickupCollected++;
-        }
-        // Yeti pistol pickup
-        if (game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] == 11) {
-            game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
-            itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
-            game.weaponsUnlocked.yetipistol = true;
-            game.pickupCollected++;
-        }
-        // Rocket launcher pickup
-        if (game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] == 12) {
-            game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
-            itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
-            game.weaponsUnlocked.rocketlauncher = true;
-            game.pickupCollected++;
-        }
-        // Rocket ammo pickup
-        if (game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] == 13) {
-            game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
-            itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
-            game.rocketammo += 4;
-            game.pickupCollected++;
-        }
-        // Scepter pickup
-        if (game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] == 14) {
-            game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
-            itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
-            game.weaponsUnlocked.scepter = true;
-            game.pickupCollected++;
+
+        // Check for pickups
+        switch (game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)]) {
+            // Ammo pickup
+            case 8:
+                game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
+                itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
+                game.ammo += 8;
+                game.pickupCollected++;
+                break;
+            // Pistol pickup
+            case 9:
+                game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
+                itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
+                game.weaponsUnlocked.pistol = true;
+                game.pickupCollected++;
+                break;
+            // Machinegun pickup
+            case 10:
+                game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
+                itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
+                game.weaponsUnlocked.machinegun = true;
+                game.pickupCollected++;
+                break;
+            // Yeti pistol pickup
+            case 11:
+                game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
+                itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
+                game.weaponsUnlocked.yetipistol = true;
+                game.pickupCollected++;
+                break;
+            // Rocket launcher pickup
+            case 12:
+                game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
+                itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
+                game.weaponsUnlocked.rocketlauncher = true;
+                game.pickupCollected++;
+                break;
+            // Rocket ammo pickup
+            case 13:
+                game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
+                itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
+                game.rocketammo += 4;
+                game.pickupCollected++;
+                break;
+            // Scepter pickup
+            case 14:
+                game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
+                itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
+                game.weaponsUnlocked.scepter = true;
+                game.pickupCollected++;
+                break;
         }
     }
     if (game.key.left.active) {
