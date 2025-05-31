@@ -19,11 +19,12 @@ let game = {
     activationDistance: 1.0,
     monsterIdCounter: 0,
     weaponsUnlocked: {
-        knife: true,
+        knife: false,
         pistol: false,
         machinegun: false,
         yetipistol: false,
-        rocketlauncher: false
+        rocketlauncher: false,
+        scepter: false
     },
     screen: {
         width: window.innerWidth,
@@ -88,7 +89,16 @@ let game = {
             floor: 6,
             wall: 2,
             background: 1,
-            startlocation: {x: 2, y: 2}
+            startlocation: { x: 2, y: 2 },
+            startingweapons: {
+                knife: true,
+                pistol: false,
+                machinegun: false,
+                yetipistol: false,
+                rocketlauncher: false,
+                scepter: false
+            },
+            equippedweapon: 1
         },
         {
             name: "Jungle",
@@ -117,7 +127,16 @@ let game = {
             floor: 5,
             wall: 7,
             background: 0,
-            startlocation: { x: 2, y: 2 }
+            startlocation: { x: 2, y: 2 },
+            startingweapons: {
+                knife: true,
+                pistol: false,
+                machinegun: false,
+                yetipistol: false,
+                rocketlauncher: false,
+                scepter: false
+            },
+            equippedweapon: 1
         },
         {
             name: "Arctic",
@@ -146,7 +165,16 @@ let game = {
             floor: 4,
             wall: 4,
             background: 2,
-            startlocation: { x: 2, y: 2 }
+            startlocation: { x: 2, y: 2 },
+            startingweapons: {
+                knife: true,
+                pistol: false,
+                machinegun: false,
+                yetipistol: false,
+                rocketlauncher: false,
+                scepter: false
+            },
+            equippedweapon: 1
         },
         {
             name: "Heaven",
@@ -175,7 +203,16 @@ let game = {
             floor: 8,
             wall: 8,
             background: 0,
-            startlocation: { x: 2, y: 4 }
+            startlocation: { x: 2, y: 4 },
+            startingweapons: {
+                knife: false,
+                pistol: false,
+                machinegun: false,
+                yetipistol: false,
+                rocketlauncher: false,
+                scepter: true
+            },
+            equippedweapon: 6
         },
         {
             name: "Test Level",
@@ -204,7 +241,16 @@ let game = {
             floor: 5,
             wall: 1,
             background: 0,
-            startlocation: { x: 2, y: 2 } 
+            startlocation: { x: 2, y: 2 },
+            startingweapons: {
+                knife: true,
+                pistol: false,
+                machinegun: false,
+                yetipistol: false,
+                rocketlauncher: false,
+                scepter: false
+            },
+            equippedweapon: 1
         }
     ],
     key: {
@@ -246,6 +292,10 @@ let game = {
         },
         five: {
             code: "Digit5",
+            active: false
+        },
+        six: {
+            code: "Digit6",
             active: false
         }
     },
@@ -319,20 +369,26 @@ let game = {
     ],
     bulletTexture: {
         id: 'bullet-sprite',
-        width: 54,
-        height: 54,
+        width: 27,
+        height: 27,
         data: null
     },
     laserTexture: {
         id: 'laser-sprite',
-        width: 54,
-        height: 54,
+        width: 27,
+        height: 27,
         data: null
     },
     rocketTexture: {
         id: 'rocket-sprite',
         width: 16,
         height: 23,
+        data: null
+    },
+    orbTexture: {
+        id: 'orb-sprite',
+        width: 27,
+        height: 27,
         data: null
     },
     backgrounds: [
@@ -429,15 +485,9 @@ function loadLevel(levelIdx) {
     // Reset inventory
     game.ammo = 0;
     game.rocketammo = 0;
-    game.weaponsUnlocked = {
-        knife: true,
-        pistol: false,
-        machinegun: false,
-        yetipistol: false,
-        rocketlauncher: false
-    };
-    game.equippedWeapon = 1;
-    game.weaponSprite = document.getElementById('knife-sprite');
+    game.weaponsUnlocked = game.levels[levelIdx].startingweapons;
+    game.equippedWeapon = game.levels[levelIdx].equippedweapon;
+    setWeapon(game.equippedWeapon);
     // Clear monsters and sprites
     game.monsters = [];
     game.sprites = [];
@@ -913,6 +963,11 @@ function movePlayer() {
         game.shootCooldown = 1200;
         game.equippedWeapon = 5;
     }
+    if (game.key.six.active && game.weaponsUnlocked.scepter == true) {
+        game.weaponSprite = document.getElementById('scepter-sprite');
+        game.shootCooldown = 300;
+        game.equippedWeapon = 6;
+    }
 }
 
 // === AUDIO CACHE ===
@@ -925,6 +980,35 @@ function playSound(id) {
     if (audio) {
         audio.currentTime = 0;
         audio.play();
+    }
+}
+
+function setWeapon(id) {
+    switch (id) {
+        case 1:
+            game.weaponSprite = document.getElementById('knife-sprite'); 
+            game.shootCooldown = 600;
+            break;
+        case 2:
+            game.weaponSprite = document.getElementById('gun-sprite');
+            game.shootCooldown = 850;
+            break;
+        case 3:
+            game.weaponSprite = document.getElementById('machinegun-sprite');
+            game.shootCooldown = 400;
+            break;
+        case 4:
+            game.weaponSprite = document.getElementById('yetipistol-sprite');
+            game.shootCooldown = 600;
+            break;
+        case 5:
+            game.weaponSprite = document.getElementById('rocketlauncher-sprite');
+            game.shootCooldown = 1200;
+            break;
+        case 6:
+            game.weaponSprite = document.getElementById('scepter-sprite');
+            game.shootCooldown = 300;
+            break;
     }
 }
 
@@ -964,6 +1048,9 @@ document.addEventListener('keydown', (event) => {
     if (keyCode === game.key.five.code) {
         game.key.five.active = true;
     }
+    if (keyCode === game.key.six.code) {
+        game.key.six.active = true;
+    }
 });
 
 /**
@@ -1001,6 +1088,9 @@ document.addEventListener('keyup', (event) => {
     }
     if (keyCode === game.key.five.code) {
         game.key.five.active = false;
+    }
+    if (keyCode === game.key.six.code) {
+        game.key.six.active = false;
     }
 });
 
@@ -1085,6 +1175,9 @@ function loadSprites() {
     // Load rocket sprite texture
     if (!game.rocketTexture.data) {
         game.rocketTexture.data = getTextureData(game.rocketTexture);
+    }
+    if (!game.orbTexture.data) {
+        game.orbTexture.data = getTextureData(game.orbTexture);
     }
 }
 
@@ -1276,6 +1369,8 @@ function drawBulletSprite(xProjection, spriteWidth, spriteHeight, bullet) {
         texture = game.laserTexture;
     } else if (game.equippedWeapon == 5) {
         texture = game.rocketTexture;
+    } else if (game.equippedWeapon == 6) {
+        texture = game.orbTexture;
     } else {
         texture = game.bulletTexture;
     }
@@ -1382,6 +1477,8 @@ function handleShooting(e) {
         } else if (game.equippedWeapon == 5) {
             playSound('rocketlaunch-sound');
             game.rocketammo--;
+        } else if (game.equippedWeapon == 6) {
+            playSound('orb-sound');
         } else {
             playSound('shoot-sound');
             game.ammo--;
