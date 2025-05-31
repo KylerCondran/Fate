@@ -413,53 +413,90 @@ let game = {
     ]
 };
 
-// Create start screen overlay
-function createStartScreen() {
-    let overlay = document.createElement('div');
-    overlay.id = 'start-screen-overlay';
-    overlay.style.position = 'fixed';
-    overlay.style.left = '0';
-    overlay.style.top = '0';
-    overlay.style.width = '100vw';
-    overlay.style.height = '100vh';
-    overlay.style.background = 'rgba(0,0,0,0.85)';
-    overlay.style.display = 'flex';
-    overlay.style.flexDirection = 'column';
-    overlay.style.justifyContent = 'center';
-    overlay.style.alignItems = 'center';
-    overlay.style.zIndex = '9999';
-    overlay.innerHTML = `
-        <h1 style="color: #fff; font-family: 'Lucida Console', monospace; font-size: 2.5em; margin-bottom: 1em;">Fate</h1>
-        <div id="level-buttons" style="display: flex; flex-direction: column; gap: 1em;"></div>
-        <p style="color: #aaa; margin-top: 2em; font-family: 'Lucida Console', monospace;">Use arrow keys to move, 1-5 to switch weapons, Space to shoot.</p>
-    `;
-    document.body.appendChild(overlay);
-    // Add level buttons
-    const btnContainer = overlay.querySelector('#level-buttons');
-    game.levels.forEach((level, idx) => {
-        let btn = document.createElement('button');
-        btn.textContent = level.name;
-        btn.style.padding = '1em 2em';
-        btn.style.fontSize = '1.2em';
-        if (game.levels[idx].unlocked == false) {
-            btn.disabled = true;
-        }      
-        btn.style.fontFamily = "'Lucida Console', monospace";
-        btn.style.cursor = 'pointer';
-        btn.onclick = () => {
-            startLevel(idx);
-        };
-        btnContainer.appendChild(btn);
-    });
+// ====================================================================
+// MAIN
+// ====================================================================
+
+// Show start screen on page load
+window.onload = function () {
+    createStartScreen();
+    loadTextures();
+    loadBackgrounds();
+    loadSprites();
 }
 
-// Remove start screen overlay
-function removeStartScreen() {
-    const overlay = document.getElementById('start-screen-overlay');
-    if (overlay) overlay.remove();
+// Calculated data
+const s = game.screen;
+game.screen.halfWidth = s.width / 2;
+game.screen.halfHeight = s.height / 2;
+game.player.halfFov = game.player.fov / 2;
+game.projection.width = s.width / s.scale;
+game.projection.height = s.height / s.scale;
+game.projection.halfWidth = game.projection.width / 2;
+game.projection.halfHeight = game.projection.height / 2;
+game.rayCasting.incrementAngle = game.player.fov / game.projection.width;
+
+// Canvas
+const screen = document.createElement('canvas');
+screen.width = game.screen.width;
+screen.height = game.screen.height;
+screen.style.border = "1px solid black";
+document.body.appendChild(screen);
+
+// Canvas context
+const screenContext = screen.getContext("2d");
+screenContext.scale(game.screen.scale, game.screen.scale);
+screenContext.imageSmoothingEnabled = false;
+
+// Buffer
+game.projection.imageData = screenContext.createImageData(game.projection.width, game.projection.height);
+game.projection.buffer = game.projection.imageData.data;
+
+// Main loop
+let mainLoop = null;
+
+// Main Function
+
+function main() {
+    mainLoop = setInterval(function () {
+        inactiveSprites();
+        clearScreen();
+        movePlayer();
+        updateGameObjects();
+        // WIN CONDITION: all monsters dead
+        if (game.monsters.length > 0 && game.monsters.every(monster => monster.isDead)) {
+            endGame();
+            return;
+        }
+        rayCasting();
+        drawSprites();
+        renderBuffer();
+        drawGun(screenContext);
+    }, game.render.delay);
 }
+
+// Window Focus Event
+
+screen.onclick = function () {
+    if (!mainLoop) {
+        main();
+    }
+}
+
+// Window Lost Focus Event
+
+window.addEventListener('blur', function (event) {
+    clearInterval(mainLoop);
+    mainLoop = null;
+    renderFocusLost();
+});
+
+// ====================================================================
+// LEVEL LOADING
+// ====================================================================
 
 // Load a level by index
+
 function startLevel(levelIdx) {
     removeStartScreen();
     loadLevel(levelIdx);
@@ -468,6 +505,7 @@ function startLevel(levelIdx) {
 }
 
 // Load map and reset game state for a level
+
 function loadLevel(levelIdx) {
     // Stop game loop if running
     if (mainLoop) {
@@ -627,141 +665,12 @@ function loadLevel(levelIdx) {
     loadSprites();
 }
 
-// Show start screen on page load
-window.onload = function () {
-    createStartScreen();
-    loadTextures();
-    loadBackgrounds();
-    loadSprites();
-}
+// ====================================================================
+// MECHANICS
+// ====================================================================
 
-// Calculated data
-const s = game.screen;
-game.screen.halfWidth = s.width / 2;
-game.screen.halfHeight = s.height / 2;
-game.player.halfFov = game.player.fov / 2;
-game.projection.width = s.width / s.scale;
-game.projection.height = s.height / s.scale;
-game.projection.halfWidth = game.projection.width / 2;
-game.projection.halfHeight = game.projection.height / 2;
-game.rayCasting.incrementAngle = game.player.fov / game.projection.width;
+// Cast rays to find walls and draw the scene
 
-// Canvas
-const screen = document.createElement('canvas');
-screen.width = game.screen.width;
-screen.height = game.screen.height;
-screen.style.border = "1px solid black";
-document.body.appendChild(screen);
-
-// Canvas context
-const screenContext = screen.getContext("2d");
-screenContext.scale(game.screen.scale, game.screen.scale);
-screenContext.imageSmoothingEnabled = false;
-
-// Buffer
-game.projection.imageData = screenContext.createImageData(game.projection.width, game.projection.height);
-game.projection.buffer = game.projection.imageData.data;
-
-// Main loop
-let mainLoop = null;
-
-function degreeToRadians(degree) {
-    let pi = Math.PI;
-    return degree * pi / 180;
-}
-
-function Color(r, g, b, a) {
-    this.r = r;
-    this.g = g;
-    this.b = b;
-    this.a = a;
-}
-
-// Draw Pixel
-function drawPixel(x, y, color) {
-    if (color.r == 255 && color.g == 0 && color.b == 255) return;
-    let offset = 4 * (Math.floor(x) + Math.floor(y) * game.projection.width);
-    game.projection.buffer[offset] = color.r;
-    game.projection.buffer[offset + 1] = color.g;
-    game.projection.buffer[offset + 2] = color.b;
-    game.projection.buffer[offset + 3] = color.a;
-}
-
-function drawLine(x1, y1, y2, color) {
-    for (let y = y1; y < y2; y++) {
-        drawPixel(x1, y, color);
-    }
-}
-
-function drawFloor(x1, wallHeight, rayAngle) {
-    start = game.projection.halfHeight + wallHeight + 1;
-    directionCos = Math.cos(degreeToRadians(rayAngle))
-    directionSin = Math.sin(degreeToRadians(rayAngle))
-    playerAngle = game.player.angle
-    for (y = start; y < game.projection.height; y++) {
-        // Create distance and calculate it
-        distance = game.projection.height / (2 * y - game.projection.height)
-        // distance = distance * Math.cos(degreeToRadians(playerAngle) - degreeToRadians(rayAngle))
-
-        // Get the tile position
-        tilex = distance * directionCos
-        tiley = distance * directionSin
-        tilex += game.player.x
-        tiley += game.player.y
-        tile = game.levels[game.currentLevel].map[Math.floor(tiley)][Math.floor(tilex)]
-
-        // Get texture
-        texture = game.textures[game.levels[game.currentLevel].floor]
-
-        if (!texture) {
-            continue
-        }
-
-        // Define texture coords
-        texture_x = (Math.floor(tilex * texture.width)) % texture.width
-        texture_y = (Math.floor(tiley * texture.height)) % texture.height
-
-        // Get pixel color
-        color = texture.data[texture_x + texture_y * texture.width];
-        drawPixel(x1, y, color)
-    }
-}
-
-/**
- * Main loop
- */
-function main() {
-    mainLoop = setInterval(function () {
-        inactiveSprites();
-        clearScreen();
-        movePlayer();
-        updateGameObjects();
-        // WIN CONDITION: all monsters dead
-        if (game.monsters.length > 0 && game.monsters.every(monster => monster.isDead)) {
-            endGame();
-            return;
-        }
-        rayCasting();
-        drawSprites();
-        renderBuffer();
-        drawGun(screenContext);
-    }, game.render.delay);
-}
-
-/**
- * Render buffer
- */
-function renderBuffer() {
-    let canvas = document.createElement('canvas');
-    canvas.width = game.projection.width;
-    canvas.height = game.projection.height;
-    canvas.getContext('2d').putImageData(game.projection.imageData, 0, 0);
-    screenContext.drawImage(canvas, 0, 0);
-}
-
-/**
- * Raycasting logic
- */
 function rayCasting() {
     let rayAngle = game.player.angle - game.player.halfFov;
     for (let rayCount = 0; rayCount < game.projection.width; rayCount++) {
@@ -810,16 +719,194 @@ function rayCasting() {
     }
 }
 
-/**
- * Clear screen
- */
-function clearScreen() {
-    screenContext.clearRect(0, 0, game.projection.width, game.projection.height);
+// Degrees to radians conversion
+
+function degreeToRadians(degree) {
+    let pi = Math.PI;
+    return degree * pi / 180;
 }
 
-/**
- * Movement
- */
+
+// Radians to degrees conversion
+
+function radiansToDegrees(radians) {
+    return 180 * radians / Math.PI;
+}
+
+// Active sprites and monsters based on player position
+
+function activeSprites(x, y) {
+    for (let sprite of game.sprites) {
+        const dx = Math.abs(x - sprite.x);
+        if (dx > game.activationDistance) continue;
+        const dy = Math.abs(y - sprite.y);
+        if (dy > game.activationDistance) continue;
+        sprite.active = true;
+    }
+    for (let monster of game.monsters) {
+        if (monster.isDead) continue;
+        const dx = Math.abs(x - monster.x);
+        if (dx > game.activationDistance) continue;
+        const dy = Math.abs(y - monster.y);
+        if (dy > game.activationDistance) continue;
+        monster.active = true;
+    }
+}
+
+// Inactive all sprites and monsters
+
+function inactiveSprites() {
+    for (let sprite of game.sprites) sprite.active = false;
+    for (let monster of game.monsters) monster.active = false;
+}
+
+// Bullet Object
+
+class Bullet {
+    constructor(x, y, angle) {
+        this.x = x;
+        this.y = y;
+        this.angle = angle;
+        this.speed = 0.2;
+    }
+
+    update() {
+        this.x += Math.cos(degreeToRadians(this.angle)) * this.speed;
+        this.y += Math.sin(degreeToRadians(this.angle)) * this.speed;
+    }
+}
+
+// Handle Shooting
+
+function handleShooting(e) {
+    const currentTime = Date.now();
+    if (currentTime - game.lastShot >= game.shootCooldown) {
+        game.isShooting = true;
+        game.lastShot = currentTime;
+
+        if ((game.equippedWeapon == 2 || game.equippedWeapon == 3) && game.ammo <= 0 || ((game.equippedWeapon == 5) && game.rocketammo <= 0)) {
+            playSound('gunclick-sound');
+            return;
+        }
+
+        // Start the bullet slightly in front of the player in the direction they're facing
+        const startX = game.player.x + Math.cos(degreeToRadians(game.player.angle)) * game.bulletStartDistance;
+        const startY = game.player.y + Math.sin(degreeToRadians(game.player.angle)) * game.bulletStartDistance;
+        const bullet = new Bullet(startX, startY, game.player.angle);
+        game.bullets.push(bullet);
+
+        if (game.equippedWeapon == 1) {
+            playSound('knife-sound');
+        } else if (game.equippedWeapon == 4) {
+            playSound('laser-sound');
+        } else if (game.equippedWeapon == 5) {
+            playSound('rocketlaunch-sound');
+            game.rocketammo--;
+        } else if (game.equippedWeapon == 6) {
+            playSound('orb-sound');
+        } else {
+            playSound('shoot-sound');
+            game.ammo--;
+        }
+    }
+}
+
+// Update Game Objects
+
+function updateGameObjects() {
+    // Update bullets
+    const bulletsToRemove = new Set();
+    for (let i = game.bullets.length - 1; i >= 0; i--) {
+        const bullet = game.bullets[i];
+        bullet.update();
+        // Stop bullet if it hits a wall
+        const mapX = Math.floor(bullet.x);
+        const mapY = Math.floor(bullet.y);
+        if (game.levels[game.currentLevel].map[mapY] && game.levels[game.currentLevel].map[mapY][mapX] === 2) {
+            if (game.equippedWeapon == 5) playSound('explosion-sound');
+            bulletsToRemove.add(i);
+            continue;
+        }
+        // Check collision with monsters only
+        for (const monster of game.monsters) {
+            if (!monster.isDead) {
+                const dx = monster.x - bullet.x;
+                const dy = monster.y - bullet.y;
+                const distanceSq = dx * dx + dy * dy;
+                if (distanceSq < game.bulletHitboxRadius) {
+                    if (monster.type == 'yeti') {
+                        if (game.equippedWeapon != 4) {
+                            playSound('yeti-laugh');
+                            bulletsToRemove.add(i);
+                            break;
+                        } else {
+                            monster.health -= 75;
+                        }
+                    } else {
+                        if (game.equippedWeapon == 4) {
+                            monster.health -= 75;
+                        } else if (game.equippedWeapon == 5) {
+                            playSound('explosion-sound');
+                            monster.health -= 150;
+                        } else {
+                            monster.health -= 25;
+                        }
+                    }
+                    if (monster.health <= 0) {
+                        monster.isDead = true;
+                        playSound(`${monster.audio}-death`);
+                        game.sprites.push({ id: 'bones-sprite', x: monster.x, y: monster.y, width: 256, height: 256, active: false, data: null });
+                        loadSprites();
+                    } else {
+                        var rnd = Math.floor(Math.random() * 3);
+                        playSound(`${monster.audio}-pain-${rnd + 1}`);
+                    }
+                    bulletsToRemove.add(i);
+                    break;
+                }
+            }
+        }
+        // Remove bullets that have traveled too far
+        const distSq = (bullet.x - game.player.x) ** 2 + (bullet.y - game.player.y) ** 2;
+        if (game.equippedWeapon == 1) {
+            if (distSq > game.knifeRange) bulletsToRemove.add(i);
+        } else {
+            if (distSq > game.bulletRange) {
+                if (game.equippedWeapon == 5) playSound('explosion-sound');
+                bulletsToRemove.add(i);
+            }
+        }
+    }
+    // Remove marked bullets in one pass
+    game.bullets = game.bullets.filter((_, idx) => !bulletsToRemove.has(idx));
+    // Update monster positions
+    for (let monster of game.monsters) {
+        if (!monster.isDead) {
+            const dx = game.player.x - monster.x;
+            const dy = game.player.y - monster.y;
+            const distSq = dx * dx + dy * dy;
+            if (distSq > 0.25 && distSq < 100) {
+                const distance = Math.sqrt(distSq);
+                const invDist = 1 / distance;
+                const dirX = dx * invDist * game.monsterMoveSpeed;
+                const dirY = dy * invDist * game.monsterMoveSpeed;
+                // Try to move in X direction
+                const newX = monster.x + dirX;
+                if (game.levels[game.currentLevel].map[Math.floor(monster.y)][Math.floor(newX)] !== 2) {
+                    monster.x = newX;
+                }
+                // Try to move in Y direction
+                const newY = monster.y + dirY;
+                if (game.levels[game.currentLevel].map[Math.floor(newY)][Math.floor(monster.x)] !== 2) {
+                    monster.y = newY;
+                }
+            }
+        }
+    }
+}
+
+// Movement
+
 function movePlayer() {
     if (game.key.up.active) {
         let playerCos = Math.cos(degreeToRadians(game.player.angle)) * game.player.speed.movement;
@@ -936,7 +1023,7 @@ function movePlayer() {
         game.player.angle %= 360;
     }
     if (game.key.space.active) {
-        handleShooting();  
+        handleShooting();
     }
     if (game.key.one.active && game.weaponsUnlocked.knife == true) {
         game.weaponSprite = document.getElementById('knife-sprite');
@@ -970,7 +1057,8 @@ function movePlayer() {
     }
 }
 
-// === AUDIO CACHE ===
+// Audio Cache
+
 const audioCache = {};
 function playSound(id) {
     if (!audioCache[id]) {
@@ -983,10 +1071,12 @@ function playSound(id) {
     }
 }
 
+// Set Initial Weapon Sprite
+
 function setWeapon(id) {
     switch (id) {
         case 1:
-            game.weaponSprite = document.getElementById('knife-sprite'); 
+            game.weaponSprite = document.getElementById('knife-sprite');
             game.shootCooldown = 600;
             break;
         case 2:
@@ -1012,9 +1102,8 @@ function setWeapon(id) {
     }
 }
 
-/**
- * Key down check
- */
+// Key Down Check
+
 document.addEventListener('keydown', (event) => {
     let keyCode = event.code;
 
@@ -1053,9 +1142,8 @@ document.addEventListener('keydown', (event) => {
     }
 });
 
-/**
- * Key up check
- */
+// Key Up Check
+
 document.addEventListener('keyup', (event) => {
     let keyCode = event.code;
 
@@ -1094,6 +1182,8 @@ document.addEventListener('keyup', (event) => {
     }
 });
 
+// Item Pickup
+
 function itemPickup(ycoords, xcoords) {
     playSound('pickup-sound');
     let spritenum = 0;
@@ -1106,24 +1196,12 @@ function itemPickup(ycoords, xcoords) {
     }
 }
 
-function drawTexture(x, wallHeight, texturePositionX, texture) {
-    let yIncrementer = (wallHeight * 2) / texture.height;
-    let y = game.projection.halfHeight - wallHeight;
-    let color = null
-    for (let i = 0; i < texture.height; i++) {
-        if (texture.id) {
-            color = texture.data[texturePositionX + i * texture.width];
-        } else {
-            color = texture.colors[texture.bitmap[i][texturePositionX]];
-        }
-        drawLine(x, y, Math.floor(y + yIncrementer + 2), color);
-        y += yIncrementer;
-    }
-}
+// ====================================================================
+// LOAD ASSETS
+// ====================================================================
 
-/**
- * Load textures
- */
+// Load Textures
+
 function loadTextures() {
     for (let i = 0; i < game.textures.length; i++) {
         if (game.textures[i].id) {
@@ -1132,9 +1210,8 @@ function loadTextures() {
     }
 }
 
-/**
- * Load backgrounds
- */
+// Load Backgrounds
+
 function loadBackgrounds() {
     for (let i = 0; i < game.backgrounds.length; i++) {
         if (game.backgrounds[i].id) {
@@ -1143,9 +1220,8 @@ function loadBackgrounds() {
     }
 }
 
-/**
- * Load sprites
- */
+// Load Sprites
+
 function loadSprites() {
     for (let i = 0; i < game.sprites.length; i++) {
         if (game.sprites[i].id) {
@@ -1181,6 +1257,8 @@ function loadSprites() {
     }
 }
 
+// Get texture data from an image element
+
 function getTextureData(texture) {
     let image = document.getElementById(texture.id);
     let canvas = document.createElement('canvas');
@@ -1192,6 +1270,8 @@ function getTextureData(texture) {
     return parseImageData(imageData);
 }
 
+// Parse image data into an array of Color objects
+
 function parseImageData(imageData) {
     let colorArray = [];
     for (let i = 0; i < imageData.length; i += 4) {
@@ -1200,34 +1280,91 @@ function parseImageData(imageData) {
     return colorArray;
 }
 
-/**
- * Window focus
- */
-screen.onclick = function () {
-    if (!mainLoop) {
-        main();
+// ====================================================================
+// DRAW METHODS
+// ====================================================================
+
+// Draw Floor
+
+function drawFloor(x1, wallHeight, rayAngle) {
+    start = game.projection.halfHeight + wallHeight + 1;
+    directionCos = Math.cos(degreeToRadians(rayAngle))
+    directionSin = Math.sin(degreeToRadians(rayAngle))
+    playerAngle = game.player.angle
+    for (y = start; y < game.projection.height; y++) {
+        // Create distance and calculate it
+        distance = game.projection.height / (2 * y - game.projection.height)
+        // distance = distance * Math.cos(degreeToRadians(playerAngle) - degreeToRadians(rayAngle))
+
+        // Get the tile position
+        tilex = distance * directionCos
+        tiley = distance * directionSin
+        tilex += game.player.x
+        tiley += game.player.y
+        tile = game.levels[game.currentLevel].map[Math.floor(tiley)][Math.floor(tilex)]
+
+        // Get texture
+        texture = game.textures[game.levels[game.currentLevel].floor]
+
+        if (!texture) {
+            continue
+        }
+
+        // Define texture coords
+        texture_x = (Math.floor(tilex * texture.width)) % texture.width
+        texture_y = (Math.floor(tiley * texture.height)) % texture.height
+
+        // Get pixel color
+        color = texture.data[texture_x + texture_y * texture.width];
+        drawPixel(x1, y, color)
     }
 }
 
-/**
- * Window focus lost event
- */
-window.addEventListener('blur', function (event) {
-    clearInterval(mainLoop);
-    mainLoop = null;
-    renderFocusLost();
-});
+// Color Object
 
-/**
- * Render focus lost
- */
-function renderFocusLost() {
-    screenContext.fillStyle = 'rgba(0,0,0,0.5)';
-    screenContext.fillRect(0, 0, game.projection.width, game.projection.height);
-    screenContext.fillStyle = 'white';
-    screenContext.font = '10px Lucida Console';
-    screenContext.fillText('CLICK TO FOCUS', game.projection.halfWidth / 2, game.projection.halfHeight);
+function Color(r, g, b, a) {
+    this.r = r;
+    this.g = g;
+    this.b = b;
+    this.a = a;
 }
+
+// Draw Pixel
+function drawPixel(x, y, color) {
+    if (color.r == 255 && color.g == 0 && color.b == 255) return;
+    let offset = 4 * (Math.floor(x) + Math.floor(y) * game.projection.width);
+    game.projection.buffer[offset] = color.r;
+    game.projection.buffer[offset + 1] = color.g;
+    game.projection.buffer[offset + 2] = color.b;
+    game.projection.buffer[offset + 3] = color.a;
+}
+
+// Draw Line
+
+function drawLine(x1, y1, y2, color) {
+    for (let y = y1; y < y2; y++) {
+        drawPixel(x1, y, color);
+    }
+}
+
+// Draw texture
+
+function drawTexture(x, wallHeight, texturePositionX, texture) {
+    let yIncrementer = (wallHeight * 2) / texture.height;
+    let y = game.projection.halfHeight - wallHeight;
+    let color = null
+    for (let i = 0; i < texture.height; i++) {
+        if (texture.id) {
+            color = texture.data[texturePositionX + i * texture.width];
+        } else {
+            color = texture.colors[texture.bitmap[i][texturePositionX]];
+        }
+        drawLine(x, y, Math.floor(y + yIncrementer + 2), color);
+        y += yIncrementer;
+    }
+}
+
+// Draw Background
 
 function drawBackground(x, y1, y2, background) {
     let offset = (game.player.angle + x);
@@ -1239,47 +1376,8 @@ function drawBackground(x, y1, y2, background) {
     }
 }
 
-function radiansToDegrees(radians) {
-    return 180 * radians / Math.PI;
-}
+// Sprite drawing method
 
-function activeSprites(x, y) {
-    for (let sprite of game.sprites) {
-        const dx = Math.abs(x - sprite.x);
-        if (dx > game.activationDistance) continue;
-        const dy = Math.abs(y - sprite.y);
-        if (dy > game.activationDistance) continue;
-        sprite.active = true;
-    }
-    for (let monster of game.monsters) {
-        if (monster.isDead) continue;
-        const dx = Math.abs(x - monster.x);
-        if (dx > game.activationDistance) continue;
-        const dy = Math.abs(y - monster.y);
-        if (dy > game.activationDistance) continue;
-        monster.active = true;
-    }
-}
-
-/**
- * Inactive all of the sprites
- */
-function inactiveSprites() {
-    for (let sprite of game.sprites) sprite.active = false;
-    for (let monster of game.monsters) monster.active = false;
-}
-
-function drawRect(x1, x2, y1, y2, color) {
-    for (let x = x1; x < x2; x++) {
-        if (x < 0) continue;
-        if (x > game.projection.width) continue;
-        drawLine(x, y1, y2, color);
-    }
-}
-
-/**
- * Find the coordinates for all activated sprites and draw it in the projection
- */
 function drawSprites() {
     // Draw trees and other non-monster sprites
     for (let i = 0; i < game.sprites.length; i++) {
@@ -1294,7 +1392,7 @@ function drawSprites() {
             drawSpriteInWorld(monster);
         }
     }
-    // Draw bullets (no need to create new object each time)
+    // Draw bullets
     for (let bullet of game.bullets) {
         drawSpriteInWorld({
             x: bullet.x,
@@ -1307,7 +1405,8 @@ function drawSprites() {
     }
 }
 
-// Separate sprite drawing logic into its own function
+// Sprite drawing logic
+
 function drawSpriteInWorld(sprite) {
     // Get X and Y coords in relation of the player coords
     let spriteXRelative, spriteYRelative;
@@ -1361,7 +1460,7 @@ function drawSpriteInWorld(sprite) {
     }
 }
 
-// New function to draw bullet sprites
+// Draw bullet sprites
 function drawBulletSprite(xProjection, spriteWidth, spriteHeight, bullet) {
     // Use bullet sprite texture instead of a filled rectangle
     let texture;
@@ -1402,6 +1501,8 @@ function drawBulletSprite(xProjection, spriteWidth, spriteHeight, bullet) {
     }
 }
 
+// Draw Sprite
+
 function drawSprite(xProjection, spriteWidth, spriteHeight, sprite) {
     // Early bounds check for the entire sprite
     if (xProjection + spriteWidth < 0 || xProjection >= game.projection.width) return;
@@ -1439,144 +1540,7 @@ function drawSprite(xProjection, spriteWidth, spriteHeight, sprite) {
     }
 }
 
-class Bullet {
-    constructor(x, y, angle) {
-        this.x = x;
-        this.y = y;
-        this.angle = angle;
-        this.speed = 0.2;
-    }
-
-    update() {
-        this.x += Math.cos(degreeToRadians(this.angle)) * this.speed;
-        this.y += Math.sin(degreeToRadians(this.angle)) * this.speed;
-    }
-}
-
-function handleShooting(e) {
-    const currentTime = Date.now();
-    if (currentTime - game.lastShot >= game.shootCooldown) {
-        game.isShooting = true;
-        game.lastShot = currentTime;
-
-        if ((game.equippedWeapon == 2 || game.equippedWeapon == 3) && game.ammo <= 0 || ((game.equippedWeapon == 5) && game.rocketammo <= 0)){
-            playSound('gunclick-sound');
-            return;
-        }
-
-        // Start the bullet slightly in front of the player in the direction they're facing
-        const startX = game.player.x + Math.cos(degreeToRadians(game.player.angle)) * game.bulletStartDistance;
-        const startY = game.player.y + Math.sin(degreeToRadians(game.player.angle)) * game.bulletStartDistance;
-        const bullet = new Bullet(startX, startY, game.player.angle);
-        game.bullets.push(bullet);
-
-        if (game.equippedWeapon == 1) {
-            playSound('knife-sound');
-        } else if (game.equippedWeapon == 4) {
-            playSound('laser-sound');
-        } else if (game.equippedWeapon == 5) {
-            playSound('rocketlaunch-sound');
-            game.rocketammo--;
-        } else if (game.equippedWeapon == 6) {
-            playSound('orb-sound');
-        } else {
-            playSound('shoot-sound');
-            game.ammo--;
-        }
-    }
-}
-
-function updateGameObjects() {
-    // Update bullets
-    const bulletsToRemove = new Set();
-    for (let i = game.bullets.length - 1; i >= 0; i--) {
-        const bullet = game.bullets[i];
-        bullet.update();
-        // Stop bullet if it hits a wall
-        const mapX = Math.floor(bullet.x);
-        const mapY = Math.floor(bullet.y);
-        if (game.levels[game.currentLevel].map[mapY] && game.levels[game.currentLevel].map[mapY][mapX] === 2) {
-            if (game.equippedWeapon == 5) playSound('explosion-sound');
-            bulletsToRemove.add(i);
-            continue;
-        }
-        // Check collision with monsters only
-        for (const monster of game.monsters) {
-            if (!monster.isDead) {
-                const dx = monster.x - bullet.x;
-                const dy = monster.y - bullet.y;
-                const distanceSq = dx * dx + dy * dy;
-                if (distanceSq < game.bulletHitboxRadius) {
-                    if (monster.type == 'yeti') {
-                        if (game.equippedWeapon != 4) {
-                            playSound('yeti-laugh');
-                            bulletsToRemove.add(i);
-                            break;
-                        } else {
-                            monster.health -= 75;
-                        }
-                    } else {
-                        if (game.equippedWeapon == 4) {
-                            monster.health -= 75;
-                        } else if (game.equippedWeapon == 5) {
-                            playSound('explosion-sound');
-                            monster.health -= 150;
-                        } else {
-                            monster.health -= 25;
-                        }
-                    }                
-                    if (monster.health <= 0) {
-                        monster.isDead = true;
-                        playSound(`${monster.audio}-death`);
-                        game.sprites.push({ id: 'bones-sprite', x: monster.x, y: monster.y, width: 256, height: 256, active: false, data: null });
-                        loadSprites();
-                    } else {
-                        var rnd = Math.floor(Math.random() * 3);
-                        playSound(`${monster.audio}-pain-${rnd + 1}`);
-                    }
-                    bulletsToRemove.add(i);
-                    break;
-                }
-            }
-        }
-        // Remove bullets that have traveled too far
-        const distSq = (bullet.x - game.player.x) ** 2 + (bullet.y - game.player.y) ** 2;
-        if (game.equippedWeapon == 1) {
-            if (distSq > game.knifeRange) bulletsToRemove.add(i);
-        } else {
-            if (distSq > game.bulletRange) {
-                if (game.equippedWeapon == 5) playSound('explosion-sound');
-                bulletsToRemove.add(i);
-            }
-        }
-    }
-    // Remove marked bullets in one pass
-    game.bullets = game.bullets.filter((_, idx) => !bulletsToRemove.has(idx));
-    // Update monster positions
-    for (let monster of game.monsters) {
-        if (!monster.isDead) {
-            const dx = game.player.x - monster.x;
-            const dy = game.player.y - monster.y;
-            const distSq = dx * dx + dy * dy;
-            if (distSq > 0.25 && distSq < 100) {
-                const distance = Math.sqrt(distSq);
-                const invDist = 1 / distance;
-                const dirX = dx * invDist * game.monsterMoveSpeed;
-                const dirY = dy * invDist * game.monsterMoveSpeed;
-                // Try to move in X direction
-                const newX = monster.x + dirX;
-                if (game.levels[game.currentLevel].map[Math.floor(monster.y)][Math.floor(newX)] !== 2) {
-                    monster.x = newX;
-                }
-                // Try to move in Y direction
-                const newY = monster.y + dirY;
-                if (game.levels[game.currentLevel].map[Math.floor(newY)][Math.floor(monster.x)] !== 2) {
-                    monster.y = newY;
-                }
-            }
-        }
-    }
-}
+// Draw Gun
 
 function drawGun(ctx) {
     if (game.isShooting) {
@@ -1595,7 +1559,12 @@ function drawGun(ctx) {
     }
 }
 
-// === WIN SCREEN ===
+// ====================================================================
+// MENU SCREENS
+// ====================================================================
+
+// Win Screen
+
 function createWinScreen() {
     let overlay = document.createElement('div');
     overlay.id = 'win-screen-overlay';
@@ -1617,12 +1586,59 @@ function createWinScreen() {
     document.body.appendChild(overlay);
 }
 
-function removeWinScreen() {
-    const overlay = document.getElementById('win-screen-overlay');
-    if (overlay) overlay.remove();
+// Start Screen
+
+function createStartScreen() {
+    let overlay = document.createElement('div');
+    overlay.id = 'start-screen-overlay';
+    overlay.style.position = 'fixed';
+    overlay.style.left = '0';
+    overlay.style.top = '0';
+    overlay.style.width = '100vw';
+    overlay.style.height = '100vh';
+    overlay.style.background = 'rgba(0,0,0,0.85)';
+    overlay.style.display = 'flex';
+    overlay.style.flexDirection = 'column';
+    overlay.style.justifyContent = 'center';
+    overlay.style.alignItems = 'center';
+    overlay.style.zIndex = '9999';
+    overlay.innerHTML = `
+        <h1 style="color: #fff; font-family: 'Lucida Console', monospace; font-size: 2.5em; margin-bottom: 1em;">Fate</h1>
+        <div id="level-buttons" style="display: flex; flex-direction: column; gap: 1em;"></div>
+        <p style="color: #aaa; margin-top: 2em; font-family: 'Lucida Console', monospace;">Use arrow keys to move, 1-5 to switch weapons, Space to shoot.</p>
+    `;
+    document.body.appendChild(overlay);
+    // Add level buttons
+    const btnContainer = overlay.querySelector('#level-buttons');
+    game.levels.forEach((level, idx) => {
+        let btn = document.createElement('button');
+        btn.textContent = level.name;
+        btn.style.padding = '1em 2em';
+        btn.style.fontSize = '1.2em';
+        if (game.levels[idx].unlocked == false) {
+            btn.disabled = true;
+        }
+        btn.style.fontFamily = "'Lucida Console', monospace";
+        btn.style.cursor = 'pointer';
+        btn.onclick = () => {
+            startLevel(idx);
+        };
+        btnContainer.appendChild(btn);
+    });
+}
+
+// Render Lost Focus 
+
+function renderFocusLost() {
+    screenContext.fillStyle = 'rgba(0,0,0,0.5)';
+    screenContext.fillRect(0, 0, game.projection.width, game.projection.height);
+    screenContext.fillStyle = 'white';
+    screenContext.font = '10px Lucida Console';
+    screenContext.fillText('CLICK TO FOCUS', game.projection.halfWidth / 2, game.projection.halfHeight);
 }
 
 // End game and show win screen, then return to start screen
+
 function endGame() {
     if (mainLoop) {
         clearInterval(mainLoop);
@@ -1631,9 +1647,39 @@ function endGame() {
     createWinScreen();
     if (game.currentLevel != game.levels.length - 1) {
         game.levels[game.currentLevel + 1].unlocked = true;
-    }   
+    }
     setTimeout(() => {
         removeWinScreen();
         createStartScreen();
     }, 5000);
+}
+
+// Render Buffer
+
+function renderBuffer() {
+    let canvas = document.createElement('canvas');
+    canvas.width = game.projection.width;
+    canvas.height = game.projection.height;
+    canvas.getContext('2d').putImageData(game.projection.imageData, 0, 0);
+    screenContext.drawImage(canvas, 0, 0);
+}
+
+// Clear Screen
+
+function clearScreen() {
+    screenContext.clearRect(0, 0, game.projection.width, game.projection.height);
+}
+
+// Remove start screen overlay
+
+function removeStartScreen() {
+    const overlay = document.getElementById('start-screen-overlay');
+    if (overlay) overlay.remove();
+}
+
+// Remove win screen overlay
+
+function removeWinScreen() {
+    const overlay = document.getElementById('win-screen-overlay');
+    if (overlay) overlay.remove();
 }
