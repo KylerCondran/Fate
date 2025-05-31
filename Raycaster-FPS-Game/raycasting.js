@@ -18,6 +18,8 @@ let game = {
     monsterMoveSpeed: 0.02,
     activationDistance: 1.0,
     monsterIdCounter: 0,
+    pickupTotal: 0,
+    pickupCollected: 0,
     weaponsUnlocked: {
         knife: false,
         pistol: false,
@@ -531,6 +533,8 @@ function loadLevel(levelIdx) {
     game.sprites = [];
     // Rebuild monsters and sprites from map
     game.monsterIdCounter = 0;
+    game.pickupTotal = 0;
+    game.pickupCollected = 0;
     for (let i = 0; i < game.levels[levelIdx].map.length; i++) {
         for (let j = 0; j < game.levels[levelIdx].map[i].length; j++) {
             switch (game.levels[levelIdx].map[i][j]) {
@@ -639,21 +643,27 @@ function loadLevel(levelIdx) {
                     break;
                 case 8:
                     game.sprites.push({ id: "ammo-sprite", x: j, y: i, width: 100, height: 81, active: false, data: null });
+                    game.pickupTotal++;
                     break;
                 case 9:
                     game.sprites.push({ id: "pistolpickup-sprite", x: j, y: i, width: 34, height: 19, active: false, data: null });
+                    game.pickupTotal++;
                     break;
                 case 10:
                     game.sprites.push({ id: "machinegunpickup-sprite", x: j, y: i, width: 49, height: 30, active: false, data: null });
+                    game.pickupTotal++;
                     break;
                 case 11:
                     game.sprites.push({ id: "yetipistolpickup-sprite", x: j, y: i, width: 50, height: 33, active: false, data: null });
+                    game.pickupTotal++;
                     break;
                 case 12:
                     game.sprites.push({ id: "rocketlauncherpickup-sprite", x: j, y: i, width: 80, height: 17, active: false, data: null });
+                    game.pickupTotal++;
                     break;
                 case 13:
                     game.sprites.push({ id: "rocketammo-sprite", x: j, y: i, width: 35, height: 18, active: false, data: null });
+                    game.pickupTotal++;
                     break;
                 default:
             }
@@ -928,36 +938,42 @@ function movePlayer() {
             game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
             itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
             game.ammo += 8;
+            game.pickupCollected++;
         }
         // Pistol pickup
         if (game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] == 9) {
             game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
             itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
             game.weaponsUnlocked.pistol = true;
+            game.pickupCollected++;
         }
         // Machinegun pickup
         if (game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] == 10) {
             game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
             itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
             game.weaponsUnlocked.machinegun = true;
+            game.pickupCollected++;
         }
         // Yeti pistol pickup
         if (game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] == 11) {
             game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
             itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
             game.weaponsUnlocked.yetipistol = true;
+            game.pickupCollected++;
         }
         // Rocket launcher pickup
         if (game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] == 12) {
             game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
             itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
             game.weaponsUnlocked.rocketlauncher = true;
+            game.pickupCollected++;
         }
         // Rocket ammo pickup
         if (game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] == 13) {
             game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
             itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
             game.rocketammo += 4;
+            game.pickupCollected++;
         }
     }
     if (game.key.down.active) {
@@ -980,36 +996,42 @@ function movePlayer() {
             game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
             itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
             game.ammo += 8;
+            game.pickupCollected++;
         }
         // Pistol pickup
         if (game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] == 9) {
             game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
             itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
             game.weaponsUnlocked.pistol = true;
+            game.pickupCollected++;
         }
         // Machinegun pickup
         if (game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] == 10) {
             game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
             itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
             game.weaponsUnlocked.machinegun = true;
+            game.pickupCollected++;
         }
         // Yeti pistol pickup
         if (game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] == 11) {
             game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
             itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
             game.weaponsUnlocked.yetipistol = true;
+            game.pickupCollected++;
         }
         // Rocket launcher pickup
         if (game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] == 12) {
             game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
             itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
             game.weaponsUnlocked.rocketlauncher = true;
+            game.pickupCollected++;
         }
         // Rocket ammo pickup
         if (game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] == 13) {
             game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
             itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
             game.rocketammo += 4;
+            game.pickupCollected++;
         }
     }
     if (game.key.left.active) {
@@ -1582,6 +1604,7 @@ function createWinScreen() {
     overlay.innerHTML = `
         <h1 style="color: #fff; font-family: 'Lucida Console', monospace; font-size: 2.5em; margin-bottom: 1em;">You Win!</h1>
         <p style="color: #aaa; font-family: 'Lucida Console', monospace; font-size: 1.2em;">All monsters defeated!</p>
+        <p style="color: #aaa; font-family: 'Lucida Console', monospace; font-size: 1.2em;">${game.pickupCollected} / ${game.pickupTotal} Pickups Collected.</p>
     `;
     document.body.appendChild(overlay);
 }
