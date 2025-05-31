@@ -62,7 +62,7 @@ let game = {
             rotation: 1.5
         }
     },
-    //level legend: 0 is empty space, 1 is a tree, 2 is a wall, 3 is a monster, 4 is a lion, 5 is a tiger, 6 is a bear, 7 is a yeti, 8 is ammo, 9 is pistolpickup, 10 is machinegunpickup, 11 is yetipistolpickup, 12 is rocketlauncherpickup, 13 is rocketammo
+    //level legend: 0 is empty space, 1 is a tree, 2 is a wall, 3 is a monster, 4 is a lion, 5 is a tiger, 6 is a bear, 7 is a yeti, 8 is ammo, 9 is pistolpickup, 10 is machinegunpickup, 11 is yetipistolpickup, 12 is rocketlauncherpickup, 13 is rocketammo, 14 is scepterpickup
     levels: [
         {
             name: "Hell",
@@ -665,6 +665,10 @@ function loadLevel(levelIdx) {
                     game.sprites.push({ id: "rocketammo-sprite", x: j, y: i, width: 35, height: 18, active: false, data: null });
                     game.pickupTotal++;
                     break;
+                case 14:
+                    game.sprites.push({ id: "scepterpickup-sprite", x: j, y: i, width: 64, height: 64, active: false, data: null });
+                    game.pickupTotal++;
+                    break;
                 default:
             }
         }
@@ -975,6 +979,13 @@ function movePlayer() {
             game.rocketammo += 4;
             game.pickupCollected++;
         }
+        // Scepter pickup
+        if (game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] == 14) {
+            game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
+            itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
+            game.weaponsUnlocked.scepter = true;
+            game.pickupCollected++;
+        }
     }
     if (game.key.down.active) {
         let playerCos = Math.cos(degreeToRadians(game.player.angle)) * game.player.speed.movement;
@@ -1031,6 +1042,13 @@ function movePlayer() {
             game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
             itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
             game.rocketammo += 4;
+            game.pickupCollected++;
+        }
+        // Scepter pickup
+        if (game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] == 14) {
+            game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
+            itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
+            game.weaponsUnlocked.scepter = true;
             game.pickupCollected++;
         }
     }
