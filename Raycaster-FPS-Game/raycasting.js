@@ -21,7 +21,7 @@ let game = {
     pickupTotal: 0,
     pickupCollected: 0,
     weaponsUnlocked: {
-        knife: false,
+        knife: true,
         pistol: false,
         machinegun: false,
         yetipistol: false,
@@ -62,7 +62,7 @@ let game = {
             rotation: 1.5
         }
     },
-    //level legend: 0 is empty space, 1 is a tree, 2 is a wall, 3 is a imp, 4 is a lion, 5 is a tiger, 6 is a bear, 7 is a yeti, 8 is ammo, 9 is pistolpickup, 10 is machinegunpickup, 11 is yetipistolpickup, 12 is rocketlauncherpickup, 13 is rocketammo, 14 is scepterpickup, 15 is a crusader, 16 is a king, 17 is a minotaur
+    //level legend: 0 is empty space, 1 is a tree, 2 is a wall, 3 is a imp, 4 is a lion, 5 is a tiger, 6 is a bear, 7 is a yeti, 8 is ammo, 9 is pistolpickup, 10 is machinegunpickup, 11 is yetipistolpickup, 12 is rocketlauncherpickup, 13 is rocketammo, 14 is scepterpickup, 15 is a crusader, 16 is a king, 17 is a minotaur, 18 is a demon, 19 is a skeleton
     levels: [
         {
             name: "Hell",
@@ -92,14 +92,6 @@ let game = {
             wall: 1,
             background: 1,
             startlocation: { x: 2, y: 2 },
-            startingweapons: {
-                knife: true,
-                pistol: false,
-                machinegun: false,
-                yetipistol: false,
-                rocketlauncher: false,
-                scepter: false
-            },
             equippedweapon: 1
         },
         {
@@ -130,14 +122,6 @@ let game = {
             wall: 7,
             background: 0,
             startlocation: { x: 2, y: 2 },
-            startingweapons: {
-                knife: true,
-                pistol: false,
-                machinegun: false,
-                yetipistol: false,
-                rocketlauncher: false,
-                scepter: false
-            },
             equippedweapon: 1
         },
         {
@@ -168,14 +152,6 @@ let game = {
             wall: 4,
             background: 2,
             startlocation: { x: 2, y: 2 },
-            startingweapons: {
-                knife: true,
-                pistol: false,
-                machinegun: false,
-                yetipistol: false,
-                rocketlauncher: false,
-                scepter: false
-            },
             equippedweapon: 1
         },
         {
@@ -206,14 +182,6 @@ let game = {
             wall: 2,
             background: 2,
             startlocation: { x: 1, y: 1 },
-            startingweapons: {
-                knife: true,
-                pistol: false,
-                machinegun: false,
-                yetipistol: false,
-                rocketlauncher: false,
-                scepter: false
-            },
             equippedweapon: 1
         },
         {
@@ -222,7 +190,7 @@ let game = {
                 [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
                 [2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2],
                 [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
-                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 15, 0, 0, 2],
+                [2, 0, 0, 14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 15, 0, 0, 2],
                 [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
                 [2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 15, 0, 0, 0, 0, 0, 0, 2],
                 [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 2],
@@ -244,15 +212,7 @@ let game = {
             wall: 8,
             background: 0,
             startlocation: { x: 2, y: 4 },
-            startingweapons: {
-                knife: false,
-                pistol: false,
-                machinegun: false,
-                yetipistol: false,
-                rocketlauncher: false,
-                scepter: true
-            },
-            equippedweapon: 6
+            equippedweapon: 1
         },
         {
             name: "Test Level",
@@ -282,14 +242,6 @@ let game = {
             wall: 1,
             background: 0,
             startlocation: { x: 2, y: 2 },
-            startingweapons: {
-                knife: true,
-                pistol: false,
-                machinegun: false,
-                yetipistol: false,
-                rocketlauncher: false,
-                scepter: false
-            },
             equippedweapon: 1
         }
     ],
@@ -567,9 +519,6 @@ function loadLevel(levelIdx) {
     //game.player.y = 2;
     game.player.angle = 0;
     // Reset inventory
-    game.ammo = 0;
-    game.rocketammo = 0;
-    game.weaponsUnlocked = game.levels[levelIdx].startingweapons;
     game.equippedWeapon = game.levels[levelIdx].equippedweapon;
     setWeapon(game.equippedWeapon);
     // Clear monsters and sprites
