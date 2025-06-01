@@ -32,6 +32,7 @@ git clone https://github.com/KylerCondran/Raycaster-FPS-Game.git
   <li>Machine Gun</li>
   <li>Yeti Pistol</li>
   <li>Rocket Launcher</li>
+  <li>Scepter</li>
 </ul>
 
 ## Monsters
@@ -42,6 +43,8 @@ git clone https://github.com/KylerCondran/Raycaster-FPS-Game.git
   <li>Tigers</li>
   <li>Bears</li>
   <li>Yetis</li>
+  <li>Crusaders</li>
+  <li>King</li>
 </ul>
 
 ## Inspiration
