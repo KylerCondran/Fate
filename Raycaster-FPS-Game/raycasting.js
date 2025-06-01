@@ -180,7 +180,7 @@ let game = {
             unlocked: false,
             floor: 9,
             wall: 2,
-            background: 2,
+            background: 1,
             startlocation: { x: 1, y: 1 },
             equippedweapon: 1
         },
