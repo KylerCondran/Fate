@@ -724,7 +724,7 @@ function loadLevel(levelIdx) {
                         id: `monster_${game.monsterIdCounter}`,
                         type: 'demon',
                         skin: 'demon-sprite',
-                        audio: 'imp',
+                        audio: 'demon',
                         x: j,
                         y: i,
                         health: 450,
