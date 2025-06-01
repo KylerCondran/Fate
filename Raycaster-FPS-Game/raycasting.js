@@ -587,7 +587,7 @@ function loadLevel(levelIdx) {
                         case 2:
                             game.sprites.push({ id: "snowytree-sprite", x: j, y: i, width: 552, height: 552, active: false, data: null });
                             break;
-                        case 3:
+                        case 4:
                             game.sprites.push({ id: "pillar-sprite", x: j, y: i, width: 320, height: 640, active: false, data: null });
                             break;
                         default:
