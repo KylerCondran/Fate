@@ -62,7 +62,7 @@ let game = {
             rotation: 1.5
         }
     },
-    //level legend: 0 is empty space, 1 is a tree, 2 is a wall, 3 is a imp, 4 is a lion, 5 is a tiger, 6 is a bear, 7 is a yeti, 8 is ammo, 9 is pistolpickup, 10 is machinegunpickup, 11 is yetipistolpickup, 12 is rocketlauncherpickup, 13 is rocketammo, 14 is scepterpickup, 15 is a crusader, 16 is a king
+    //level legend: 0 is empty space, 1 is a tree, 2 is a wall, 3 is a imp, 4 is a lion, 5 is a tiger, 6 is a bear, 7 is a yeti, 8 is ammo, 9 is pistolpickup, 10 is machinegunpickup, 11 is yetipistolpickup, 12 is rocketlauncherpickup, 13 is rocketammo, 14 is scepterpickup, 15 is a crusader, 16 is a king, 17 is a minotaur
     levels: [
         {
             name: "Hell",
@@ -85,11 +85,11 @@ let game = {
                 [2, 0, 13, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 13, 0, 0, 0, 0, 2],
                 [2, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 13, 0, 0, 0, 0, 0, 0, 0, 2],
                 [2, 3, 0, 0, 0, 0, 13, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 3, 2],
-                [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+                [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
             ],
             unlocked: true,
             floor: 6,
-            wall: 2,
+            wall: 1,
             background: 1,
             startlocation: { x: 2, y: 2 },
             startingweapons: {
@@ -123,7 +123,7 @@ let game = {
                 [2, 0, 8, 1, 0, 0, 0, 1, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
                 [2, 0, 0, 0, 10, 0, 0, 0, 0, 2, 0, 8, 0, 0, 0, 0, 1, 0, 0, 2],
                 [2, 6, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 4, 2],
-                [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+                [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
             ],
             unlocked: false,
             floor: 5,
@@ -161,13 +161,51 @@ let game = {
                 [2, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
                 [2, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 11, 0, 0, 0, 1, 0, 0, 2],
                 [2, 7, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 7, 2],
-                [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+                [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
             ],
             unlocked: false,
             floor: 4,
             wall: 4,
             background: 2,
             startlocation: { x: 2, y: 2 },
+            startingweapons: {
+                knife: true,
+                pistol: false,
+                machinegun: false,
+                yetipistol: false,
+                rocketlauncher: false,
+                scepter: false
+            },
+            equippedweapon: 1
+        },
+        {
+            name: "Labyrinth",
+            map: [
+                [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+                [2, 0, 0, 0, 8, 0, 0, 8, 0, 0, 0, 2, 17, 0, 0, 2, 17, 0, 0, 2],
+                [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 2, 0, 0, 0, 2, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2, 2, 2, 0, 2, 2, 2, 0, 2],
+                [2, 0, 2, 2, 2, 2, 2, 2, 0, 2, 0, 2, 0, 0, 0, 2, 0, 2, 0, 2],
+                [2, 0, 0, 8, 0, 0, 0, 2, 0, 2, 0, 2, 0, 2, 0, 2, 0, 2, 0, 2],
+                [2, 2, 2, 2, 2, 2, 0, 2, 0, 2, 0, 2, 0, 0, 0, 0, 0, 2, 0, 2],
+                [2, 0, 0, 0, 8, 0, 0, 2, 0, 2, 0, 2, 2, 2, 0, 2, 0, 2, 0, 2],
+                [2, 0, 2, 2, 2, 2, 2, 2, 0, 2, 0, 0, 0, 2, 0, 2, 0, 2, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 2, 0, 2, 2, 2, 0, 2, 0, 2, 0, 2, 0, 2],
+                [2, 2, 2, 2, 2, 2, 0, 2, 0, 0, 0, 0, 0, 2, 0, 2, 0, 2, 0, 2],
+                [2, 0, 0, 0, 0, 2, 0, 2, 2, 2, 2, 2, 2, 2, 0, 2, 0, 2, 0, 2],
+                [2, 0, 2, 2, 0, 2, 0, 2, 0, 2, 0, 0, 0, 0, 0, 2, 0, 2, 0, 2],
+                [2, 0, 0, 2, 0, 0, 0, 2, 9, 2, 0, 2, 2, 2, 0, 2, 0, 2, 0, 2],
+                [2, 2, 0, 2, 2, 2, 2, 2, 0, 2, 0, 2, 17, 0, 0, 2, 0, 2, 0, 2],
+                [2, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 0, 0, 2, 0, 2],
+                [2, 0, 2, 2, 0, 2, 0, 2, 0, 2, 0, 2, 2, 2, 0, 2, 2, 2, 0, 2],
+                [2, 0, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
+            ],
+            unlocked: false,
+            floor: 9,
+            wall: 2,
+            background: 2,
+            startlocation: { x: 1, y: 1 },
             startingweapons: {
                 knife: true,
                 pistol: false,
@@ -199,7 +237,7 @@ let game = {
                 [2, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
                 [2, 0, 1, 0, 1, 0, 2, 15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
                 [2, 16, 0, 0, 0, 0, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2],
-                [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+                [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
             ],
             unlocked: false,
             floor: 8,
@@ -237,7 +275,7 @@ let game = {
                 [2, 0, 8, 1, 0, 0, 0, 1, 0, 2, 0, 0, 0, 0, 11, 0, 0, 0, 0, 2],
                 [2, 0, 0, 0, 10, 0, 0, 0, 0, 2, 0, 8, 0, 0, 0, 0, 1, 0, 0, 2],
                 [2, 6, 0, 0, 0, 0, 13, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 7, 2],
-                [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+                [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
             ],
             unlocked: false,
             floor: 5,
@@ -366,6 +404,12 @@ let game = {
             width: 16,
             height: 16,
             id: "cloud",
+            data: null
+        },
+        {
+            width: 16,
+            height: 16,
+            id: "sand-texture",
             data: null
         }
     ],
@@ -703,6 +747,24 @@ function loadLevel(levelIdx) {
                         data: null
                     };
                     game.monsters.push(king);
+                    game.monsterIdCounter++;
+                    break;
+                case 17:
+                    const minotaur = {
+                        id: `monster_${game.monsterIdCounter}`,
+                        type: 'minotaur',
+                        skin: 'minotaur-sprite',
+                        audio: 'minotaur',
+                        x: j,
+                        y: i,
+                        health: 150,
+                        isDead: false,
+                        width: 512,
+                        height: 512,
+                        active: false,
+                        data: null
+                    };
+                    game.monsters.push(minotaur);
                     game.monsterIdCounter++;
                     break;
                 default:
