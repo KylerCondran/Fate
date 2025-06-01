@@ -62,7 +62,7 @@ let game = {
             rotation: 1.5
         }
     },
-    //level legend: 0 is empty space, 1 is a tree, 2 is a wall, 3 is a imp, 4 is a lion, 5 is a tiger, 6 is a bear, 7 is a yeti, 8 is ammo, 9 is pistolpickup, 10 is machinegunpickup, 11 is yetipistolpickup, 12 is rocketlauncherpickup, 13 is rocketammo, 14 is scepterpickup, 15 is a crusader
+    //level legend: 0 is empty space, 1 is a tree, 2 is a wall, 3 is a imp, 4 is a lion, 5 is a tiger, 6 is a bear, 7 is a yeti, 8 is ammo, 9 is pistolpickup, 10 is machinegunpickup, 11 is yetipistolpickup, 12 is rocketlauncherpickup, 13 is rocketammo, 14 is scepterpickup, 15 is a crusader, 16 is a king
     levels: [
         {
             name: "Hell",
@@ -191,14 +191,14 @@ let game = {
                 [2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 0, 0, 0, 0, 0, 2],
                 [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 2],
                 [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 2],
-                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 15, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 2],
                 [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 2],
                 [2, 0, 1, 0, 1, 0, 2, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 2],
                 [2, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
                 [2, 0, 1, 0, 1, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 15, 0, 2],
                 [2, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
-                [2, 0, 1, 0, 1, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
-                [2, 0, 0, 0, 0, 0, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2],
+                [2, 0, 1, 0, 1, 0, 2, 15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 16, 0, 0, 0, 0, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2],
                 [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
             ],
             unlocked: false,
@@ -687,6 +687,23 @@ function loadLevel(levelIdx) {
                     game.monsters.push(crusader);
                     game.monsterIdCounter++;
                     break;
+                case 16:
+                    const king = {
+                        id: `monster_${game.monsterIdCounter}`,
+                        type: 'king',
+                        skin: 'king-sprite',
+                        audio: 'crusader',
+                        x: j,
+                        y: i,
+                        health: 1000,
+                        isDead: false,
+                        width: 512,
+                        height: 512,
+                        active: false,
+                        data: null
+                    };
+                    game.monsters.push(king);
+                    game.monsterIdCounter++;
                     break;
                 default:
             }
@@ -888,7 +905,7 @@ function updateGameObjects() {
                     if (monster.health <= 0) {
                         monster.isDead = true;
                         playSound(`${monster.audio}-death`);
-                        if (monster.type == 'crusader') {
+                        if (monster.type == 'crusader' || monster.type == 'king') {
                             game.sprites.push({ id: 'tombstone-sprite', x: monster.x, y: monster.y, width: 256, height: 256, active: false, data: null });
                         } else {
                             game.sprites.push({ id: 'bones-sprite', x: monster.x, y: monster.y, width: 256, height: 256, active: false, data: null });
