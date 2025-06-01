@@ -888,7 +888,11 @@ function updateGameObjects() {
                     if (monster.health <= 0) {
                         monster.isDead = true;
                         playSound(`${monster.audio}-death`);
-                        game.sprites.push({ id: 'bones-sprite', x: monster.x, y: monster.y, width: 256, height: 256, active: false, data: null });
+                        if (monster.type == 'crusader') {
+                            game.sprites.push({ id: 'tombstone-sprite', x: monster.x, y: monster.y, width: 256, height: 256, active: false, data: null });
+                        } else {
+                            game.sprites.push({ id: 'bones-sprite', x: monster.x, y: monster.y, width: 256, height: 256, active: false, data: null });
+                        }                     
                         loadSprites();
                     } else {
                         var rnd = Math.floor(Math.random() * 3);
