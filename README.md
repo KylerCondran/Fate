@@ -44,6 +44,8 @@ git clone https://github.com/KylerCondran/Raycaster-FPS-Game.git
   <li>Bears</li>
   <li>Yetis</li>
   <li>Minotaurs</li>
+  <li>Demons</li>
+  <li>Skeletons</li>
   <li>Crusaders</li>
   <li>King</li>
 </ul>
