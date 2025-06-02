@@ -1,6 +1,6 @@
 # Raycaster-FPS-Game
 
-This is a game I am developing with a working title of 'Fate'. It is a 3D Environment Raycasting FPS Game Engine built on pure JavaScript. Hunt And Shoot Monsters. Arrow Keys To Move, Space To Shoot. 1 - 5 To Swap Weapons.
+This is a game I am developing with a working title of 'Fate'. It is a 3D Environment Raycasting FPS Game Engine built on pure JavaScript. Hunt And Shoot Monsters. Arrow Keys To Move, Space To Shoot. 1 - 6 To Swap Weapons.
 
 <p align="center">
   <a href="https://kylercondran.github.io/Raycaster-FPS-Game/Raycaster-FPS-Game/raycasting.html">Play This Game</a>
