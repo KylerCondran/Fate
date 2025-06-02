@@ -35,6 +35,17 @@ git clone https://github.com/KylerCondran/Raycaster-FPS-Game.git
   <li>Scepter</li>
 </ul>
 
+## Levels
+
+<ul>
+  <li>Hell</li>
+  <li>Jungle</li>
+  <li>Arctic</li>
+  <li>Labyrinth</li>
+  <li>Heaven</li>
+  <li>Test Level</li>
+</ul>
+
 ## Monsters
 
 <ul>
