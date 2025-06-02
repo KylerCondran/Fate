@@ -1595,6 +1595,19 @@ function drawSpriteInWorld(sprite) {
         spriteWidth = Math.floor(game.projection.halfWidth / distance);
         drawSprite(spriteX, spriteWidth, spriteHeight, sprite);
     }
+
+    if (sprite.type && sprite.health !== undefined && sprite.isDead === false) {
+        // Health bar settings
+        const barWidth = Math.max(24, Math.floor(spriteWidth * 0.7));
+        const barHeight = 6;
+        // Center above head
+        const barX = Math.floor(spriteX + spriteWidth / 2 - barWidth / 2);
+        const barY = Math.floor(game.projection.halfHeight - spriteHeight / 2) - 12;
+        // Find maxHealth (initial health at spawn)
+        let maxHealth = sprite.maxHealth || sprite._maxHealth || sprite.health;
+        if (!sprite._maxHealth) sprite._maxHealth = sprite.health;
+        drawHealthBar(barX, barY, barWidth, barHeight, sprite.health, maxHealth);
+    }
 }
 
 // Draw bullet sprites
@@ -1693,6 +1706,31 @@ function drawGun(ctx) {
             game.projection.height - 155,
             160, 160
         );
+    }
+}
+
+function drawHealthBar(x, y, width, height, health, maxHealth) {
+    // Draw red background (depleted health)
+    for (let i = 0; i < width; i++) {
+        for (let j = 0; j < height; j++) {
+            drawPixel(x + i, y + j, new Color(180, 0, 0, 255));
+        }
+    }
+    // Draw green foreground (remaining health)
+    const greenWidth = Math.floor(width * Math.max(0, health) / maxHealth);
+    for (let i = 0; i < greenWidth; i++) {
+        for (let j = 0; j < height; j++) {
+            drawPixel(x + i, y + j, new Color(0, 200, 0, 255));
+        }
+    }
+    // Black border
+    for (let i = 0; i < width; i++) {
+        drawPixel(x + i, y, new Color(0, 0, 0, 255));
+        drawPixel(x + i, y + height - 1, new Color(0, 0, 0, 255));
+    }
+    for (let j = 0; j < height; j++) {
+        drawPixel(x, y + j, new Color(0, 0, 0, 255));
+        drawPixel(x + width - 1, y + j, new Color(0, 0, 0, 255));
     }
 }
 
