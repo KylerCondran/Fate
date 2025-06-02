@@ -1781,7 +1781,7 @@ function createStartScreen() {
     overlay.innerHTML = `
         <h1 style="color: #fff; font-family: 'Lucida Console', monospace; font-size: 2.5em; margin-bottom: 1em;">Fate</h1>
         <div id="level-buttons" style="display: flex; flex-direction: column; gap: 1em;"></div>
-        <p style="color: #aaa; margin-top: 2em; font-family: 'Lucida Console', monospace;">Use arrow keys to move, 1-5 to switch weapons, Space to shoot.</p>
+        <p style="color: #aaa; margin-top: 2em; font-family: 'Lucida Console', monospace;">Use arrow keys to move, 1-6 to switch weapons, Space to shoot.</p>
     `;
     document.body.appendChild(overlay);
     // Add level buttons
