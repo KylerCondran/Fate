@@ -433,6 +433,8 @@ game.projection.height = s.height / s.scale;
 game.projection.halfWidth = game.projection.width / 2;
 game.projection.halfHeight = game.projection.height / 2;
 game.rayCasting.incrementAngle = game.player.fov / game.projection.width;
+const degree_to_rad = Math.PI / 180;
+const rad_to_degree = 180 / Math.PI;
 
 // Canvas
 const screen = document.createElement('canvas');
@@ -772,84 +774,96 @@ function loadLevel(levelIdx) {
 // Cast rays to find walls and draw the scene
 
 function rayCasting() {
+    const currentMap = game.levels[game.currentLevel].map;
+    const rayPrecision = game.rayCasting.precision;
+    const projectionHalfHeight = game.projection.halfHeight;
+
     let rayAngle = game.player.angle - game.player.halfFov;
+    const angleIncrement = game.rayCasting.incrementAngle;
+
+    // Precalculate values used in loop
+    const playerX = game.player.x;
+    const playerY = game.player.y;
+
     for (let rayCount = 0; rayCount < game.projection.width; rayCount++) {
+        const rayAngleRad = degreeToRadians(rayAngle);
+        const rayCos = Math.cos(rayAngleRad) / rayPrecision;
+        const raySin = Math.sin(rayAngleRad) / rayPrecision;
 
-        // Ray data
-        let ray = {
-            x: game.player.x,
-            y: game.player.y
-        }
+        // Ray position
+        let rayX = playerX;
+        let rayY = playerY;
 
-        // Ray path incrementers
-        let rayCos = Math.cos(degreeToRadians(rayAngle)) / game.rayCasting.precision;
-        let raySin = Math.sin(degreeToRadians(rayAngle)) / game.rayCasting.precision;
+        // Wall detection
+        let wall;
+        do {
+            rayX += rayCos;
+            rayY += raySin;
+            wall = currentMap[Math.floor(rayY)][Math.floor(rayX)];
+            activeSprites(rayX, rayY);
+        } while (wall !== 2);
 
-        // Wall finder
-        let wall = 0;
-        while (wall != 2) {
-            ray.x += rayCos;
-            ray.y += raySin;
-            wall = game.levels[game.currentLevel].map[Math.floor(ray.y)][Math.floor(ray.x)];
-            activeSprites(ray.x, ray.y);
-        }
+        // Distance calculation with fish-eye fix
+        const dx = rayX - playerX;
+        const dy = rayY - playerY;
+        const distance = Math.sqrt(dx * dx + dy * dy) *
+            Math.cos(degreeToRadians(rayAngle - game.player.angle));
 
-        // Pythagoras theorem
-        let distance = Math.sqrt(Math.pow(game.player.x - ray.x, 2) + Math.pow(game.player.y - ray.y, 2));
+        // Wall height calculation
+        const wallHeight = Math.floor(projectionHalfHeight / distance);
 
-        // Fish eye fix
-        distance = distance * Math.cos(degreeToRadians(rayAngle - game.player.angle));
+        // Draw calls
+        drawBackground(rayCount, 0, projectionHalfHeight - wallHeight,
+            game.backgrounds[game.levels[game.currentLevel].background]);
+        drawTexture(rayCount, wallHeight,
+            Math.floor((texture.width * (rayX + rayY)) % texture.width),
+            game.textures[game.levels[game.currentLevel].wall]);
+        drawFloor(rayCount, wallHeight, rayAngle);
 
-        // Wall height
-        let wallHeight = Math.floor(game.projection.halfHeight / distance);
-
-        // Get texture
-        let texture = game.textures[game.levels[game.currentLevel].wall];
-
-        // Calcule texture position
-        let texturePositionX = Math.floor((texture.width * (ray.x + ray.y)) % texture.width);
-
-        // Draw
-        drawBackground(rayCount, 0, game.projection.halfHeight - wallHeight, game.backgrounds[game.levels[game.currentLevel].background]);
-        drawTexture(rayCount, wallHeight, texturePositionX, texture);
-        drawFloor(rayCount, wallHeight, rayAngle)
-
-        // Increment
-        rayAngle += game.rayCasting.incrementAngle;
+        rayAngle += angleIncrement;
     }
 }
 
 // Degrees to radians conversion
 
 function degreeToRadians(degree) {
-    let pi = Math.PI;
-    return degree * pi / 180;
+    return degree * degree_to_rad;
 }
 
 
 // Radians to degrees conversion
 
 function radiansToDegrees(radians) {
-    return 180 * radians / Math.PI;
+    return radians * rad_to_degree;
 }
 
 // Active sprites and monsters based on player position
 
 function activeSprites(x, y) {
+    const activationDistSq = game.activationDistance * game.activationDistance;
+
     for (let sprite of game.sprites) {
-        const dx = Math.abs(x - sprite.x);
-        if (dx > game.activationDistance) continue;
-        const dy = Math.abs(y - sprite.y);
-        if (dy > game.activationDistance) continue;
-        sprite.active = true;
+        if (sprite.active) continue; // Skip if already active
+
+        const dx = x - sprite.x;
+        const dy = y - sprite.y;
+        const distSq = dx * dx + dy * dy;
+
+        if (distSq <= activationDistSq) {
+            sprite.active = true;
+        }
     }
+
     for (let monster of game.monsters) {
-        if (monster.isDead) continue;
-        const dx = Math.abs(x - monster.x);
-        if (dx > game.activationDistance) continue;
-        const dy = Math.abs(y - monster.y);
-        if (dy > game.activationDistance) continue;
-        monster.active = true;
+        if (monster.isDead || monster.active) continue;
+
+        const dx = x - monster.x;
+        const dy = y - monster.y;
+        const distSq = dx * dx + dy * dy;
+
+        if (distSq <= activationDistSq) {
+            monster.active = true;
+        }
     }
 }
 
