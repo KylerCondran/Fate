@@ -190,7 +190,7 @@ let game = {
                 [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
                 [2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2],
                 [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
-                [2, 0, 0, 14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 15, 0, 0, 2],
+                [2, 0, 0, 0, 14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 15, 0, 0, 2],
                 [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
                 [2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 15, 0, 0, 0, 0, 0, 0, 2],
                 [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 2],
@@ -1552,13 +1552,8 @@ function drawSprites() {
 function drawSpriteInWorld(sprite) {
     // Get X and Y coords in relation of the player coords
     let spriteXRelative, spriteYRelative;
-    if (sprite.isBullet) {
-        spriteXRelative = sprite.x - game.player.x;
-        spriteYRelative = sprite.y - game.player.y;
-    } else {
-        spriteXRelative = sprite.x + 0.5 - game.player.x;
-        spriteYRelative = sprite.y + 0.5 - game.player.y;
-    }
+    spriteXRelative = sprite.x - game.player.x;
+    spriteYRelative = sprite.y - game.player.y;
 
     // Get angle of the sprite in relation of the player angle
     let spriteAngleRadians = Math.atan2(spriteYRelative, spriteXRelative);
