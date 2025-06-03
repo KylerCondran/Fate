@@ -536,16 +536,16 @@ function loadLevel(levelIdx) {
                 case 1:
                     switch (game.currentLevel) {
                         case 0:
-                            game.sprites.push({ id: "cauldron-sprite", x: j, y: i, width: 512, height: 512, active: false, data: null });
+                            game.sprites.push({ id: "cauldron-sprite", x: j, y: i, width: 512, height: 512, active: true, data: null });
                             break;
                         case 2:
-                            game.sprites.push({ id: "snowytree-sprite", x: j, y: i, width: 552, height: 552, active: false, data: null });
+                            game.sprites.push({ id: "snowytree-sprite", x: j, y: i, width: 552, height: 552, active: true, data: null });
                             break;
                         case 4:
-                            game.sprites.push({ id: "pillar-sprite", x: j, y: i, width: 320, height: 640, active: false, data: null });
+                            game.sprites.push({ id: "pillar-sprite", x: j, y: i, width: 320, height: 640, active: true, data: null });
                             break;
                         default:
-                            game.sprites.push({ id: "tree-sprite", x: j, y: i, width: 8, height: 16, active: false, data: null });
+                            game.sprites.push({ id: "tree-sprite", x: j, y: i, width: 8, height: 16, active: true, data: null });
                             break;
                     }
                     break;
@@ -640,31 +640,31 @@ function loadLevel(levelIdx) {
                     game.monsterIdCounter++;
                     break;
                 case 8:
-                    game.sprites.push({ id: "ammo-sprite", x: j, y: i, width: 100, height: 81, active: false, data: null });
+                    game.sprites.push({ id: "ammo-sprite", x: j, y: i, width: 100, height: 81, active: true, data: null });
                     game.pickupTotal++;
                     break;
                 case 9:
-                    game.sprites.push({ id: "pistolpickup-sprite", x: j, y: i, width: 34, height: 19, active: false, data: null });
+                    game.sprites.push({ id: "pistolpickup-sprite", x: j, y: i, width: 34, height: 19, active: true, data: null });
                     game.pickupTotal++;
                     break;
                 case 10:
-                    game.sprites.push({ id: "machinegunpickup-sprite", x: j, y: i, width: 49, height: 30, active: false, data: null });
+                    game.sprites.push({ id: "machinegunpickup-sprite", x: j, y: i, width: 49, height: 30, active: true, data: null });
                     game.pickupTotal++;
                     break;
                 case 11:
-                    game.sprites.push({ id: "yetipistolpickup-sprite", x: j, y: i, width: 50, height: 33, active: false, data: null });
+                    game.sprites.push({ id: "yetipistolpickup-sprite", x: j, y: i, width: 50, height: 33, active: true, data: null });
                     game.pickupTotal++;
                     break;
                 case 12:
-                    game.sprites.push({ id: "rocketlauncherpickup-sprite", x: j, y: i, width: 80, height: 17, active: false, data: null });
+                    game.sprites.push({ id: "rocketlauncherpickup-sprite", x: j, y: i, width: 80, height: 17, active: true, data: null });
                     game.pickupTotal++;
                     break;
                 case 13:
-                    game.sprites.push({ id: "rocketammo-sprite", x: j, y: i, width: 35, height: 18, active: false, data: null });
+                    game.sprites.push({ id: "rocketammo-sprite", x: j, y: i, width: 35, height: 18, active: true, data: null });
                     game.pickupTotal++;
                     break;
                 case 14:
-                    game.sprites.push({ id: "scepterpickup-sprite", x: j, y: i, width: 64, height: 64, active: false, data: null });
+                    game.sprites.push({ id: "scepterpickup-sprite", x: j, y: i, width: 64, height: 64, active: true, data: null });
                     game.pickupTotal++;
                     break;
                 case 15:
@@ -837,23 +837,12 @@ function radiansToDegrees(radians) {
     return radians * rad_to_degree;
 }
 
-// Active sprites and monsters based on player position
+// Active monsters based on player position
 
 function activeSprites(x, y) {
     const activationDistSq = game.activationDistance * game.activationDistance;
 
-    for (let sprite of game.sprites) {
-        if (sprite.active) continue; // Skip if already active
-
-        const dx = x - sprite.x;
-        const dy = y - sprite.y;
-        const distSq = dx * dx + dy * dy;
-
-        if (distSq <= activationDistSq) {
-            sprite.active = true;
-        }
-    }
-
+    // Check activation for monsters since they are dynamic
     for (let monster of game.monsters) {
         if (monster.isDead || monster.active) continue;
 
@@ -867,11 +856,13 @@ function activeSprites(x, y) {
     }
 }
 
-// Inactive all sprites and monsters
+// Inactive all monsters
 
 function inactiveSprites() {
-    for (let sprite of game.sprites) sprite.active = false;
-    for (let monster of game.monsters) monster.active = false;
+    // Only inactive monsters since they are dynamic
+    for (let monster of game.monsters) {
+        monster.active = false;
+    }
 }
 
 // Bullet Object
@@ -970,9 +961,9 @@ function updateGameObjects() {
                         monster.isDead = true;
                         playSound(`${monster.audio}-death`);
                         if (monster.type == 'crusader' || monster.type == 'king') {
-                            game.sprites.push({ id: 'tombstone-sprite', x: monster.x, y: monster.y, width: 256, height: 256, active: false, data: null });
+                            game.sprites.push({ id: 'tombstone-sprite', x: monster.x, y: monster.y, width: 256, height: 256, active: true, data: null });
                         } else {
-                            game.sprites.push({ id: 'bones-sprite', x: monster.x, y: monster.y, width: 256, height: 256, active: false, data: null });
+                            game.sprites.push({ id: 'bones-sprite', x: monster.x, y: monster.y, width: 256, height: 256, active: true, data: null });
                         }                     
                         loadSprites();
                     } else {
