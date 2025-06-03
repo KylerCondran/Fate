@@ -534,14 +534,14 @@ function loadLevel(levelIdx) {
         for (let j = 0; j < game.levels[levelIdx].map[i].length; j++) {
             switch (game.levels[levelIdx].map[i][j]) {
                 case 1:
-                    switch (game.currentLevel) {
-                        case 0:
+                    switch (game.levels[levelIdx].name) {
+                        case "Hell":
                             game.sprites.push({ id: "cauldron-sprite", x: j, y: i, width: 512, height: 512, active: true, data: null });
                             break;
-                        case 2:
+                        case "Arctic":
                             game.sprites.push({ id: "snowytree-sprite", x: j, y: i, width: 552, height: 552, active: true, data: null });
                             break;
-                        case 4:
+                        case "Heaven":
                             game.sprites.push({ id: "pillar-sprite", x: j, y: i, width: 320, height: 640, active: true, data: null });
                             break;
                         default:
