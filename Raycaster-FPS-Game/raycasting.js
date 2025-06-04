@@ -215,6 +215,7 @@ let game = {
             wall: 8,
             background: 0,
             startlocation: { x: 2, y: 4 },
+            portalcoords: [{ x: 11, y: 8, exitx: 3, exity: 8, exitangle: 90 }],
             equippedweapon: 1
         },
         {
@@ -1148,10 +1149,15 @@ function movePlayer() {
                 break;
             // Portal activated
             case 20:
-                playSound('portal-sound');
-                game.player.x = 3;
-                game.player.y = 8;
-                game.player.angle = 90;               
+                for (let portal of game.levels[game.currentLevel].portalcoords) {
+                    if (portal.x == Math.floor(game.player.x) && portal.y == Math.floor(game.player.y)) {
+                        playSound('portal-sound');
+                        game.player.x = portal.exitx;
+                        game.player.y = portal.exity;
+                        game.player.angle = portal.exitangle;
+                        break;
+                    }
+                }              
                 break;
         }
     }
@@ -1224,10 +1230,15 @@ function movePlayer() {
                 break;
             // Portal activated
             case 20:
-                playSound('portal-sound');
-                game.player.x = 3;
-                game.player.y = 8;
-                game.player.angle = 90;
+                for (let portal of game.levels[game.currentLevel].portalcoords) {
+                    if (portal.x == Math.floor(game.player.x) && portal.y == Math.floor(game.player.y)) {
+                        playSound('portal-sound');
+                        game.player.x = portal.exitx;
+                        game.player.y = portal.exity;
+                        game.player.angle = portal.exitangle;
+                        break;
+                    }
+                }
                 break;
         }
     }
