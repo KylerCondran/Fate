@@ -65,7 +65,7 @@ let game = {
             rotation: 1.5
         }
     },
-    //level legend: 0 is empty space, 1 is a tree, 2 is a wall, 3 is a imp, 4 is a lion, 5 is a tiger, 6 is a bear, 7 is a yeti, 8 is ammo, 9 is pistolpickup, 10 is machinegunpickup, 11 is yetipistolpickup, 12 is rocketlauncherpickup, 13 is rocketammo, 14 is scepterpickup, 15 is a crusader, 16 is a king, 17 is a minotaur, 18 is a demon, 19 is a skeleton
+    //level legend: 0 is empty space, 1 is a tree, 2 is a wall, 3 is a imp, 4 is a lion, 5 is a tiger, 6 is a bear, 7 is a yeti, 8 is ammo, 9 is pistolpickup, 10 is machinegunpickup, 11 is yetipistolpickup, 12 is rocketlauncherpickup, 13 is rocketammo, 14 is scepterpickup, 15 is a crusader, 16 is a king, 17 is a minotaur, 18 is a demon, 19 is a skeleton, 20 is a portal
     levels: [
         {
             name: "Hell",
@@ -196,18 +196,18 @@ let game = {
                 [2, 0, 0, 0, 14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 15, 0, 0, 2],
                 [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
                 [2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 15, 0, 0, 0, 0, 0, 0, 2],
-                [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 2],
-                [2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 0, 0, 0, 0, 0, 2],
-                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 2],
-                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 2],
-                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 2],
-                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 2],
-                [2, 0, 1, 0, 1, 0, 2, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 2],
-                [2, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
-                [2, 0, 1, 0, 1, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 15, 0, 2],
-                [2, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
-                [2, 0, 1, 0, 1, 0, 2, 15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
-                [2, 16, 0, 0, 0, 0, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2],
+                [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 2, 1, 0, 0, 0, 1, 2, 0, 0, 0, 0, 2],
+                [2, 0, 1, 0, 0, 0, 1, 0, 2, 0, 0, 20, 0, 0, 2, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 2],
+                [2, 0, 1, 0, 0, 0, 1, 0, 2, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 2],
+                [2, 0, 1, 0, 0, 0, 1, 0, 2, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 1, 0, 0, 0, 1, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 15, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 1, 0, 0, 0, 1, 0, 2, 15, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 16, 0, 0, 0, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2],
                 [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
             ],
             unlocked: false,
@@ -793,7 +793,10 @@ function loadLevel(levelIdx) {
                     game.monsters.push(skeleton);
                     game.monsterTotal++;
                     break;
+                case 20:
+                    game.sprites.push({ id: "portal-sprite", x: j, y: i, width: 1024, height: 1024, active: true, data: null });
                 default:
+                    break;
             }
         }
     }
@@ -1143,6 +1146,13 @@ function movePlayer() {
                 game.weaponsUnlocked.scepter = true;
                 game.pickupCollected++;
                 break;
+            // Portal activated
+            case 20:
+                playSound('portal-sound');
+                game.player.x = 3;
+                game.player.y = 8;
+                game.player.angle = 90;               
+                break;
         }
     }
     if (game.key.down.active) {
@@ -1211,6 +1221,13 @@ function movePlayer() {
                 itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
                 game.weaponsUnlocked.scepter = true;
                 game.pickupCollected++;
+                break;
+            // Portal activated
+            case 20:
+                playSound('portal-sound');
+                game.player.x = 3;
+                game.player.y = 8;
+                game.player.angle = 90;
                 break;
         }
     }
