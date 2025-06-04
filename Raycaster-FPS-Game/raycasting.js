@@ -17,7 +17,8 @@ let game = {
     bulletStartDistance: 0.5,
     monsterMoveSpeed: 0.02,
     activationDistance: 1.0,
-    monsterIdCounter: 0,
+    monsterTotal: 0,
+    monsterDefeated: 0,
     pickupTotal: 0,
     pickupCollected: 0,
     weaponsUnlocked: {
@@ -57,6 +58,8 @@ let game = {
         y: 2,
         angle: 0,
         radius: 20,
+        health: 100,
+        maxHealth: 100,
         speed: {
             movement: 0.08,
             rotation: 1.5
@@ -527,9 +530,12 @@ function loadLevel(levelIdx) {
     game.monsters = [];
     game.sprites = [];
     // Rebuild monsters and sprites from map
-    game.monsterIdCounter = 0;
+    game.monsterTotal = 0;
+    game.monsterDefeated = 0;
     game.pickupTotal = 0;
     game.pickupCollected = 0;
+    // Reset playerr health
+    game.player.health = 100;
     for (let i = 0; i < game.levels[levelIdx].map.length; i++) {
         for (let j = 0; j < game.levels[levelIdx].map[i].length; j++) {
             switch (game.levels[levelIdx].map[i][j]) {
@@ -551,7 +557,7 @@ function loadLevel(levelIdx) {
                     break;
                 case 3:
                     const imp = {
-                        id: `monster_${game.monsterIdCounter}`,
+                        id: `monster_${game.monsterTotal}`,
                         type: 'imp',
                         skin: 'imp-sprite',
                         audio: 'imp',
@@ -562,14 +568,17 @@ function loadLevel(levelIdx) {
                         width: 484,
                         height: 499,
                         active: false,
-                        data: null
+                        data: null,
+                        damage: 10,
+                        lastAttack: 0,
+                        attackCooldown: 1000
                     };
                     game.monsters.push(imp);
-                    game.monsterIdCounter++;
+                    game.monsterTotal++;
                     break;
                 case 4:
                     const lion = {
-                        id: `monster_${game.monsterIdCounter}`,
+                        id: `monster_${game.monsterTotal}`,
                         type: 'lion',
                         skin: 'lion-sprite',
                         audio: 'bigcat',
@@ -580,14 +589,17 @@ function loadLevel(levelIdx) {
                         width: 665,
                         height: 725,
                         active: false,
-                        data: null
+                        data: null,
+                        damage: 10,
+                        lastAttack: 0,
+                        attackCooldown: 1000
                     };
                     game.monsters.push(lion);
-                    game.monsterIdCounter++;
+                    game.monsterTotal++;
                     break;
                 case 5:
                     const tiger = {
-                        id: `monster_${game.monsterIdCounter}`,
+                        id: `monster_${game.monsterTotal}`,
                         type: 'tiger',
                         skin: 'tiger-sprite',
                         audio: 'bigcat',
@@ -598,14 +610,17 @@ function loadLevel(levelIdx) {
                         width: 256,
                         height: 201,
                         active: false,
-                        data: null
+                        data: null,
+                        damage: 10,
+                        lastAttack: 0,
+                        attackCooldown: 1000
                     };
                     game.monsters.push(tiger);
-                    game.monsterIdCounter++;
+                    game.monsterTotal++;
                     break;
                 case 6:
                     const bear = {
-                        id: `monster_${game.monsterIdCounter}`,
+                        id: `monster_${game.monsterTotal}`,
                         type: 'bear',
                         skin: 'bear-sprite',
                         audio: 'bear',
@@ -616,14 +631,17 @@ function loadLevel(levelIdx) {
                         width: 220,
                         height: 237,
                         active: false,
-                        data: null
+                        data: null,
+                        damage: 10,
+                        lastAttack: 0,
+                        attackCooldown: 1000
                     };
                     game.monsters.push(bear);
-                    game.monsterIdCounter++;
+                    game.monsterTotal++;
                     break;
                 case 7:
                     const yeti = {
-                        id: `monster_${game.monsterIdCounter}`,
+                        id: `monster_${game.monsterTotal}`,
                         type: 'yeti',
                         skin: 'yeti-sprite',
                         audio: 'bear',
@@ -634,10 +652,13 @@ function loadLevel(levelIdx) {
                         width: 326,
                         height: 384,
                         active: false,
-                        data: null
+                        data: null,
+                        damage: 10,
+                        lastAttack: 0,
+                        attackCooldown: 1000
                     };
                     game.monsters.push(yeti);
-                    game.monsterIdCounter++;
+                    game.monsterTotal++;
                     break;
                 case 8:
                     game.sprites.push({ id: "ammo-sprite", x: j, y: i, width: 100, height: 81, active: true, data: null });
@@ -669,7 +690,7 @@ function loadLevel(levelIdx) {
                     break;
                 case 15:
                     const crusader = {
-                        id: `monster_${game.monsterIdCounter}`,
+                        id: `monster_${game.monsterTotal}`,
                         type: 'crusader',
                         skin: 'crusader-sprite',
                         audio: 'crusader',
@@ -680,14 +701,17 @@ function loadLevel(levelIdx) {
                         width: 512,
                         height: 512,
                         active: false,
-                        data: null
+                        data: null,
+                        damage: 10,
+                        lastAttack: 0,
+                        attackCooldown: 1000
                     };
                     game.monsters.push(crusader);
-                    game.monsterIdCounter++;
+                    game.monsterTotal++;
                     break;
                 case 16:
                     const king = {
-                        id: `monster_${game.monsterIdCounter}`,
+                        id: `monster_${game.monsterTotal}`,
                         type: 'king',
                         skin: 'king-sprite',
                         audio: 'crusader',
@@ -698,14 +722,17 @@ function loadLevel(levelIdx) {
                         width: 512,
                         height: 512,
                         active: false,
-                        data: null
+                        data: null,
+                        damage: 10,
+                        lastAttack: 0,
+                        attackCooldown: 1000
                     };
                     game.monsters.push(king);
-                    game.monsterIdCounter++;
+                    game.monsterTotal++;
                     break;
                 case 17:
                     const minotaur = {
-                        id: `monster_${game.monsterIdCounter}`,
+                        id: `monster_${game.monsterTotal}`,
                         type: 'minotaur',
                         skin: 'minotaur-sprite',
                         audio: 'minotaur',
@@ -716,14 +743,17 @@ function loadLevel(levelIdx) {
                         width: 512,
                         height: 512,
                         active: false,
-                        data: null
+                        data: null,
+                        damage: 10,
+                        lastAttack: 0,
+                        attackCooldown: 1000
                     };
                     game.monsters.push(minotaur);
-                    game.monsterIdCounter++;
+                    game.monsterTotal++;
                     break;
                 case 18:
                     const demon = {
-                        id: `monster_${game.monsterIdCounter}`,
+                        id: `monster_${game.monsterTotal}`,
                         type: 'demon',
                         skin: 'demon-sprite',
                         audio: 'demon',
@@ -734,14 +764,17 @@ function loadLevel(levelIdx) {
                         width: 512,
                         height: 512,
                         active: false,
-                        data: null
+                        data: null,
+                        damage: 10,
+                        lastAttack: 0,
+                        attackCooldown: 1000
                     };
                     game.monsters.push(demon);
-                    game.monsterIdCounter++;
+                    game.monsterTotal++;
                     break;
                 case 19:
                     const skeleton = {
-                        id: `monster_${game.monsterIdCounter}`,
+                        id: `monster_${game.monsterTotal}`,
                         type: 'skeleton',
                         skin: 'skeleton-sprite',
                         audio: 'skeleton',
@@ -752,10 +785,13 @@ function loadLevel(levelIdx) {
                         width: 512,
                         height: 512,
                         active: false,
-                        data: null
+                        data: null,
+                        damage: 10,
+                        lastAttack: 0,
+                        attackCooldown: 1000
                     };
                     game.monsters.push(skeleton);
-                    game.monsterIdCounter++;
+                    game.monsterTotal++;
                     break;
                 default:
             }
@@ -932,13 +968,14 @@ function updateGameObjects() {
             bulletsToRemove.add(i);
             continue;
         }
-        // Check collision with monsters only
+        // Check collision with monsters
         for (const monster of game.monsters) {
             if (!monster.isDead) {
                 const dx = monster.x - bullet.x;
                 const dy = monster.y - bullet.y;
                 const distanceSq = dx * dx + dy * dy;
                 if (distanceSq < game.bulletHitboxRadius) {
+                    // Bullet hit a monster
                     if (monster.type == 'yeti') {
                         if (game.equippedWeapon != 4) {
                             playSound('yeti-laugh');
@@ -959,6 +996,7 @@ function updateGameObjects() {
                     }
                     if (monster.health <= 0) {
                         monster.isDead = true;
+                        game.monsterDefeated++;
                         playSound(`${monster.audio}-death`);
                         if (monster.type == 'crusader' || monster.type == 'king') {
                             game.sprites.push({ id: 'tombstone-sprite', x: monster.x, y: monster.y, width: 256, height: 256, active: true, data: null });
@@ -988,26 +1026,48 @@ function updateGameObjects() {
     }
     // Remove marked bullets in one pass
     game.bullets = game.bullets.filter((_, idx) => !bulletsToRemove.has(idx));
-    // Update monster positions
+
+    // Update monster positions and check for attacks
+    const currentTime = Date.now();
     for (let monster of game.monsters) {
         if (!monster.isDead) {
             const dx = game.player.x - monster.x;
             const dy = game.player.y - monster.y;
             const distSq = dx * dx + dy * dy;
+
+            // Move monster if within certain range but not too close
             if (distSq > 0.25 && distSq < 100) {
                 const distance = Math.sqrt(distSq);
                 const invDist = 1 / distance;
                 const dirX = dx * invDist * game.monsterMoveSpeed;
                 const dirY = dy * invDist * game.monsterMoveSpeed;
+                
                 // Try to move in X direction
                 const newX = monster.x + dirX;
                 if (game.levels[game.currentLevel].map[Math.floor(monster.y)][Math.floor(newX)] !== 2) {
                     monster.x = newX;
                 }
+                
                 // Try to move in Y direction
                 const newY = monster.y + dirY;
                 if (game.levels[game.currentLevel].map[Math.floor(newY)][Math.floor(monster.x)] !== 2) {
                     monster.y = newY;
+                }
+            }
+
+            // Check for attack range and cooldown
+            if (distSq < 0.5 && (!monster.lastAttack || currentTime - monster.lastAttack >= (monster.attackCooldown))) {
+                // Attack the player
+                game.player.health -= (monster.damage);
+                monster.lastAttack = currentTime;
+                
+                // Play monster attack sound
+                playSound('injured-sound');
+
+                // Check if player died
+                if (game.player.health <= 0) {
+                    playSound('death-sound');
+                    endGameDeath();
                 }
             }
         }
@@ -1756,7 +1816,29 @@ function createWinScreen() {
     overlay.style.zIndex = '10000';
     overlay.innerHTML = `
         <h1 style="color: #fff; font-family: 'Lucida Console', monospace; font-size: 2.5em; margin-bottom: 1em;">You Win!</h1>
-        <p style="color: #aaa; font-family: 'Lucida Console', monospace; font-size: 1.2em;">All monsters defeated!</p>
+        <p style="color: #aaa; font-family: 'Lucida Console', monospace; font-size: 1.2em;">${game.monsterDefeated} / ${game.monsterTotal} monsters defeated!</p>
+        <p style="color: #aaa; font-family: 'Lucida Console', monospace; font-size: 1.2em;">${game.pickupCollected} / ${game.pickupTotal} Pickups Collected.</p>
+    `;
+    document.body.appendChild(overlay);
+}
+
+function createDeathScreen() {
+    let overlay = document.createElement('div');
+    overlay.id = 'death-screen-overlay';
+    overlay.style.position = 'fixed';
+    overlay.style.left = '0';
+    overlay.style.top = '0';
+    overlay.style.width = '100vw';
+    overlay.style.height = '100vh';
+    overlay.style.background = 'rgba(0,0,0,0.92)';
+    overlay.style.display = 'flex';
+    overlay.style.flexDirection = 'column';
+    overlay.style.justifyContent = 'center';
+    overlay.style.alignItems = 'center';
+    overlay.style.zIndex = '10000';
+    overlay.innerHTML = `
+        <h1 style="color: #fff; font-family: 'Lucida Console', monospace; font-size: 2.5em; margin-bottom: 1em;">You Died!</h1>
+        <p style="color: #aaa; font-family: 'Lucida Console', monospace; font-size: 1.2em;">${game.monsterDefeated} / ${game.monsterTotal} monsters defeated!</p>
         <p style="color: #aaa; font-family: 'Lucida Console', monospace; font-size: 1.2em;">${game.pickupCollected} / ${game.pickupTotal} Pickups Collected.</p>
     `;
     document.body.appendChild(overlay);
@@ -1830,6 +1912,18 @@ function endGame() {
     }, 5000);
 }
 
+function endGameDeath() {
+    if (mainLoop) {
+        clearInterval(mainLoop);
+        mainLoop = null;
+    }
+    createDeathScreen();
+    setTimeout(() => {
+        removeDeathScreen();
+        createStartScreen();
+    }, 5000);
+}
+
 // Render Buffer
 
 function renderBuffer() {
@@ -1857,5 +1951,12 @@ function removeStartScreen() {
 
 function removeWinScreen() {
     const overlay = document.getElementById('win-screen-overlay');
+    if (overlay) overlay.remove();
+}
+
+// Remove death screen overlay
+
+function removeDeathScreen() {
+    const overlay = document.getElementById('death-screen-overlay');
     if (overlay) overlay.remove();
 }
