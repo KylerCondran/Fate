@@ -534,7 +534,7 @@ function loadLevel(levelIdx) {
     game.monsterDefeated = 0;
     game.pickupTotal = 0;
     game.pickupCollected = 0;
-    // Reset playerr health
+    // Reset player health
     game.player.health = 100;
     for (let i = 0; i < game.levels[levelIdx].map.length; i++) {
         for (let j = 0; j < game.levels[levelIdx].map[i].length; j++) {
@@ -590,7 +590,7 @@ function loadLevel(levelIdx) {
                         height: 725,
                         active: false,
                         data: null,
-                        damage: 10,
+                        damage: 20,
                         lastAttack: 0,
                         attackCooldown: 1000
                     };
@@ -611,7 +611,7 @@ function loadLevel(levelIdx) {
                         height: 201,
                         active: false,
                         data: null,
-                        damage: 10,
+                        damage: 15,
                         lastAttack: 0,
                         attackCooldown: 1000
                     };
@@ -632,7 +632,7 @@ function loadLevel(levelIdx) {
                         height: 237,
                         active: false,
                         data: null,
-                        damage: 10,
+                        damage: 25,
                         lastAttack: 0,
                         attackCooldown: 1000
                     };
@@ -702,7 +702,7 @@ function loadLevel(levelIdx) {
                         height: 512,
                         active: false,
                         data: null,
-                        damage: 10,
+                        damage: 25,
                         lastAttack: 0,
                         attackCooldown: 1000
                     };
@@ -723,7 +723,7 @@ function loadLevel(levelIdx) {
                         height: 512,
                         active: false,
                         data: null,
-                        damage: 10,
+                        damage: 100,
                         lastAttack: 0,
                         attackCooldown: 1000
                     };
@@ -744,7 +744,7 @@ function loadLevel(levelIdx) {
                         height: 512,
                         active: false,
                         data: null,
-                        damage: 10,
+                        damage: 25,
                         lastAttack: 0,
                         attackCooldown: 1000
                     };
@@ -765,7 +765,7 @@ function loadLevel(levelIdx) {
                         height: 512,
                         active: false,
                         data: null,
-                        damage: 10,
+                        damage: 25,
                         lastAttack: 0,
                         attackCooldown: 1000
                     };
