@@ -47,6 +47,7 @@ git clone https://github.com/KylerCondran/Raycaster-FPS-Game.git
   <li>Arctic</li>
   <li>Labyrinth</li>
   <li>Heaven</li>
+  <li>Death Pit</li>
   <li>Test Level</li>
 </ul>
 

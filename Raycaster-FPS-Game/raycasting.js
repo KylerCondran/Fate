@@ -1028,15 +1028,19 @@ function updateGameObjects() {
                         } else {
                             monster.health -= 75;
                         }
-                    } else {
-                        if (game.equippedWeapon == 4) {
+                    } else if (game.equippedWeapon == 4) {
+                        monster.health -= 50;
+                    } else if (game.equippedWeapon == 5) {
+                        playSound('explosion-sound');
+                        monster.health -= 150;
+                    } else if (game.equippedWeapon == 6) {
+                        if (monster.type == 'imp' || monster.type == 'demon' || monster.type == 'skeleton') {
                             monster.health -= 75;
-                        } else if (game.equippedWeapon == 5) {
-                            playSound('explosion-sound');
-                            monster.health -= 150;
                         } else {
                             monster.health -= 25;
-                        }
+                        }                     
+                    } else {
+                        monster.health -= 25;
                     }
                     if (monster.health <= 0) {
                         monster.isDead = true;
