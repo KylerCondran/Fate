@@ -1938,26 +1938,43 @@ function createStartScreen() {
     overlay.style.zIndex = '9999';
     overlay.innerHTML = `
         <h1 style="color: #fff; font-family: 'Lucida Console', monospace; font-size: 2.5em; margin-bottom: 1em;">Fate</h1>
-        <div id="level-buttons" style="display: flex; flex-direction: column; gap: 1em;"></div>
+        <table id="level-buttons" style="border-spacing: 1em;"></table>
         <p style="color: #aaa; margin-top: 2em; font-family: 'Lucida Console', monospace;">Use arrow keys to move, 1-6 to switch weapons, Space to shoot.</p>
     `;
     document.body.appendChild(overlay);
-    // Add level buttons
+    // Add level buttons in a 2-column table
     const btnContainer = overlay.querySelector('#level-buttons');
+    let currentRow;
     game.levels.forEach((level, idx) => {
+        if (idx % 2 === 0) {
+            currentRow = document.createElement('tr');
+            btnContainer.appendChild(currentRow);
+        }
+        let td = document.createElement('td');
         let btn = document.createElement('button');
-        btn.textContent = level.name;
-        btn.style.padding = '1em 2em';
+        if (game.levels[idx].unlocked == false) {
+            btn.textContent = 'Locked';
+            btn.style.backgroundColor = '#3b3b3b';
+        } else {
+            btn.textContent = level.name; 
+            btn.style.backgroundColor = '#a9a9a9';
+        }
+        
+        btn.style.width = '200px';
+        btn.style.height = '60px';
         btn.style.fontSize = '1.2em';
         if (game.levels[idx].unlocked == false) {
             btn.disabled = true;
         }
         btn.style.fontFamily = "'Lucida Console', monospace";
         btn.style.cursor = 'pointer';
+        btn.style.border = '2px solid #666';
+        btn.style.color = '#fff';
         btn.onclick = () => {
             startLevel(idx);
         };
-        btnContainer.appendChild(btn);
+        td.appendChild(btn);
+        currentRow.appendChild(td);
     });
 }
 
