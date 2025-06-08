@@ -65,7 +65,7 @@ let game = {
             rotation: 1.5
         }
     },
-    //level legend: 0 is empty space, 1 is a tree, 2 is a wall, 3 is a imp, 4 is a lion, 5 is a tiger, 6 is a bear, 7 is a yeti, 8 is ammo, 9 is pistolpickup, 10 is machinegunpickup, 11 is yetipistolpickup, 12 is rocketlauncherpickup, 13 is rocketammo, 14 is scepterpickup, 15 is a crusader, 16 is a king, 17 is a minotaur, 18 is a demon, 19 is a skeleton, 20 is a portal
+    //level legend: 0 is empty space, 1 is a tree, 2 is a wall, 3 is a imp, 4 is a lion, 5 is a tiger, 6 is a bear, 7 is a yeti, 8 is ammo, 9 is pistolpickup, 10 is machinegunpickup, 11 is yetipistolpickup, 12 is rocketlauncherpickup, 13 is rocketammo, 14 is scepterpickup, 15 is a crusader, 16 is a king, 17 is a minotaur, 18 is a demon, 19 is a skeleton, 20 is a portal, 21 is a jackalope, 22 is a alien1, 23 is a alien2, 24 is a ufo
     levels: [
         {
             name: "Hell",
@@ -131,7 +131,7 @@ let game = {
             name: "Arctic",
             map: [
                 [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
-                [2, 0, 0, 0, 0, 2, 0, 0, 0, 2, 2, 2, 0, 0, 0, 0, 0, 7, 0, 2],
+                [2, 0, 0, 0, 0, 2, 0, 0, 21, 2, 2, 2, 0, 0, 0, 0, 0, 7, 0, 2],
                 [2, 0, 0, 0, 0, 2, 1, 0, 0, 1, 2, 2, 0, 1, 0, 0, 1, 0, 0, 2],
                 [2, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
                 [2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 2, 0, 2],
@@ -141,13 +141,13 @@ let game = {
                 [2, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 2],
                 [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 2],
                 [2, 0, 0, 0, 0, 0, 2, 0, 2, 0, 2, 2, 2, 2, 2, 2, 0, 0, 0, 2],
-                [2, 0, 0, 0, 0, 0, 2, 0, 2, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 2, 0, 2, 21, 0, 0, 2, 0, 0, 0, 0, 0, 0, 2],
                 [2, 2, 0, 0, 0, 2, 2, 0, 2, 0, 0, 7, 2, 0, 0, 0, 0, 0, 0, 2],
                 [2, 2, 2, 2, 2, 2, 2, 0, 2, 2, 0, 2, 2, 2, 2, 2, 0, 2, 2, 2],
                 [2, 2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
-                [2, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 21, 2],
                 [2, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 11, 0, 0, 0, 1, 0, 0, 2],
-                [2, 7, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 7, 2],
+                [2, 7, 0, 0, 0, 0, 0, 0, 21, 2, 0, 0, 0, 0, 0, 0, 0, 0, 7, 2],
                 [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
             ],
             unlocked: false,
@@ -256,6 +256,57 @@ let game = {
                 { x: 6, y: 13, exitx: 2, exity: 10, exitangle: 90 },
                 { x: 13, y: 6, exitx: 17, exity: 9, exitangle: 270 },
                 { x: 13, y: 13, exitx: 17, exity: 10, exitangle: 90 }],
+            equippedweapon: 1
+        },
+        {
+            name: "Alien Base",
+            map: [
+                [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 23, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 22, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 23, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 22, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+                [2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 24, 0, 2],
+                [2, 0, 0, 24, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 23, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 22, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 23, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 22, 0, 0, 0, 0, 0, 24, 0, 0, 2],
+                [2, 0, 0, 0, 24, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
+            ],
+            unlocked: false,
+            floor: 10,
+            wall: 10,
+            background: 3,
+            startlocation: { x: 2, y: 2 },
             equippedweapon: 1
         },
         {
@@ -407,6 +458,12 @@ let game = {
             height: 16,
             id: "sand-texture",
             data: null
+        },
+        {
+            width: 16,
+            height: 16,
+            id: "tech-texture",
+            data: null
         }
     ],
     bulletTexture: {
@@ -450,6 +507,12 @@ let game = {
             width: 360,
             height: 60,
             id: "snowy",
+            data: null
+        },
+        {
+            width: 360,
+            height: 60,
+            id: "space",
             data: null
         }
     ]
@@ -836,6 +899,91 @@ function loadLevel(levelIdx) {
                     break;
                 case 20:
                     game.sprites.push({ id: "portal-sprite", x: j, y: i, width: 1024, height: 1024, active: true, data: null });
+                    break
+                case 21:
+                    const jackalope = {
+                        id: `monster_${game.monsterTotal}`,
+                        type: 'jackalope',
+                        skin: 'jackalope-sprite',
+                        audio: 'jackalope',
+                        x: j,
+                        y: i,
+                        health: 50,
+                        isDead: false,
+                        width: 512,
+                        height: 512,
+                        active: false,
+                        data: null,
+                        damage: 5,
+                        lastAttack: 0,
+                        attackCooldown: 1000
+                    };
+                    game.monsters.push(jackalope);
+                    game.monsterTotal++;
+                    break;
+                case 22:
+                    const alien1 = {
+                        id: `monster_${game.monsterTotal}`,
+                        type: 'alien',
+                        skin: 'alien1-sprite',
+                        audio: 'alien',
+                        x: j,
+                        y: i,
+                        health: 350,
+                        isDead: false,
+                        width: 512,
+                        height: 512,
+                        active: false,
+                        data: null,
+                        damage: 20,
+                        lastAttack: 0,
+                        attackCooldown: 1000
+                    };
+                    game.monsters.push(alien1);
+                    game.monsterTotal++;
+                    break;
+                case 23:
+                    const alien2 = {
+                        id: `monster_${game.monsterTotal}`,
+                        type: 'alien',
+                        skin: 'alien2-sprite',
+                        audio: 'alien',
+                        x: j,
+                        y: i,
+                        health: 350,
+                        isDead: false,
+                        width: 512,
+                        height: 512,
+                        active: false,
+                        data: null,
+                        damage: 20,
+                        lastAttack: 0,
+                        attackCooldown: 1000
+                    };
+                    game.monsters.push(alien2);
+                    game.monsterTotal++;
+                    break;
+                case 24:
+                    const ufo = {
+                        id: `monster_${game.monsterTotal}`,
+                        type: 'ufo',
+                        skin: 'ufo-sprite',
+                        audio: 'ufo',
+                        x: j,
+                        y: i,
+                        health: 1000,
+                        isDead: false,
+                        width: 512,
+                        height: 512,
+                        active: false,
+                        data: null,
+                        damage: 20,
+                        lastAttack: 0,
+                        attackCooldown: 1000
+                    };
+                    game.monsters.push(ufo);
+                    game.monsterTotal++;
+                    break;
                 default:
                     break;
             }
