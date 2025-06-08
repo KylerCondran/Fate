@@ -942,8 +942,6 @@ function loadLevel(levelIdx) {
                         height: 512,
                         active: false,
                         data: null,
-                        damage: 20,
-                        lastAttack: 0,
                         lastShot: 0,
                         attackCooldown: 2000
                     };
@@ -964,8 +962,6 @@ function loadLevel(levelIdx) {
                         height: 512,
                         active: false,
                         data: null,
-                        damage: 20,
-                        lastAttack: 0,
                         lastShot: 0,
                         attackCooldown: 2000
                     };
@@ -986,10 +982,10 @@ function loadLevel(levelIdx) {
                         height: 512,
                         active: false,
                         data: null,
-                        damage: 20,
-                        lastAttack: 0,
                         lastShot: 0,
-                        attackCooldown: 8000
+                        rocketlastShot: 0,
+                        attackCooldown: 2000,
+                        rocketCooldown: 8000
                     };
                     game.monsters.push(ufo);
                     game.monsterTotal++;
@@ -1341,15 +1337,27 @@ function updateGameObjects() {
                 }
             }
 
+            // For ufo types, shoot lasers at player if in range
+            if ((monster.type === 'ufo') && distSq < 64) {
+                if (!monster.lastShot || currentTime - monster.lastShot >= monster.attackCooldown) {
+                    const angle = radiansToDegrees(Math.atan2(dy, dx));
+                    const projectile = new MonsterProjectile(monster.x, monster.y, angle, 'laser', game.laserTexture);
+
+                    game.monsterProjectiles.push(projectile);
+                    playSound('laser-sound');;
+                    monster.lastShot = currentTime;
+                }
+            }
+
             // For ufo types, shoot rockets at player if in range
             if ((monster.type === 'ufo') && distSq < 100) {
-                if (!monster.lastShot || currentTime - monster.lastShot >= monster.attackCooldown) {
+                if (!monster.rocketlastShot || currentTime - monster.rocketlastShot >= monster.rocketCooldown) {
                     const angle = radiansToDegrees(Math.atan2(dy, dx));
                     const projectile = new MonsterProjectile(monster.x, monster.y, angle, 'rocket', game.inboundrocketTexture);
 
                     game.monsterProjectiles.push(projectile);
                     playSound('rocketlaunch-sound');
-                    monster.lastShot = currentTime;
+                    monster.rocketlastShot = currentTime;
                 }
             }
 
@@ -1398,7 +1406,7 @@ function updateGameObjects() {
                 // Check for attack range and cooldown
                 if (distSq < 0.5 && (!monster.lastAttack || currentTime - monster.lastAttack >= monster.attackCooldown)) {
                     // Attack the player
-                    game.player.health -= (monster.damage);
+                    game.player.health -= monster.damage;
                     monster.lastAttack = currentTime;
 
                     // Play monster attack sound
