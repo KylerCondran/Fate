@@ -485,6 +485,12 @@ let game = {
         height: 23,
         data: null
     },
+    inboundrocketTexture: {
+        id: 'inboundrocket-sprite',
+        width: 16,
+        height: 23,
+        data: null
+    },
     orbTexture: {
         id: 'orb-sprite',
         width: 27,
@@ -1339,7 +1345,7 @@ function updateGameObjects() {
             if ((monster.type === 'ufo') && distSq < 100) {
                 if (!monster.lastShot || currentTime - monster.lastShot >= 8000) { // Shoot every 8 seconds
                     const angle = radiansToDegrees(Math.atan2(dy, dx));
-                    const projectile = new MonsterProjectile(monster.x, monster.y, angle, 'rocket', game.rocketTexture);
+                    const projectile = new MonsterProjectile(monster.x, monster.y, angle, 'rocket', game.inboundrocketTexture);
 
                     game.monsterProjectiles.push(projectile);
                     playSound('rocketlaunch-sound');
@@ -1812,6 +1818,10 @@ function loadSprites() {
     // Load rocket sprite texture
     if (!game.rocketTexture.data) {
         game.rocketTexture.data = getTextureData(game.rocketTexture);
+    }
+    // Load inboundrocket sprite texture
+    if (!game.inboundrocketTexture.data) {
+        game.inboundrocketTexture.data = getTextureData(game.inboundrocketTexture);
     }
     if (!game.orbTexture.data) {
         game.orbTexture.data = getTextureData(game.orbTexture);
