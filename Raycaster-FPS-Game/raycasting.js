@@ -573,19 +573,20 @@ let mainLoop = null;
 
 function main() {
     mainLoop = setInterval(function () {
-        inactiveSprites();
-        clearScreen();
-        movePlayer();
-        updateGameObjects();
-        // WIN CONDITION: all monsters dead
-        if (game.monsters.length > 0 && game.monsters.every(monster => monster.isDead)) {
-            endGame();
-            return;
-        }
-        rayCasting();
-        drawSprites();
-        renderBuffer();
-        drawGun(screenContext);
+    inactiveSprites();
+    clearScreen();
+    movePlayer();
+    updateGameObjects();
+    // WIN CONDITION: all monsters dead
+    if (game.monsters.length > 0 && game.monsters.every(monster => monster.isDead)) {
+        endGame();
+        return;
+    }
+    rayCasting();
+    drawSprites();
+    renderBuffer();
+    drawGun(screenContext);
+    drawHUD(screenContext);
     }, game.render.delay);
 }
 
@@ -2157,6 +2158,44 @@ function drawGun(ctx) {
             160, 160
         );
     }
+}
+
+function drawHUD(ctx) {
+    // Draw semi-transparent black background for HUD
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+    ctx.fillRect(0, 0, 80, 20);
+
+    // Configure text style
+    ctx.font = '5px "Lucida Console"';
+    ctx.fillStyle = '#FFFFFF';
+
+    ctx.fillText(`Health: ${game.player.health}`, 0, 5);
+
+    // Draw weapon name
+    const weaponName = (() => {
+        switch(game.equippedWeapon) {
+            case 1: return 'Knife';
+            case 2: return 'Pistol';
+            case 3: return 'Machine Gun';
+            case 4: return 'Yeti Pistol';
+            case 5: return 'Rocket Launcher';
+            case 6: return 'Scepter';
+            default: return 'Unknown';
+        }
+    })();
+    ctx.fillText(`Weapon: ${weaponName}`, 0, 10);
+
+    // Draw ammo count
+    const ammoText = (() => {
+        if (game.equippedWeapon === 1 || game.equippedWeapon === 4 || game.equippedWeapon == 6) {
+            return '∞'; 
+        } else if (game.equippedWeapon === 5) {
+            return `${game.rocketammo}`; // Special ammo type for rocket launcher
+        } else {
+            return `${game.ammo}`; // Regular ammo for guns
+        }
+    })();
+    ctx.fillText(`Ammo: ${ammoText}`, 0, 15);
 }
 
 function drawHealthBar(x, y, width, height, health, maxHealth) {
