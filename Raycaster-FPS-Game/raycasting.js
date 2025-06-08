@@ -3,7 +3,8 @@ let game = {
     currentLevel: 0,
     monsters: [], // Each monster will have position, health, sprite, etc.
     sprites: [], // Only trees and other non-monster sprites
-    bullets: [],
+    bullets: [], // Player bullets
+    monsterProjectiles: [], // Monster projectiles
     weaponSprite: document.getElementById('knife-sprite'),
     isShooting: false,
     equippedWeapon: 1,
@@ -239,7 +240,7 @@ let game = {
                 [2, 0, 18, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 2],
                 [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
                 [2, 0, 20, 0, 0, 0, 0, 0, 0, 0, 18, 0, 0, 12, 0, 0, 0, 20, 0, 2],
-                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],				
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
                 [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
             ],
             unlocked: false,
@@ -937,6 +938,7 @@ function loadLevel(levelIdx) {
                         data: null,
                         damage: 20,
                         lastAttack: 0,
+                        lastShot: 0,
                         attackCooldown: 1000
                     };
                     game.monsters.push(alien1);
@@ -958,6 +960,7 @@ function loadLevel(levelIdx) {
                         data: null,
                         damage: 20,
                         lastAttack: 0,
+                        lastShot: 0,
                         attackCooldown: 1000
                     };
                     game.monsters.push(alien2);
@@ -979,6 +982,7 @@ function loadLevel(levelIdx) {
                         data: null,
                         damage: 20,
                         lastAttack: 0,
+                        lastShot: 0,
                         attackCooldown: 1000
                     };
                     game.monsters.push(ufo);
@@ -1101,6 +1105,23 @@ class Bullet {
         this.y = y;
         this.angle = angle;
         this.speed = 0.2;
+        this.owner = 'player';  // Used for rendering
+    }
+
+    update() {
+        this.x += Math.cos(degreeToRadians(this.angle)) * this.speed;
+        this.y += Math.sin(degreeToRadians(this.angle)) * this.speed;
+    }
+}
+
+// Monster Projectile Object
+class MonsterProjectile {
+    constructor(x, y, angle) {
+        this.x = x;
+        this.y = y;
+        this.angle = angle;
+        this.speed = 0.2;
+        this.owner = 'monster';  // Used for rendering
     }
 
     update() {
@@ -1147,8 +1168,11 @@ function handleShooting(e) {
 // Update Game Objects
 
 function updateGameObjects() {
-    // Update bullets
+    // Update bullets and monster projectiles
     const bulletsToRemove = new Set();
+    const projectilesToRemove = new Set();
+    
+    // Update player bullets
     for (let i = game.bullets.length - 1; i >= 0; i--) {
         const bullet = game.bullets[i];
         bullet.update();
@@ -1225,9 +1249,43 @@ function updateGameObjects() {
                 bulletsToRemove.add(i);
             }
         }
-    }
-    // Remove marked bullets in one pass
+    }    // Remove marked bullets in one pass
     game.bullets = game.bullets.filter((_, idx) => !bulletsToRemove.has(idx));
+
+    // Update monster projectiles
+    for (let i = game.monsterProjectiles.length - 1; i >= 0; i--) {
+        const projectile = game.monsterProjectiles[i];
+        projectile.update();        // Stop projectile if it hits a wall
+        const mapX = Math.floor(projectile.x);
+        const mapY = Math.floor(projectile.y);
+        if (game.levels[game.currentLevel].map[mapY] && game.levels[game.currentLevel].map[mapY][mapX] === 2) {
+            projectilesToRemove.add(i);
+            continue;
+        }
+
+        // Check if projectile hit player
+        const dx = game.player.x - projectile.x;
+        const dy = game.player.y - projectile.y;
+        const distSq = dx * dx + dy * dy;
+        if (distSq < game.bulletHitboxRadius) {
+            game.player.health -= 10; // Laser damage
+            playSound('injured-sound');
+            projectilesToRemove.add(i);
+
+            if (game.player.health <= 0) {
+                playSound('death-sound');
+                endGameDeath();
+            }
+        }
+
+        // Remove projectiles that have traveled too far
+        if (distSq > game.bulletRange) {
+            projectilesToRemove.add(i);
+        }
+    }
+
+    // Remove marked projectiles
+    game.monsterProjectiles = game.monsterProjectiles.filter((_, idx) => !projectilesToRemove.has(idx));
 
     // Update monster positions and check for attacks
     const currentTime = Date.now();
@@ -1236,6 +1294,28 @@ function updateGameObjects() {
             const dx = game.player.x - monster.x;
             const dy = game.player.y - monster.y;
             const distSq = dx * dx + dy * dy;
+            const currentTime = Date.now();
+
+            // For alien types, shoot lasers at player if in range
+            if ((monster.type === 'alien' || monster.type === 'ufo') && distSq < 64) {
+                if (!monster.lastShot || currentTime - monster.lastShot >= 2000) { // Shoot every 2 seconds
+                    const angle = radiansToDegrees(Math.atan2(dy, dx));
+                    const projectile = new MonsterProjectile(monster.x, monster.y, angle);
+                    
+                    // Set different colors for different alien types
+                    if (monster.type === 'ufo') {
+                        projectile.color = new Color(0, 255, 255, 255); // Cyan for UFO
+                    } else if (monster.skin === 'alien1-sprite') {
+                        projectile.color = new Color(255, 0, 0, 255); // Red for alien1
+                    } else {
+                        projectile.color = new Color(0, 255, 0, 255); // Green for alien2
+                    }
+                    
+                    game.monsterProjectiles.push(projectile);
+                    playSound('laser-sound');
+                    monster.lastShot = currentTime;
+                }
+            }
 
             // Move monster if within certain range but not too close
             if (distSq > 0.25 && distSq < 100) {
@@ -1807,19 +1887,27 @@ function drawBackground(x, y1, y2, background) {
 // Sprite drawing method
 
 function drawSprites() {
+    const currentTime = Date.now();
+    // Clean up expired effects
+    game.sprites = game.sprites.filter(sprite => 
+        !sprite.isEffect || (currentTime - sprite.createTime) < sprite.lifetime
+    );
+
     // Draw trees and other non-monster sprites
     for (let i = 0; i < game.sprites.length; i++) {
         const sprite = game.sprites[i];
-        if (sprite.active && sprite.data) {
+        if ((sprite.active && sprite.data) || sprite.isEffect) {
             drawSpriteInWorld(sprite);
         }
     }
+
     // Draw monsters
     for (let monster of game.monsters) {
         if (!monster.isDead && monster.active && monster.data) {
             drawSpriteInWorld(monster);
         }
     }
+
     // Draw bullets
     for (let bullet of game.bullets) {
         drawSpriteInWorld({
@@ -1828,7 +1916,21 @@ function drawSprites() {
             width: 4,
             height: 4,
             isBullet: true,
+            owner: 'player',
             color: new Color(255, 255, 0, 255)
+        });
+    }
+
+    // Draw monster projectiles
+    for (let projectile of game.monsterProjectiles) {
+        drawSpriteInWorld({
+            x: projectile.x,
+            y: projectile.y,
+            width: 4,
+            height: 4,
+            isBullet: true,
+            owner: 'monster',
+            color: projectile.color || new Color(255, 0, 0, 255) // Use custom color or default to red
         });
     }
 }
@@ -1871,7 +1973,7 @@ function drawSpriteInWorld(sprite) {
         const effectiveDistance = Math.max(distance, minDistance);
         spriteHeight = Math.max(4, Math.floor(game.projection.halfHeight * baseBulletSize / effectiveDistance));
         spriteWidth = Math.max(4, Math.floor(game.projection.halfWidth * baseBulletSize / effectiveDistance));
-        if (game.equippedWeapon == 1) {
+        if (sprite.owner == 'player' && game.equippedWeapon == 1) {
             // Knife: don't draw bullet
             return;
         }
@@ -1900,7 +2002,9 @@ function drawSpriteInWorld(sprite) {
 function drawBulletSprite(xProjection, spriteWidth, spriteHeight, bullet) {
     // Use bullet sprite texture instead of a filled rectangle
     let texture;
-    if (game.equippedWeapon == 4) {
+    if (bullet.owner == 'monster') {
+        texture = game.laserTexture;
+    } else if (game.equippedWeapon == 4) {
         texture = game.laserTexture;
     } else if (game.equippedWeapon == 5) {
         texture = game.rocketTexture;
