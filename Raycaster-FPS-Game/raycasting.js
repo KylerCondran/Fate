@@ -69,36 +69,6 @@ let game = {
     //level legend: 0 is empty space, 1 is a tree, 2 is a wall, 3 is a imp, 4 is a lion, 5 is a tiger, 6 is a bear, 7 is a yeti, 8 is ammo, 9 is pistolpickup, 10 is machinegunpickup, 11 is yetipistolpickup, 12 is rocketlauncherpickup, 13 is rocketammo, 14 is scepterpickup, 15 is a crusader, 16 is a king, 17 is a minotaur, 18 is a demon, 19 is a skeleton, 20 is a portal, 21 is a jackalope, 22 is a alien1, 23 is a alien2, 24 is a ufo
     levels: [
         {
-            name: "Hell",
-            map: [
-                [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
-                [2, 0, 0, 0, 0, 2, 0, 0, 0, 2, 2, 2, 0, 0, 0, 0, 0, 3, 0, 2],
-                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 1, 0, 0, 0, 13, 0, 2],
-                [2, 0, 0, 0, 0, 0, 13, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
-                [2, 2, 0, 0, 0, 0, 0, 0, 19, 0, 0, 2, 2, 0, 0, 0, 0, 2, 0, 2],
-                [2, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 2, 2, 0, 2, 0, 2, 2, 2],
-                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 2],
-                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 2],
-                [2, 0, 0, 0, 19, 0, 0, 0, 0, 0, 0, 2, 0, 0, 13, 2, 0, 0, 0, 2],
-                [2, 0, 0, 0, 0, 0, 0, 19, 0, 0, 0, 2, 0, 0, 0, 2, 0, 12, 0, 2],
-                [2, 0, 0, 0, 0, 0, 2, 0, 2, 0, 2, 2, 2, 2, 2, 2, 0, 0, 0, 2],
-                [2, 0, 13, 0, 0, 0, 2, 0, 2, 0, 0, 0, 2, 0, 0, 0, 19, 0, 0, 2],
-                [2, 2, 0, 0, 0, 2, 2, 0, 2, 0, 0, 3, 2, 3, 13, 0, 0, 0, 0, 2],
-                [2, 2, 2, 2, 2, 2, 2, 0, 2, 2, 0, 2, 2, 2, 2, 2, 0, 2, 2, 2],
-                [2, 2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
-                [2, 0, 13, 0, 0, 1, 0, 0, 0, 2, 0, 0, 0, 1, 13, 0, 0, 0, 0, 2],
-                [2, 3, 0, 0, 0, 0, 0, 0, 0, 2, 0, 13, 0, 0, 0, 0, 0, 0, 0, 2],
-                [2, 0, 0, 0, 0, 0, 13, 0, 2, 2, 0, 0, 0, 19, 0, 0, 0, 0, 18, 2],
-                [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
-            ],
-            unlocked: true,
-            floor: 6,
-            wall: 1,
-            background: 1,
-            startlocation: { x: 2, y: 2 },
-            equippedweapon: 1
-        },
-        {
             name: "Jungle",
             map: [
                 [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
@@ -121,10 +91,40 @@ let game = {
                 [2, 6, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 4, 2],
                 [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
             ],
-            unlocked: false,
+            unlocked: true,
             floor: 5,
             wall: 7,
             background: 0,
+            startlocation: { x: 2, y: 2 },
+            equippedweapon: 1
+        },
+        {
+            name: "Hell",
+            map: [
+                [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+                [2, 0, 0, 0, 0, 2, 0, 0, 0, 2, 2, 2, 0, 0, 0, 0, 0, 3, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 1, 0, 0, 0, 13, 0, 2],
+                [2, 0, 0, 0, 0, 0, 13, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 2, 0, 0, 0, 0, 0, 0, 19, 0, 0, 2, 2, 0, 0, 0, 0, 2, 0, 2],
+                [2, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2, 2, 2, 0, 2, 0, 2, 2, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 2],
+                [2, 0, 0, 0, 19, 0, 0, 0, 0, 0, 0, 2, 0, 0, 13, 2, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 19, 0, 0, 0, 2, 0, 0, 0, 2, 0, 12, 0, 2],
+                [2, 0, 0, 0, 0, 0, 2, 0, 2, 0, 2, 2, 2, 2, 2, 2, 0, 0, 0, 2],
+                [2, 0, 13, 0, 0, 0, 2, 0, 2, 0, 0, 0, 2, 0, 0, 0, 19, 0, 0, 2],
+                [2, 2, 0, 0, 0, 2, 2, 0, 2, 0, 0, 3, 2, 3, 13, 0, 0, 0, 0, 2],
+                [2, 2, 2, 2, 2, 2, 2, 0, 2, 2, 0, 2, 2, 2, 2, 2, 0, 2, 2, 2],
+                [2, 2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 13, 0, 0, 1, 0, 0, 0, 2, 0, 0, 0, 1, 13, 0, 0, 0, 0, 2],
+                [2, 3, 0, 0, 0, 0, 0, 0, 0, 2, 0, 13, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 13, 0, 2, 2, 0, 0, 0, 19, 0, 0, 0, 0, 18, 2],
+                [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
+            ],
+            unlocked: false,
+            floor: 6,
+            wall: 1,
+            background: 1,
             startlocation: { x: 2, y: 2 },
             equippedweapon: 1
         },
@@ -1255,7 +1255,8 @@ function updateGameObjects() {
     // Update monster projectiles
     for (let i = game.monsterProjectiles.length - 1; i >= 0; i--) {
         const projectile = game.monsterProjectiles[i];
-        projectile.update();        // Stop projectile if it hits a wall
+        projectile.update();
+        // Stop projectile if it hits a wall
         const mapX = Math.floor(projectile.x);
         const mapY = Math.floor(projectile.y);
         if (game.levels[game.currentLevel].map[mapY] && game.levels[game.currentLevel].map[mapY][mapX] === 2) {
@@ -1268,7 +1269,7 @@ function updateGameObjects() {
         const dy = game.player.y - projectile.y;
         const distSq = dx * dx + dy * dy;
         if (distSq < game.bulletHitboxRadius) {
-            game.player.health -= 10; // Laser damage
+            game.player.health -= 5; // Laser damage
             playSound('injured-sound');
             projectilesToRemove.add(i);
 
@@ -1288,7 +1289,6 @@ function updateGameObjects() {
     game.monsterProjectiles = game.monsterProjectiles.filter((_, idx) => !projectilesToRemove.has(idx));
 
     // Update monster positions and check for attacks
-    const currentTime = Date.now();
     for (let monster of game.monsters) {
         if (!monster.isDead) {
             const dx = game.player.x - monster.x;
@@ -1300,16 +1300,7 @@ function updateGameObjects() {
             if ((monster.type === 'alien' || monster.type === 'ufo') && distSq < 64) {
                 if (!monster.lastShot || currentTime - monster.lastShot >= 2000) { // Shoot every 2 seconds
                     const angle = radiansToDegrees(Math.atan2(dy, dx));
-                    const projectile = new MonsterProjectile(monster.x, monster.y, angle);
-                    
-                    // Set different colors for different alien types
-                    if (monster.type === 'ufo') {
-                        projectile.color = new Color(0, 255, 255, 255); // Cyan for UFO
-                    } else if (monster.skin === 'alien1-sprite') {
-                        projectile.color = new Color(255, 0, 0, 255); // Red for alien1
-                    } else {
-                        projectile.color = new Color(0, 255, 0, 255); // Green for alien2
-                    }
+                    const projectile = new MonsterProjectile(monster.x, monster.y, angle);                
                     
                     game.monsterProjectiles.push(projectile);
                     playSound('laser-sound');
@@ -1318,38 +1309,61 @@ function updateGameObjects() {
             }
 
             // Move monster if within certain range but not too close
-            if (distSq > 0.25 && distSq < 100) {
-                const distance = Math.sqrt(distSq);
-                const invDist = 1 / distance;
-                const dirX = dx * invDist * game.monsterMoveSpeed;
-                const dirY = dy * invDist * game.monsterMoveSpeed;
-                
-                // Try to move in X direction
-                const newX = monster.x + dirX;
-                if (game.levels[game.currentLevel].map[Math.floor(monster.y)][Math.floor(newX)] !== 2) {
-                    monster.x = newX;
+            if (monster.type === 'alien' || monster.type === 'ufo') {
+                if (distSq > 50 && distSq < 200) {
+                    const distance = Math.sqrt(distSq);
+                    const invDist = 1 / distance;
+                    const dirX = dx * invDist * game.monsterMoveSpeed;
+                    const dirY = dy * invDist * game.monsterMoveSpeed;
+
+                    // Try to move in X direction
+                    const newX = monster.x + dirX;
+                    if (game.levels[game.currentLevel].map[Math.floor(monster.y)][Math.floor(newX)] !== 2) {
+                        monster.x = newX;
+                    }
+
+                    // Try to move in Y direction
+                    const newY = monster.y + dirY;
+                    if (game.levels[game.currentLevel].map[Math.floor(newY)][Math.floor(monster.x)] !== 2) {
+                        monster.y = newY;
+                    }
                 }
-                
-                // Try to move in Y direction
-                const newY = monster.y + dirY;
-                if (game.levels[game.currentLevel].map[Math.floor(newY)][Math.floor(monster.x)] !== 2) {
-                    monster.y = newY;
+            } else {
+                if (distSq > 0.25 && distSq < 100) {
+                    const distance = Math.sqrt(distSq);
+                    const invDist = 1 / distance;
+                    const dirX = dx * invDist * game.monsterMoveSpeed;
+                    const dirY = dy * invDist * game.monsterMoveSpeed;
+
+                    // Try to move in X direction
+                    const newX = monster.x + dirX;
+                    if (game.levels[game.currentLevel].map[Math.floor(monster.y)][Math.floor(newX)] !== 2) {
+                        monster.x = newX;
+                    }
+
+                    // Try to move in Y direction
+                    const newY = monster.y + dirY;
+                    if (game.levels[game.currentLevel].map[Math.floor(newY)][Math.floor(monster.x)] !== 2) {
+                        monster.y = newY;
+                    }
                 }
             }
 
-            // Check for attack range and cooldown
-            if (distSq < 0.5 && (!monster.lastAttack || currentTime - monster.lastAttack >= (monster.attackCooldown))) {
-                // Attack the player
-                game.player.health -= (monster.damage);
-                monster.lastAttack = currentTime;
-                
-                // Play monster attack sound
-                playSound('injured-sound');
+            if (monster.type != 'alien' && monster.type != 'ufo') {
+                // Check for attack range and cooldown
+                if (distSq < 0.5 && (!monster.lastAttack || currentTime - monster.lastAttack >= (monster.attackCooldown))) {
+                    // Attack the player
+                    game.player.health -= (monster.damage);
+                    monster.lastAttack = currentTime;
 
-                // Check if player died
-                if (game.player.health <= 0) {
-                    playSound('death-sound');
-                    endGameDeath();
+                    // Play monster attack sound
+                    playSound('injured-sound');
+
+                    // Check if player died
+                    if (game.player.health <= 0) {
+                        playSound('death-sound');
+                        endGameDeath();
+                    }
                 }
             }
         }
@@ -1917,7 +1931,6 @@ function drawSprites() {
             height: 4,
             isBullet: true,
             owner: 'player',
-            color: new Color(255, 255, 0, 255)
         });
     }
 
@@ -1930,7 +1943,6 @@ function drawSprites() {
             height: 4,
             isBullet: true,
             owner: 'monster',
-            color: projectile.color || new Color(255, 0, 0, 255) // Use custom color or default to red
         });
     }
 }

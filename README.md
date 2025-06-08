@@ -42,12 +42,13 @@ git clone https://github.com/KylerCondran/Raycaster-FPS-Game.git
 ## Levels
 
 <ul>
-  <li>Hell</li>
   <li>Jungle</li>
+  <li>Hell</li> 
   <li>Arctic</li>
   <li>Labyrinth</li>
   <li>Heaven</li>
   <li>Death Pit</li>
+  <li>Alien Base</li>
   <li>Test Level</li>
 </ul>
 
@@ -58,12 +59,18 @@ git clone https://github.com/KylerCondran/Raycaster-FPS-Game.git
   <li>Lions</li>
   <li>Tigers</li>
   <li>Bears</li>
+  <li>Cheetahs</li>
+  <li>Rhinos</li>
+  <li>Wolves</li>
   <li>Yetis</li>
   <li>Minotaurs</li>
+  <li>Jackalopes</li>
   <li>Demons</li>
   <li>Skeletons</li>
   <li>Crusaders</li>
   <li>King</li>
+  <li>Aliens</li>
+  <li>UFOs</li>
 </ul>
 
 ## Inspiration
