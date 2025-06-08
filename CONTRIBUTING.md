@@ -10,14 +10,15 @@
 
 - [ ] More Sprites
 - [ ] Design Levels
-- [ ] More Weapons
+- [ ] More Weapons - Boomerang
 - [ ] Explosions
-- [ ] Win/Loss Screen
-- [ ] Player Taking Damage
+- [x] ~~Win/Loss Screen~~
+- [x] ~~Player Taking Damage~~
 - [ ] More Environment Textures
-- [ ] Enemies Shooting Guns
+- [x] ~~Enemies Shooting Guns~~
 - [ ] Programmatic Map Generation
 - [ ] More Pickups
 - [ ] Player HUD
 - [ ] Plot/Lore
 - [ ] Code Optimization
+- [ ] More Sounds
