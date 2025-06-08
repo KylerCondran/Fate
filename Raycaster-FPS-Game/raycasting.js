@@ -909,7 +909,7 @@ function loadLevel(levelIdx) {
                         audio: 'jackalope',
                         x: j,
                         y: i,
-                        health: 50,
+                        health: 25,
                         isDead: false,
                         width: 512,
                         height: 512,
@@ -1100,12 +1100,14 @@ function inactiveSprites() {
 // Bullet Object
 
 class Bullet {
-    constructor(x, y, angle) {
+    constructor(x, y, angle, type, texture) {
         this.x = x;
         this.y = y;
         this.angle = angle;
         this.speed = 0.2;
-        this.owner = 'player';  // Used for rendering
+        this.owner = 'player';
+        this.type = type,
+        this.texture = texture;
     }
 
     update() {
@@ -1116,12 +1118,14 @@ class Bullet {
 
 // Monster Projectile Object
 class MonsterProjectile {
-    constructor(x, y, angle) {
+    constructor(x, y, angle, type, texture) {
         this.x = x;
         this.y = y;
         this.angle = angle;
         this.speed = 0.2;
-        this.owner = 'monster';  // Used for rendering
+        this.owner = 'monster';
+        this.type = type,
+        this.texture = texture;
     }
 
     update() {
@@ -1146,7 +1150,22 @@ function handleShooting(e) {
         // Start the bullet slightly in front of the player in the direction they're facing
         const startX = game.player.x + Math.cos(degreeToRadians(game.player.angle)) * game.bulletStartDistance;
         const startY = game.player.y + Math.sin(degreeToRadians(game.player.angle)) * game.bulletStartDistance;
-        const bullet = new Bullet(startX, startY, game.player.angle);
+        let texture;
+        let type;
+        if (game.equippedWeapon == 4) {
+            texture = game.laserTexture;
+            type = 'laser';
+        } else if (game.equippedWeapon == 5) {
+            texture = game.rocketTexture;
+            type = 'rocket';
+        } else if (game.equippedWeapon == 6) {
+            texture = game.orbTexture;
+            type = 'orb';
+        } else {
+            texture = game.bulletTexture;
+            type = 'bullet';
+        }
+        const bullet = new Bullet(startX, startY, game.player.angle, type, texture);
         game.bullets.push(bullet);
 
         if (game.equippedWeapon == 1) {
@@ -1260,6 +1279,9 @@ function updateGameObjects() {
         const mapX = Math.floor(projectile.x);
         const mapY = Math.floor(projectile.y);
         if (game.levels[game.currentLevel].map[mapY] && game.levels[game.currentLevel].map[mapY][mapX] === 2) {
+            if (projectile.type === 'rocket') {
+                playSound('explosion-sound');
+            }
             projectilesToRemove.add(i);
             continue;
         }
@@ -1269,7 +1291,12 @@ function updateGameObjects() {
         const dy = game.player.y - projectile.y;
         const distSq = dx * dx + dy * dy;
         if (distSq < game.bulletHitboxRadius) {
-            game.player.health -= 5; // Laser damage
+            if (projectile.type === 'rocket') {
+                game.player.health -= 25; // rocket damage
+                playSound('explosion-sound');
+            } else {
+                game.player.health -= 5; // Laser damage
+            }
             playSound('injured-sound');
             projectilesToRemove.add(i);
 
@@ -1297,13 +1324,25 @@ function updateGameObjects() {
             const currentTime = Date.now();
 
             // For alien types, shoot lasers at player if in range
-            if ((monster.type === 'alien' || monster.type === 'ufo') && distSq < 64) {
+            if ((monster.type === 'alien') && distSq < 64) {
                 if (!monster.lastShot || currentTime - monster.lastShot >= 2000) { // Shoot every 2 seconds
                     const angle = radiansToDegrees(Math.atan2(dy, dx));
-                    const projectile = new MonsterProjectile(monster.x, monster.y, angle);                
+                    const projectile = new MonsterProjectile(monster.x, monster.y, angle, 'laser', game.laserTexture);                
                     
                     game.monsterProjectiles.push(projectile);
                     playSound('laser-sound');
+                    monster.lastShot = currentTime;
+                }
+            }
+
+            // For ufo types, shoot rockets at player if in range
+            if ((monster.type === 'ufo') && distSq < 100) {
+                if (!monster.lastShot || currentTime - monster.lastShot >= 8000) { // Shoot every 8 seconds
+                    const angle = radiansToDegrees(Math.atan2(dy, dx));
+                    const projectile = new MonsterProjectile(monster.x, monster.y, angle, 'rocket', game.rocketTexture);
+
+                    game.monsterProjectiles.push(projectile);
+                    playSound('rocketlaunch-sound');
                     monster.lastShot = currentTime;
                 }
             }
@@ -1931,6 +1970,7 @@ function drawSprites() {
             height: 4,
             isBullet: true,
             owner: 'player',
+            texture: bullet.texture
         });
     }
 
@@ -1943,6 +1983,7 @@ function drawSprites() {
             height: 4,
             isBullet: true,
             owner: 'monster',
+            texture: projectile.texture
         });
     }
 }
@@ -2012,19 +2053,8 @@ function drawSpriteInWorld(sprite) {
 
 // Draw bullet sprites
 function drawBulletSprite(xProjection, spriteWidth, spriteHeight, bullet) {
-    // Use bullet sprite texture instead of a filled rectangle
-    let texture;
-    if (bullet.owner == 'monster') {
-        texture = game.laserTexture;
-    } else if (game.equippedWeapon == 4) {
-        texture = game.laserTexture;
-    } else if (game.equippedWeapon == 5) {
-        texture = game.rocketTexture;
-    } else if (game.equippedWeapon == 6) {
-        texture = game.orbTexture;
-    } else {
-        texture = game.bulletTexture;
-    }
+    // Use bullet sprite texture
+    const texture = bullet.texture;
     if (!texture.data) return;
     // Clamp sprite size
     spriteWidth = Math.max(4, Math.min(spriteWidth, texture.width));
