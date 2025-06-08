@@ -945,7 +945,7 @@ function loadLevel(levelIdx) {
                         damage: 20,
                         lastAttack: 0,
                         lastShot: 0,
-                        attackCooldown: 1000
+                        attackCooldown: 2000
                     };
                     game.monsters.push(alien1);
                     game.monsterTotal++;
@@ -967,7 +967,7 @@ function loadLevel(levelIdx) {
                         damage: 20,
                         lastAttack: 0,
                         lastShot: 0,
-                        attackCooldown: 1000
+                        attackCooldown: 2000
                     };
                     game.monsters.push(alien2);
                     game.monsterTotal++;
@@ -989,7 +989,7 @@ function loadLevel(levelIdx) {
                         damage: 20,
                         lastAttack: 0,
                         lastShot: 0,
-                        attackCooldown: 1000
+                        attackCooldown: 8000
                     };
                     game.monsters.push(ufo);
                     game.monsterTotal++;
@@ -1296,7 +1296,7 @@ function updateGameObjects() {
         const dx = game.player.x - projectile.x;
         const dy = game.player.y - projectile.y;
         const distSq = dx * dx + dy * dy;
-        if (distSq < game.bulletHitboxRadius) {
+        if (distSq < 0.10) {
             if (projectile.type === 'rocket') {
                 game.player.health -= 25; // rocket damage
                 playSound('explosion-sound');
@@ -1331,7 +1331,7 @@ function updateGameObjects() {
 
             // For alien types, shoot lasers at player if in range
             if ((monster.type === 'alien') && distSq < 64) {
-                if (!monster.lastShot || currentTime - monster.lastShot >= 2000) { // Shoot every 2 seconds
+                if (!monster.lastShot || currentTime - monster.lastShot >= monster.attackCooldown) {
                     const angle = radiansToDegrees(Math.atan2(dy, dx));
                     const projectile = new MonsterProjectile(monster.x, monster.y, angle, 'laser', game.laserTexture);                
                     
@@ -1343,7 +1343,7 @@ function updateGameObjects() {
 
             // For ufo types, shoot rockets at player if in range
             if ((monster.type === 'ufo') && distSq < 100) {
-                if (!monster.lastShot || currentTime - monster.lastShot >= 8000) { // Shoot every 8 seconds
+                if (!monster.lastShot || currentTime - monster.lastShot >= monster.attackCooldown) {
                     const angle = radiansToDegrees(Math.atan2(dy, dx));
                     const projectile = new MonsterProjectile(monster.x, monster.y, angle, 'rocket', game.inboundrocketTexture);
 
@@ -1355,7 +1355,7 @@ function updateGameObjects() {
 
             // Move monster if within certain range but not too close
             if (monster.type === 'alien' || monster.type === 'ufo') {
-                if (distSq > 50 && distSq < 200) {
+                if (distSq > 30 && distSq < 200) {
                     const distance = Math.sqrt(distSq);
                     const invDist = 1 / distance;
                     const dirX = dx * invDist * game.monsterMoveSpeed;
@@ -1396,7 +1396,7 @@ function updateGameObjects() {
 
             if (monster.type != 'alien' && monster.type != 'ufo') {
                 // Check for attack range and cooldown
-                if (distSq < 0.5 && (!monster.lastAttack || currentTime - monster.lastAttack >= (monster.attackCooldown))) {
+                if (distSq < 0.5 && (!monster.lastAttack || currentTime - monster.lastAttack >= monster.attackCooldown)) {
                     // Attack the player
                     game.player.health -= (monster.damage);
                     monster.lastAttack = currentTime;
