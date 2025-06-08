@@ -1196,6 +1196,8 @@ function updateGameObjects() {
                         playSound(`${monster.audio}-death`);
                         if (monster.type == 'crusader' || monster.type == 'king') {
                             game.sprites.push({ id: 'tombstone-sprite', x: monster.x, y: monster.y, width: 256, height: 256, active: true, data: null });
+                        } else if (monster.type == 'alien') {
+                            game.sprites.push({ id: 'acid-sprite', x: monster.x, y: monster.y, width: 256, height: 256, active: true, data: null });
                         } else {
                             game.sprites.push({ id: 'bones-sprite', x: monster.x, y: monster.y, width: 256, height: 256, active: true, data: null });
                         }                     
