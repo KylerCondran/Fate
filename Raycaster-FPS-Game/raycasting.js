@@ -385,6 +385,14 @@ let game = {
         six: {
             code: "Digit6",
             active: false
+        },
+        strafeleft: {
+            code: "KeyA",
+            active: false
+        },
+        straferight: {
+            code: "KeyD",
+            active: false
         }
     },
     textures: [
@@ -1442,70 +1450,6 @@ function movePlayer() {
         if (game.levels[game.currentLevel].map[Math.floor(game.player.y)][checkX] != 2) {
             game.player.x = newX;
         }
-        // Check for pickups
-        switch (game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)]) {
-            // Ammo pickup
-            case 8:
-                game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
-                itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
-                game.ammo += 8;
-                game.pickupCollected++;
-                break;
-            // Pistol pickup
-            case 9:
-                game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
-                itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
-                game.weaponsUnlocked.pistol = true;
-                game.pickupCollected++;
-                break;
-            // Machinegun pickup
-            case 10:
-                game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
-                itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
-                game.weaponsUnlocked.machinegun = true;
-                game.pickupCollected++;
-                break;
-            // Yeti pistol pickup
-            case 11:
-                game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
-                itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
-                game.weaponsUnlocked.yetipistol = true;
-                game.pickupCollected++;
-                break;
-            // Rocket launcher pickup
-            case 12:
-                game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
-                itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
-                game.weaponsUnlocked.rocketlauncher = true;
-                game.pickupCollected++;
-                break;
-            // Rocket ammo pickup
-            case 13:
-                game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
-                itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
-                game.rocketammo += 4;
-                game.pickupCollected++;
-                break;
-            // Scepter pickup
-            case 14:
-                game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
-                itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
-                game.weaponsUnlocked.scepter = true;
-                game.pickupCollected++;
-                break;
-            // Portal activated
-            case 20:
-                for (let portal of game.levels[game.currentLevel].portalcoords) {
-                    if (portal.x == Math.floor(game.player.x) && portal.y == Math.floor(game.player.y)) {
-                        playSound('portal-sound');
-                        game.player.x = portal.exitx;
-                        game.player.y = portal.exity;
-                        game.player.angle = portal.exitangle;
-                        break;
-                    }
-                }              
-                break;
-        }
     }
     if (game.key.down.active) {
         let playerCos = Math.cos(degreeToRadians(game.player.angle)) * game.player.speed.movement;
@@ -1522,7 +1466,55 @@ function movePlayer() {
         if (game.levels[game.currentLevel].map[Math.floor(game.player.y)][checkX] != 2) {
             game.player.x = newX;
         }
+    }
+    if (game.key.left.active) {
+        game.player.angle -= game.player.speed.rotation;
+        if (game.player.angle < 0) game.player.angle += 360;
+        game.player.angle %= 360;
+    }
+    if (game.key.right.active) {
+        game.player.angle += game.player.speed.rotation;
+        if (game.player.angle < 0) game.player.angle += 360;
+        game.player.angle %= 360;
+    }
+    if (game.key.space.active) {
+        handleShooting();
+    }
+    if (game.key.strafeleft.active) {
+        let angle = degreeToRadians(game.player.angle - 90);
+        let playerCos = Math.cos(angle) * game.player.speed.movement;
+        let playerSin = Math.sin(angle) * game.player.speed.movement;
+        let newX = game.player.x + playerCos;
+        let newY = game.player.y + playerSin;
+        let checkX = Math.floor(newX + playerCos * game.player.radius);
+        let checkY = Math.floor(newY + playerSin * game.player.radius);
 
+        // Collision detection
+        if (game.levels[game.currentLevel].map[checkY][Math.floor(game.player.x)] != 2) {
+            game.player.y = newY;
+        }
+        if (game.levels[game.currentLevel].map[Math.floor(game.player.y)][checkX] != 2) {
+            game.player.x = newX;
+        }
+    }
+    if (game.key.straferight.active) {
+        let angle = degreeToRadians(game.player.angle + 90);
+        let playerCos = Math.cos(angle) * game.player.speed.movement;
+        let playerSin = Math.sin(angle) * game.player.speed.movement;
+        let newX = game.player.x + playerCos;
+        let newY = game.player.y + playerSin;
+        let checkX = Math.floor(newX + playerCos * game.player.radius);
+        let checkY = Math.floor(newY + playerSin * game.player.radius);
+
+        // Collision detection
+        if (game.levels[game.currentLevel].map[checkY][Math.floor(game.player.x)] != 2) {
+            game.player.y = newY;
+        }
+        if (game.levels[game.currentLevel].map[Math.floor(game.player.y)][checkX] != 2) {
+            game.player.x = newX;
+        }
+    }
+    if (game.key.up.active || game.key.down.active || game.key.strafeleft.active || game.key.straferight.active) {
         // Check for pickups
         switch (game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)]) {
             // Ammo pickup
@@ -1587,19 +1579,6 @@ function movePlayer() {
                 }
                 break;
         }
-    }
-    if (game.key.left.active) {
-        game.player.angle -= game.player.speed.rotation;
-        if (game.player.angle < 0) game.player.angle += 360;
-        game.player.angle %= 360;
-    }
-    if (game.key.right.active) {
-        game.player.angle += game.player.speed.rotation;
-        if (game.player.angle < 0) game.player.angle += 360;
-        game.player.angle %= 360;
-    }
-    if (game.key.space.active) {
-        handleShooting();
     }
     if (game.key.one.active && game.weaponsUnlocked.knife == true) {
         game.weaponSprite = document.getElementById('knife-sprite');
@@ -1681,80 +1660,92 @@ function setWeapon(id) {
 // Key Down Check
 
 document.addEventListener('keydown', (event) => {
-    let keyCode = event.code;
-
-    if (keyCode === game.key.up.code) {
-        game.key.up.active = true;
-    }
-    if (keyCode === game.key.down.code) {
-        game.key.down.active = true;
-    }
-    if (keyCode === game.key.left.code) {
-        game.key.left.active = true;
-    }
-    if (keyCode === game.key.right.code) {
-        game.key.right.active = true;
-    }
-    if (keyCode === game.key.space.code) {
-        game.key.space.active = true;
-    }
-    if (keyCode === game.key.one.code) {
-        game.key.one.active = true;
-    }
-    if (keyCode === game.key.two.code) {
-        game.key.two.active = true;
-    }
-    if (keyCode === game.key.three.code) {
-        game.key.three.active = true;
-    }
-    if (keyCode === game.key.four.code) {
-        game.key.four.active = true;
-    }
-    if (keyCode === game.key.five.code) {
-        game.key.five.active = true;
-    }
-    if (keyCode === game.key.six.code) {
-        game.key.six.active = true;
+    switch (event.code) {
+        case game.key.up.code:
+            game.key.up.active = true;
+            break;
+        case game.key.down.code:
+            game.key.down.active = true;
+            break;
+        case game.key.left.code:
+            game.key.left.active = true;
+            break;
+        case game.key.right.code:
+            game.key.right.active = true;
+            break;
+        case game.key.space.code:
+            game.key.space.active = true;
+            break;
+        case game.key.one.code:
+            game.key.one.active = true;
+            break;
+        case game.key.two.code:
+            game.key.two.active = true;
+            break;
+        case game.key.three.code:
+            game.key.three.active = true;
+            break;
+        case game.key.four.code:
+            game.key.four.active = true;
+            break;
+        case game.key.five.code:
+            game.key.five.active = true;
+            break;
+        case game.key.six.code:
+            game.key.six.active = true;
+            break;
+        case game.key.strafeleft.code:
+            game.key.strafeleft.active = true;
+            break;
+        case game.key.straferight.code:
+            game.key.straferight.active = true;
+            break;
     }
 });
 
 // Key Up Check
 
 document.addEventListener('keyup', (event) => {
-    let keyCode = event.code;
-
-    if (keyCode === game.key.up.code) {
-        game.key.up.active = false;
-    }
-    if (keyCode === game.key.down.code) {
-        game.key.down.active = false;
-    }
-    if (keyCode === game.key.left.code) {
-        game.key.left.active = false;
-    }
-    if (keyCode === game.key.right.code) {
-        game.key.right.active = false;
-    }
-    if (keyCode === game.key.space.code) {
-        game.key.space.active = false;
-    }
-    if (keyCode === game.key.one.code) {
-        game.key.one.active = false;
-    }
-    if (keyCode === game.key.two.code) {
-        game.key.two.active = false;
-    }
-    if (keyCode === game.key.three.code) {
-        game.key.three.active = false;
-    }
-    if (keyCode === game.key.four.code) {
-        game.key.four.active = false;
-    }
-    if (keyCode === game.key.five.code) {
-        game.key.five.active = false;
-    }
-    if (keyCode === game.key.six.code) {
-        game.key.six.active = false;
+    switch (event.code) {
+        case game.key.up.code:
+            game.key.up.active = false;
+            break;
+        case game.key.down.code:
+            game.key.down.active = false;
+            break;
+        case game.key.left.code:
+            game.key.left.active = false;
+            break;
+        case game.key.right.code:
+            game.key.right.active = false;
+            break;
+        case game.key.space.code:
+            game.key.space.active = false;
+            break;
+        case game.key.one.code:
+            game.key.one.active = false;
+            break;
+        case game.key.two.code:
+            game.key.two.active = false;
+            break;
+        case game.key.three.code:
+            game.key.three.active = false;
+            break;
+        case game.key.four.code:
+            game.key.four.active = false;
+            break;
+        case game.key.five.code:
+            game.key.five.active = false;
+            break;
+        case game.key.six.code:
+            game.key.six.active = false;
+            break;
+        case game.key.strafeleft.code:
+            game.key.strafeleft.active = false;
+            break;
+        case game.key.straferight.code:
+            game.key.straferight.active = false;
+            break;
     }
 });
 
@@ -2292,7 +2283,7 @@ function createStartScreen() {
     overlay.innerHTML = `
         <h1 style="color: #fff; font-family: 'Lucida Console', monospace; font-size: 2.5em; margin-bottom: 1em;">Fate</h1>
         <table id="level-buttons" style="border-spacing: 1em;"></table>
-        <p style="color: #aaa; margin-top: 2em; font-family: 'Lucida Console', monospace;">Use arrow keys to move, 1-6 to switch weapons, Space to shoot.</p>
+        <p style="color: #aaa; margin-top: 2em; font-family: 'Lucida Console', monospace;">Use arrow keys to move, A & D to strafe, 1-6 to switch weapons, Space to shoot.</p>
     `;
     document.body.appendChild(overlay);
     // Add level buttons in a 2-column table
