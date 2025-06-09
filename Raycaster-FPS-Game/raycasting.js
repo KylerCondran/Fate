@@ -1481,37 +1481,43 @@ function movePlayer() {
         handleShooting();
     }
     if (game.key.strafeleft.active) {
-        let angle = degreeToRadians(game.player.angle - 90);
-        let playerCos = Math.cos(angle) * game.player.speed.movement;
-        let playerSin = Math.sin(angle) * game.player.speed.movement;
+        // Calculate strafe angle (90 degrees to the left of player's angle)
+        let strafeAngle = game.player.angle - 90;
+        let playerCos = Math.cos(degreeToRadians(strafeAngle)) * game.player.speed.movement;
+        let playerSin = Math.sin(degreeToRadians(strafeAngle)) * game.player.speed.movement;
         let newX = game.player.x + playerCos;
         let newY = game.player.y + playerSin;
-        let checkX = Math.floor(newX + playerCos * game.player.radius);
-        let checkY = Math.floor(newY + playerSin * game.player.radius);
 
-        // Collision detection
-        if (game.levels[game.currentLevel].map[checkY][Math.floor(game.player.x)] != 2) {
-            game.player.y = newY;
-        }
+        // Calculate wall check coordinates with player radius
+        let checkX = Math.floor(newX);
+        let checkY = Math.floor(newY);
+
+        // Check both X and Y collisions independently
         if (game.levels[game.currentLevel].map[Math.floor(game.player.y)][checkX] != 2) {
             game.player.x = newX;
+        }
+        if (game.levels[game.currentLevel].map[checkY][Math.floor(game.player.x)] != 2) {
+            game.player.y = newY;
         }
     }
     if (game.key.straferight.active) {
-        let angle = degreeToRadians(game.player.angle + 90);
-        let playerCos = Math.cos(angle) * game.player.speed.movement;
-        let playerSin = Math.sin(angle) * game.player.speed.movement;
+        // Calculate strafe angle (90 degrees to the right of player's angle)
+        let strafeAngle = game.player.angle + 90;
+        let playerCos = Math.cos(degreeToRadians(strafeAngle)) * game.player.speed.movement;
+        let playerSin = Math.sin(degreeToRadians(strafeAngle)) * game.player.speed.movement;
         let newX = game.player.x + playerCos;
         let newY = game.player.y + playerSin;
-        let checkX = Math.floor(newX + playerCos * game.player.radius);
-        let checkY = Math.floor(newY + playerSin * game.player.radius);
 
-        // Collision detection
-        if (game.levels[game.currentLevel].map[checkY][Math.floor(game.player.x)] != 2) {
-            game.player.y = newY;
-        }
+        // Calculate wall check coordinates with player radius
+        let checkX = Math.floor(newX);
+        let checkY = Math.floor(newY);
+
+        // Check both X and Y collisions independently
         if (game.levels[game.currentLevel].map[Math.floor(game.player.y)][checkX] != 2) {
             game.player.x = newX;
+        }
+        if (game.levels[game.currentLevel].map[checkY][Math.floor(game.player.x)] != 2) {
+            game.player.y = newY;
         }
     }
     if (game.key.up.active || game.key.down.active || game.key.strafeleft.active || game.key.straferight.active) {
