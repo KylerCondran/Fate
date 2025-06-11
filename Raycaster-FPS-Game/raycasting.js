@@ -1435,19 +1435,23 @@ function updateGameObjects() {
 // Movement
 
 function movePlayer() {
+    let map = game.levels[game.currentLevel].map;
+    let mapHeight = map.length;
+    let mapWidth = map[0]?.length ?? 0; 
     if (game.key.up.active) {
         let playerCos = Math.cos(degreeToRadians(game.player.angle)) * game.player.speed.movement;
         let playerSin = Math.sin(degreeToRadians(game.player.angle)) * game.player.speed.movement;
         let newX = game.player.x + playerCos;
         let newY = game.player.y + playerSin;
         let checkX = Math.floor(newX + playerCos * game.player.radius);
-        let checkY = Math.floor(newY + playerSin * game.player.radius);
-
+        let checkY = Math.floor(newY + playerSin * game.player.radius);  
+        let mathfloorX = Math.floor(game.player.x);
+        let mathfloorY = Math.floor(game.player.y);
         // Collision detection
-        if (game.levels[game.currentLevel].map[checkY][Math.floor(game.player.x)] != 2) {
+        if (checkY >= 0 && checkY < mapHeight && mathfloorX >= 0 && mathfloorX < mapWidth && map[checkY][mathfloorX] !== 2) {
             game.player.y = newY;
         }
-        if (game.levels[game.currentLevel].map[Math.floor(game.player.y)][checkX] != 2) {
+        if (mathfloorY >= 0 && mathfloorY < mapHeight && checkX >= 0 && checkX < mapWidth && map[mathfloorY][checkX] !== 2) {
             game.player.x = newX;
         }
     }
@@ -1458,12 +1462,13 @@ function movePlayer() {
         let newY = game.player.y - playerSin;
         let checkX = Math.floor(newX - playerCos * game.player.radius);
         let checkY = Math.floor(newY - playerSin * game.player.radius);
-
+        let mathfloorX = Math.floor(game.player.x);
+        let mathfloorY = Math.floor(game.player.y);
         // Collision detection
-        if (game.levels[game.currentLevel].map[checkY][Math.floor(game.player.x)] != 2) {
+        if (checkY >= 0 && checkY < mapHeight && mathfloorX >= 0 && mathfloorX < mapWidth && map[checkY][mathfloorX] !== 2) {
             game.player.y = newY;
         }
-        if (game.levels[game.currentLevel].map[Math.floor(game.player.y)][checkX] != 2) {
+        if (mathfloorY >= 0 && mathfloorY < mapHeight && checkX >= 0 && checkX < mapWidth && map[mathfloorY][checkX] !== 2) {
             game.player.x = newX;
         }
     }
@@ -1487,17 +1492,16 @@ function movePlayer() {
         let playerSin = Math.sin(degreeToRadians(strafeAngle)) * game.player.speed.movement;
         let newX = game.player.x + playerCos;
         let newY = game.player.y + playerSin;
-
-        // Calculate wall check coordinates with player radius
         let checkX = Math.floor(newX);
         let checkY = Math.floor(newY);
-
-        // Check both X and Y collisions independently
-        if (game.levels[game.currentLevel].map[Math.floor(game.player.y)][checkX] != 2) {
-            game.player.x = newX;
-        }
-        if (game.levels[game.currentLevel].map[checkY][Math.floor(game.player.x)] != 2) {
+        let mathfloorX = Math.floor(game.player.x);
+        let mathfloorY = Math.floor(game.player.y);
+        // Collision detection
+        if (checkY >= 0 && checkY < mapHeight && mathfloorX >= 0 && mathfloorX < mapWidth && map[checkY][mathfloorX] !== 2) {
             game.player.y = newY;
+        }
+        if (mathfloorY >= 0 && mathfloorY < mapHeight && checkX >= 0 && checkX < mapWidth && map[mathfloorY][checkX] !== 2) {
+            game.player.x = newX;
         }
     }
     if (game.key.straferight.active) {
@@ -1507,17 +1511,16 @@ function movePlayer() {
         let playerSin = Math.sin(degreeToRadians(strafeAngle)) * game.player.speed.movement;
         let newX = game.player.x + playerCos;
         let newY = game.player.y + playerSin;
-
-        // Calculate wall check coordinates with player radius
         let checkX = Math.floor(newX);
         let checkY = Math.floor(newY);
-
-        // Check both X and Y collisions independently
-        if (game.levels[game.currentLevel].map[Math.floor(game.player.y)][checkX] != 2) {
-            game.player.x = newX;
-        }
-        if (game.levels[game.currentLevel].map[checkY][Math.floor(game.player.x)] != 2) {
+        let mathfloorX = Math.floor(game.player.x);
+        let mathfloorY = Math.floor(game.player.y);
+        // Collision detection
+        if (checkY >= 0 && checkY < mapHeight && mathfloorX >= 0 && mathfloorX < mapWidth && map[checkY][mathfloorX] !== 2) {
             game.player.y = newY;
+        }
+        if (mathfloorY >= 0 && mathfloorY < mapHeight && checkX >= 0 && checkX < mapWidth && map[mathfloorY][checkX] !== 2) {
+            game.player.x = newX;
         }
     }
     if (game.key.up.active || game.key.down.active || game.key.strafeleft.active || game.key.straferight.active) {
