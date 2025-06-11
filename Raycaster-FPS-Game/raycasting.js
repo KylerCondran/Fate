@@ -1956,16 +1956,10 @@ function drawBackground(x, y1, y2, background) {
 // Sprite drawing method
 
 function drawSprites() {
-    const currentTime = Date.now();
-    // Clean up expired effects
-    game.sprites = game.sprites.filter(sprite => 
-        !sprite.isEffect || (currentTime - sprite.createTime) < sprite.lifetime
-    );
-
     // Draw trees and other non-monster sprites
     for (let i = 0; i < game.sprites.length; i++) {
         const sprite = game.sprites[i];
-        if ((sprite.active && sprite.data) || sprite.isEffect) {
+        if (sprite.data) {
             drawSpriteInWorld(sprite);
         }
     }
