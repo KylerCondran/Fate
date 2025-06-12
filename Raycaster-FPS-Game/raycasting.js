@@ -1148,6 +1148,7 @@ function handleShooting(e) {
         switch (game.equippedWeapon) {
             case 1:
                 playSound('knife-sound');
+                type = 'knife';
                 break;
             case 4:
                 texture = game.laserTexture;
