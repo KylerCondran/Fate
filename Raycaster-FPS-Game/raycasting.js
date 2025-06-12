@@ -1160,41 +1160,40 @@ function handleShooting(e) {
             playSound('gunclick-sound');
             return;
         }
-
         // Start the bullet slightly in front of the player in the direction they're facing
         const startX = game.player.x + Math.cos(degreeToRadians(game.player.angle)) * game.bulletStartDistance;
         const startY = game.player.y + Math.sin(degreeToRadians(game.player.angle)) * game.bulletStartDistance;
         let texture;
         let type;
-        if (game.equippedWeapon == 4) {
-            texture = game.laserTexture;
-            type = 'laser';
-        } else if (game.equippedWeapon == 5) {
-            texture = game.rocketTexture;
-            type = 'rocket';
-        } else if (game.equippedWeapon == 6) {
-            texture = game.orbTexture;
-            type = 'orb';
-        } else {
-            texture = game.bulletTexture;
-            type = 'bullet';
+        switch (game.equippedWeapon) {
+            case 1:
+                playSound('knife-sound');
+                break;
+            case 4:
+                texture = game.laserTexture;
+                type = 'laser';
+                playSound('laser-sound');
+                break;
+            case 5:
+                texture = game.rocketTexture;
+                type = 'rocket';
+                playSound('rocketlaunch-sound');
+                game.rocketammo--;
+                break;
+            case 6:
+                texture = game.orbTexture;
+                type = 'orb';
+                playSound('orb-sound');
+                break;
+            default:
+                texture = game.bulletTexture;
+                type = 'bullet';
+                playSound('shoot-sound');
+                game.ammo--;
+                break;
         }
         const bullet = new Bullet(startX, startY, game.player.angle, type, texture);
         game.bullets.push(bullet);
-
-        if (game.equippedWeapon == 1) {
-            playSound('knife-sound');
-        } else if (game.equippedWeapon == 4) {
-            playSound('laser-sound');
-        } else if (game.equippedWeapon == 5) {
-            playSound('rocketlaunch-sound');
-            game.rocketammo--;
-        } else if (game.equippedWeapon == 6) {
-            playSound('orb-sound');
-        } else {
-            playSound('shoot-sound');
-            game.ammo--;
-        }
     }
 }
 
