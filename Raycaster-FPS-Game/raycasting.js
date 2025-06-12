@@ -1340,100 +1340,103 @@ function updateGameObjects() {
             const dy = game.player.y - monster.y;
             const distSq = dx * dx + dy * dy;
             const currentTime = Date.now();
+            let map = game.levels[game.currentLevel].map;
 
-            // For alien types, shoot lasers at player if in range
-            if ((monster.type === 'alien') && distSq < 64) {
-                if (!monster.lastShot || currentTime - monster.lastShot >= monster.attackCooldown) {
-                    const angle = radiansToDegrees(Math.atan2(dy, dx));
-                    const projectile = new MonsterProjectile(monster.x, monster.y, angle, 'laser', game.laserTexture);                
-                    
-                    game.monsterProjectiles.push(projectile);
-                    playSound('laser-sound');
-                    monster.lastShot = currentTime;
-                }
-            }
+            switch (monster.type) {
+                case 'alien':
+                    if (distSq < 64) {
+                        if (!monster.lastShot || currentTime - monster.lastShot >= monster.attackCooldown) {
+                            const angle = radiansToDegrees(Math.atan2(dy, dx));
+                            const projectile = new MonsterProjectile(monster.x, monster.y, angle, 'laser', game.laserTexture);
 
-            // For ufo types, shoot lasers at player if in range
-            if ((monster.type === 'ufo') && distSq < 64) {
-                if (!monster.lastShot || currentTime - monster.lastShot >= monster.attackCooldown) {
-                    const angle = radiansToDegrees(Math.atan2(dy, dx));
-                    const projectile = new MonsterProjectile(monster.x, monster.y, angle, 'laser', game.laserTexture);
-
-                    game.monsterProjectiles.push(projectile);
-                    playSound('laser-sound');;
-                    monster.lastShot = currentTime;
-                }
-            }
-
-            // For ufo types, shoot rockets at player if in range
-            if ((monster.type === 'ufo') && distSq < 100) {
-                if (!monster.rocketlastShot || currentTime - monster.rocketlastShot >= monster.rocketCooldown) {
-                    const angle = radiansToDegrees(Math.atan2(dy, dx));
-                    const projectile = new MonsterProjectile(monster.x, monster.y, angle, 'rocket', game.inboundrocketTexture);
-
-                    game.monsterProjectiles.push(projectile);
-                    playSound('rocketlaunch-sound');
-                    monster.rocketlastShot = currentTime;
-                }
-            }
-
-            // Move monster if within certain range but not too close
-            if (monster.type === 'alien' || monster.type === 'ufo') {
-                if (distSq > 30 && distSq < 200) {
-                    const distance = Math.sqrt(distSq);
-                    const invDist = 1 / distance;
-                    const dirX = dx * invDist * game.monsterMoveSpeed;
-                    const dirY = dy * invDist * game.monsterMoveSpeed;
-
-                    // Try to move in X direction
-                    const newX = monster.x + dirX;
-                    if (game.levels[game.currentLevel].map[Math.floor(monster.y)][Math.floor(newX)] !== 2) {
-                        monster.x = newX;
+                            game.monsterProjectiles.push(projectile);
+                            playSound('laser-sound');
+                            monster.lastShot = currentTime;
+                        }
                     }
-
-                    // Try to move in Y direction
-                    const newY = monster.y + dirY;
-                    if (game.levels[game.currentLevel].map[Math.floor(newY)][Math.floor(monster.x)] !== 2) {
-                        monster.y = newY;
+                    if (distSq > 30 && distSq < 200) {
+                        const distance = Math.sqrt(distSq);
+                        const invDist = 1 / distance;
+                        const dirX = dx * invDist * game.monsterMoveSpeed;
+                        const dirY = dy * invDist * game.monsterMoveSpeed;
+                        // Try to move in X direction
+                        const newX = monster.x + dirX;
+                        if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2) {
+                            monster.x = newX;
+                        }
+                        // Try to move in Y direction
+                        const newY = monster.y + dirY;
+                        if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2) {
+                            monster.y = newY;
+                        }
                     }
-                }
-            } else {
-                if (distSq > 0.25 && distSq < 100) {
-                    const distance = Math.sqrt(distSq);
-                    const invDist = 1 / distance;
-                    const dirX = dx * invDist * game.monsterMoveSpeed;
-                    const dirY = dy * invDist * game.monsterMoveSpeed;
-
-                    // Try to move in X direction
-                    const newX = monster.x + dirX;
-                    if (game.levels[game.currentLevel].map[Math.floor(monster.y)][Math.floor(newX)] !== 2) {
-                        monster.x = newX;
+                    break;
+                case 'ufo':
+                    if (distSq < 64) {
+                        if (!monster.lastShot || currentTime - monster.lastShot >= monster.attackCooldown) {
+                            const angle = radiansToDegrees(Math.atan2(dy, dx));
+                            const projectile = new MonsterProjectile(monster.x, monster.y, angle, 'laser', game.laserTexture);
+                            game.monsterProjectiles.push(projectile);
+                            playSound('laser-sound');
+                            monster.lastShot = currentTime;
+                        }
                     }
-
-                    // Try to move in Y direction
-                    const newY = monster.y + dirY;
-                    if (game.levels[game.currentLevel].map[Math.floor(newY)][Math.floor(monster.x)] !== 2) {
-                        monster.y = newY;
+                    if (distSq < 100) {
+                        if (!monster.rocketlastShot || currentTime - monster.rocketlastShot >= monster.rocketCooldown) {
+                            const angle = radiansToDegrees(Math.atan2(dy, dx));
+                            const projectile = new MonsterProjectile(monster.x, monster.y, angle, 'rocket', game.inboundrocketTexture);
+                            game.monsterProjectiles.push(projectile);
+                            playSound('rocketlaunch-sound');
+                            monster.rocketlastShot = currentTime;
+                        }
                     }
-                }
-            }
-
-            if (monster.type != 'alien' && monster.type != 'ufo') {
-                // Check for attack range and cooldown
-                if (distSq < 0.5 && (!monster.lastAttack || currentTime - monster.lastAttack >= monster.attackCooldown)) {
-                    // Attack the player
-                    game.player.health -= monster.damage;
-                    monster.lastAttack = currentTime;
-
-                    // Play monster attack sound
-                    playSound('injured-sound');
-
-                    // Check if player died
-                    if (game.player.health <= 0) {
-                        playSound('death-sound');
-                        endGameDeath();
+                    if (distSq > 30 && distSq < 200) {
+                        const distance = Math.sqrt(distSq);
+                        const invDist = 1 / distance;
+                        const dirX = dx * invDist * game.monsterMoveSpeed;
+                        const dirY = dy * invDist * game.monsterMoveSpeed;
+                        // Try to move in X direction
+                        const newX = monster.x + dirX;
+                        if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2) {
+                            monster.x = newX;
+                        }
+                        // Try to move in Y direction
+                        const newY = monster.y + dirY;
+                        if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2) {
+                            monster.y = newY;
+                        }
                     }
-                }
+                    break;
+                default:
+                    if (distSq > 0.25 && distSq < 100) {
+                        const distance = Math.sqrt(distSq);
+                        const invDist = 1 / distance;
+                        const dirX = dx * invDist * game.monsterMoveSpeed;
+                        const dirY = dy * invDist * game.monsterMoveSpeed;
+                        // Try to move in X direction
+                        const newX = monster.x + dirX;
+                        if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2) {
+                            monster.x = newX;
+                        }
+                        // Try to move in Y direction
+                        const newY = monster.y + dirY;
+                        if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2) {
+                            monster.y = newY;
+                        }
+                    }
+                    if (distSq < 0.5 && (!monster.lastAttack || currentTime - monster.lastAttack >= monster.attackCooldown)) {
+                        // Attack the player
+                        game.player.health -= monster.damage;
+                        monster.lastAttack = currentTime;
+                        // Play monster attack sound
+                        playSound('injured-sound');
+                        // Check if player died
+                        if (game.player.health <= 0) {
+                            playSound('death-sound');
+                            endGameDeath();
+                        }
+                    }
+                    break;
             }
         }
     }
