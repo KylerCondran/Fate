@@ -656,9 +656,12 @@ function loadLevel(levelIdx) {
     game.pickupCollected = 0;
     // Reset player health
     game.player.health = 100;
-    for (let i = 0; i < game.levels[levelIdx].map.length; i++) {
-        for (let j = 0; j < game.levels[levelIdx].map[i].length; j++) {
-            switch (game.levels[levelIdx].map[i][j]) {
+    let map = game.levels[levelIdx].map;
+    let mapy = map.length;
+    let mapx = map[0].length;
+    for (let i = 0; i < mapy; i++) {
+        for (let j = 0; j < mapx; j++) {
+            switch (map[i][j]) {
                 case 1:
                     switch (game.levels[levelIdx].name) {
                         case "Hell":
