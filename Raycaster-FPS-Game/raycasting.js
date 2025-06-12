@@ -3,8 +3,7 @@ let game = {
     currentLevel: 0,
     monsters: [], // Each monster will have position, health, sprite, etc.
     sprites: [], // Only trees and other non-monster sprites
-    bullets: [], // Player bullets
-    monsterProjectiles: [], // Monster projectiles
+    projectiles: [], // Bullets, rockets, etc.
     weaponSprite: document.getElementById('knife-sprite'),
     isShooting: false,
     equippedWeapon: 1,
@@ -1113,35 +1112,16 @@ function inactiveSprites() {
 
 // Bullet Object
 
-class Bullet {
-    constructor(x, y, angle, type, texture) {
+class Projectile {
+    constructor(x, y, angle, type, texture, owner) {
         this.x = x;
         this.y = y;
         this.angle = angle;
         this.speed = 0.2;
-        this.owner = 'player';
-        this.type = type,
+        this.owner = owner;
+        this.type = type;
         this.texture = texture;
     }
-
-    update() {
-        this.x += Math.cos(degreeToRadians(this.angle)) * this.speed;
-        this.y += Math.sin(degreeToRadians(this.angle)) * this.speed;
-    }
-}
-
-// Monster Projectile Object
-class MonsterProjectile {
-    constructor(x, y, angle, type, texture) {
-        this.x = x;
-        this.y = y;
-        this.angle = angle;
-        this.speed = 0.2;
-        this.owner = 'monster';
-        this.type = type,
-        this.texture = texture;
-    }
-
     update() {
         this.x += Math.cos(degreeToRadians(this.angle)) * this.speed;
         this.y += Math.sin(degreeToRadians(this.angle)) * this.speed;
@@ -1192,147 +1172,131 @@ function handleShooting(e) {
                 game.ammo--;
                 break;
         }
-        const bullet = new Bullet(startX, startY, game.player.angle, type, texture);
-        game.bullets.push(bullet);
+        game.projectiles.push(new Projectile(startX, startY, game.player.angle, type, texture, 'player'));
     }
 }
 
 // Update Game Objects
 
 function updateGameObjects() {
-    // Update bullets and monster projectiles
-    const bulletsToRemove = new Set();
+    // Update projectiles
     const projectilesToRemove = new Set();
     let map = game.levels[game.currentLevel].map;
-    
-    // Update player bullets
-    for (let i = game.bullets.length - 1; i >= 0; i--) {
-        const bullet = game.bullets[i];
-        bullet.update();
-        // Stop bullet if it hits a wall
-        const mapX = Math.floor(bullet.x);
-        const mapY = Math.floor(bullet.y);
-        if (map[mapY] && map[mapY][mapX] === 2) {
-            if (game.equippedWeapon == 5) playSound('explosion-sound');
-            bulletsToRemove.add(i);
-            continue;
-        }
-        // Check collision with monsters
-        for (const monster of game.monsters) {
-            if (!monster.isDead) {
-                const dx = monster.x - bullet.x;
-                const dy = monster.y - bullet.y;
-                const distanceSq = dx * dx + dy * dy;
-                if (distanceSq < game.bulletHitboxRadius) {
-                    // Bullet hit a monster
-                    if (monster.type == 'yeti') {
-                        if (game.equippedWeapon != 4) {
-                            playSound('yeti-laugh');
-                            bulletsToRemove.add(i);
-                            break;
-                        } else {
-                            monster.health -= 75;
-                        }
-                    } else if (game.equippedWeapon == 4) {
-                        monster.health -= 50;
-                    } else if (game.equippedWeapon == 5) {
-                        playSound('explosion-sound');
-                        monster.health -= 150;
-                    } else if (game.equippedWeapon == 6) {
-                        if (monster.type == 'imp' || monster.type == 'demon' || monster.type == 'skeleton') {
-                            monster.health -= 75;
-                        } else {
-                            monster.health -= 25;
-                        }                     
-                    } else {
-                        monster.health -= 25;
-                    }
-                    if (monster.health <= 0) {
-                        monster.isDead = true;
-                        game.monsterDefeated++;
-                        playSound(`${monster.audio}-death`);
-                        switch (monster.type) {
-                            case 'crusader':
-                            case 'king':
-                                game.sprites.push({ id: 'tombstone-sprite', x: monster.x, y: monster.y, width: 256, height: 256, active: true, data: null });
-                                break;
-                            case 'alien':
-                                game.sprites.push({ id: 'acid-sprite', x: monster.x, y: monster.y, width: 256, height: 256, active: true, data: null });
-                                break;
-                            default:
-                                game.sprites.push({ id: 'bones-sprite', x: monster.x, y: monster.y, width: 256, height: 256, active: true, data: null });
-                                break;
-                        }                   
-                        for (let i = 0; i < game.sprites.length; i++) {
-                            if (!game.sprites[i].data) {
-                                game.sprites[i].data = getTextureData(game.sprites[i]);
-                            }
-                        }
-                    } else {
-                        var rnd = Math.floor(Math.random() * 3);
-                        playSound(`${monster.audio}-pain-${rnd + 1}`);
-                    }
-                    bulletsToRemove.add(i);
-                    break;
-                }
-            }
-        }
-        // Remove bullets that have traveled too far
-        const distSq = (bullet.x - game.player.x) ** 2 + (bullet.y - game.player.y) ** 2;
-        if (game.equippedWeapon == 1) {
-            if (distSq > game.knifeRange) bulletsToRemove.add(i);
-        } else {
-            if (distSq > game.bulletRange) {
-                if (game.equippedWeapon == 5) playSound('explosion-sound');
-                bulletsToRemove.add(i);
-            }
-        }
-    }    // Remove marked bullets in one pass
-    game.bullets = game.bullets.filter((_, idx) => !bulletsToRemove.has(idx));
 
-    // Update monster projectiles
-    for (let i = game.monsterProjectiles.length - 1; i >= 0; i--) {
-        const projectile = game.monsterProjectiles[i];
+    // Update projectiles
+    for (let i = game.projectiles.length - 1; i >= 0; i--) {
+        const projectile = game.projectiles[i];
         projectile.update();
-        // Stop projectile if it hits a wall
+
         const mapX = Math.floor(projectile.x);
         const mapY = Math.floor(projectile.y);
+
+        // Remove if hits a wall
         if (map[mapY] && map[mapY][mapX] === 2) {
-            if (projectile.type === 'rocket') {
-                playSound('explosion-sound');
-            }
+            if (projectile.type === 'rocket') playSound('explosion-sound');
             projectilesToRemove.add(i);
             continue;
         }
 
-        // Check if projectile hit player
-        const dx = game.player.x - projectile.x;
-        const dy = game.player.y - projectile.y;
-        const distSq = dx * dx + dy * dy;
-        if (distSq < 0.10) {
-            if (projectile.type === 'rocket') {
-                game.player.health -= 25; // rocket damage
-                playSound('explosion-sound');
+        if (projectile.owner === 'player') {
+            // Check collision with monsters
+            for (const monster of game.monsters) {
+                if (!monster.isDead) {
+                    const dx = monster.x - projectile.x;
+                    const dy = monster.y - projectile.y;
+                    const distanceSq = dx * dx + dy * dy;
+                    if (distanceSq < game.bulletHitboxRadius) {
+                        if (monster.type == 'yeti') {
+                            if (game.equippedWeapon != 4) {
+                                playSound('yeti-laugh');
+                                projectilesToRemove.add(i);
+                                break;
+                            } else {
+                                monster.health -= 75;
+                            }
+                        } else if (game.equippedWeapon == 4) {
+                            monster.health -= 50;
+                        } else if (game.equippedWeapon == 5) {
+                            playSound('explosion-sound');
+                            monster.health -= 150;
+                        } else if (game.equippedWeapon == 6) {
+                            if (monster.type == 'imp' || monster.type == 'demon' || monster.type == 'skeleton') {
+                                monster.health -= 75;
+                            } else {
+                                monster.health -= 25;
+                            }
+                        } else {
+                            monster.health -= 25;
+                        }
+                        if (monster.health <= 0) {
+                            monster.isDead = true;
+                            game.monsterDefeated++;
+                            playSound(`${monster.audio}-death`);
+                            switch (monster.type) {
+                                case 'crusader':
+                                case 'king':
+                                    game.sprites.push({ id: 'tombstone-sprite', x: monster.x, y: monster.y, width: 256, height: 256, active: true, data: null });
+                                    break;
+                                case 'alien':
+                                    game.sprites.push({ id: 'acid-sprite', x: monster.x, y: monster.y, width: 256, height: 256, active: true, data: null });
+                                    break;
+                                default:
+                                    game.sprites.push({ id: 'bones-sprite', x: monster.x, y: monster.y, width: 256, height: 256, active: true, data: null });
+                                    break;
+                            }
+                            for (let i = 0; i < game.sprites.length; i++) {
+                                if (!game.sprites[i].data) {
+                                    game.sprites[i].data = getTextureData(game.sprites[i]);
+                                }
+                            }
+                        } else {
+                            var rnd = Math.floor(Math.random() * 3);
+                            playSound(`${monster.audio}-pain-${rnd + 1}`);
+                        }
+                        projectilesToRemove.add(i);
+                        break;
+                    }
+                }
+            }
+            // Remove if out of range
+            const distSq = (projectile.x - game.player.x) ** 2 + (projectile.y - game.player.y) ** 2;
+            if (projectile.type === 'knife') {
+                if (distSq > game.knifeRange) projectilesToRemove.add(i);
             } else {
-                game.player.health -= 5; // Laser damage
+                if (distSq > game.bulletRange) {
+                    if (projectile.type === 'rocket') playSound('explosion-sound');
+                    projectilesToRemove.add(i);
+                }
             }
-            playSound('injured-sound');
-            projectilesToRemove.add(i);
-
-            if (game.player.health <= 0) {
-                playSound('death-sound');
-                endGameDeath();
+        } else if (projectile.owner === 'monster') {
+            // Check collision with player
+            const dx = game.player.x - projectile.x;
+            const dy = game.player.y - projectile.y;
+            const distSq = dx * dx + dy * dy;
+            if (distSq < 0.10) {
+                if (projectile.type === 'rocket') {
+                    game.player.health -= 25; // rocket damage
+                    playSound('explosion-sound');
+                } else {
+                    game.player.health -= 5; // Laser damage
+                }
+                playSound('injured-sound');
+                projectilesToRemove.add(i);
+                if (game.player.health <= 0) {
+                    playSound('death-sound');
+                    endGameDeath();
+                }
+                projectilesToRemove.add(i);
             }
-        }
-
-        // Remove projectiles that have traveled too far
-        if (distSq > game.bulletRange) {
-            projectilesToRemove.add(i);
+            // Remove if out of range
+            if (distSq > game.bulletRange) {
+                if (projectile.type === 'rocket') playSound('explosion-sound');
+                projectilesToRemove.add(i);
+            }
         }
     }
-
     // Remove marked projectiles
-    game.monsterProjectiles = game.monsterProjectiles.filter((_, idx) => !projectilesToRemove.has(idx));
+    game.projectiles = game.projectiles.filter((_, idx) => !projectilesToRemove.has(idx));
 
     // Update monster positions and check for attacks
     for (let monster of game.monsters) {
@@ -1347,9 +1311,7 @@ function updateGameObjects() {
                     if (distSq < 64) {
                         if (!monster.lastShot || currentTime - monster.lastShot >= monster.attackCooldown) {
                             const angle = radiansToDegrees(Math.atan2(dy, dx));
-                            const projectile = new MonsterProjectile(monster.x, monster.y, angle, 'laser', game.laserTexture);
-
-                            game.monsterProjectiles.push(projectile);
+                            game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'laser', game.laserTexture, 'monster'));
                             playSound('laser-sound');
                             monster.lastShot = currentTime;
                         }
@@ -1375,8 +1337,7 @@ function updateGameObjects() {
                     if (distSq < 64) {
                         if (!monster.lastShot || currentTime - monster.lastShot >= monster.attackCooldown) {
                             const angle = radiansToDegrees(Math.atan2(dy, dx));
-                            const projectile = new MonsterProjectile(monster.x, monster.y, angle, 'laser', game.laserTexture);
-                            game.monsterProjectiles.push(projectile);
+                            game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'laser', game.laserTexture, 'monster'));
                             playSound('laser-sound');
                             monster.lastShot = currentTime;
                         }
@@ -1384,8 +1345,7 @@ function updateGameObjects() {
                     if (distSq < 100) {
                         if (!monster.rocketlastShot || currentTime - monster.rocketlastShot >= monster.rocketCooldown) {
                             const angle = radiansToDegrees(Math.atan2(dy, dx));
-                            const projectile = new MonsterProjectile(monster.x, monster.y, angle, 'rocket', game.inboundrocketTexture);
-                            game.monsterProjectiles.push(projectile);
+                            game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'rocket', game.inboundrocketTexture, 'monster'));
                             playSound('rocketlaunch-sound');
                             monster.rocketlastShot = currentTime;
                         }
@@ -1896,7 +1856,7 @@ function drawFloor(x1, wallHeight, rayAngle) {
         texture = game.textures[game.levels[game.currentLevel].floor];
 
         if (!texture) {
-            continue
+            continue;
         }
 
         // Define texture coords
@@ -1983,28 +1943,15 @@ function drawSprites() {
         }
     }
 
-    // Draw bullets
-    for (let bullet of game.bullets) {
-        drawSpriteInWorld({
-            x: bullet.x,
-            y: bullet.y,
-            width: 4,
-            height: 4,
-            isBullet: true,
-            owner: 'player',
-            texture: bullet.texture
-        });
-    }
-
-    // Draw monster projectiles
-    for (let projectile of game.monsterProjectiles) {
+    // Draw projectiles
+    for (let projectile of game.projectiles) {
         drawSpriteInWorld({
             x: projectile.x,
             y: projectile.y,
             width: 4,
             height: 4,
             isBullet: true,
-            owner: 'monster',
+            owner: projectile.owner,
             texture: projectile.texture
         });
     }
