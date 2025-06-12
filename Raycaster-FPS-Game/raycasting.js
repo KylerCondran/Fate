@@ -1878,35 +1878,34 @@ function parseImageData(imageData) {
 
 function drawFloor(x1, wallHeight, rayAngle) {
     start = game.projection.halfHeight + wallHeight + 1;
-    directionCos = Math.cos(degreeToRadians(rayAngle))
-    directionSin = Math.sin(degreeToRadians(rayAngle))
-    playerAngle = game.player.angle
+    directionCos = Math.cos(degreeToRadians(rayAngle));
+    directionSin = Math.sin(degreeToRadians(rayAngle));
+    playerAngle = game.player.angle;
     for (y = start; y < game.projection.height; y++) {
         // Create distance and calculate it
-        distance = game.projection.height / (2 * y - game.projection.height)
+        distance = game.projection.height / (2 * y - game.projection.height);
         // distance = distance * Math.cos(degreeToRadians(playerAngle) - degreeToRadians(rayAngle))
 
         // Get the tile position
-        tilex = distance * directionCos
-        tiley = distance * directionSin
-        tilex += game.player.x
-        tiley += game.player.y
-        tile = game.levels[game.currentLevel].map[Math.floor(tiley)][Math.floor(tilex)]
+        tilex = distance * directionCos;
+        tiley = distance * directionSin;
+        tilex += game.player.x;
+        tiley += game.player.y;
 
         // Get texture
-        texture = game.textures[game.levels[game.currentLevel].floor]
+        texture = game.textures[game.levels[game.currentLevel].floor];
 
         if (!texture) {
             continue
         }
 
         // Define texture coords
-        texture_x = (Math.floor(tilex * texture.width)) % texture.width
-        texture_y = (Math.floor(tiley * texture.height)) % texture.height
+        texture_x = (Math.floor(tilex * texture.width)) % texture.width;
+        texture_y = (Math.floor(tiley * texture.height)) % texture.height;
 
         // Get pixel color
         color = texture.data[texture_x + texture_y * texture.width];
-        drawPixel(x1, y, color)
+        drawPixel(x1, y, color);
     }
 }
 
