@@ -1203,6 +1203,7 @@ function updateGameObjects() {
     // Update bullets and monster projectiles
     const bulletsToRemove = new Set();
     const projectilesToRemove = new Set();
+    let map = game.levels[game.currentLevel].map;
     
     // Update player bullets
     for (let i = game.bullets.length - 1; i >= 0; i--) {
@@ -1211,7 +1212,7 @@ function updateGameObjects() {
         // Stop bullet if it hits a wall
         const mapX = Math.floor(bullet.x);
         const mapY = Math.floor(bullet.y);
-        if (game.levels[game.currentLevel].map[mapY] && game.levels[game.currentLevel].map[mapY][mapX] === 2) {
+        if (map[mapY] && map[mapY][mapX] === 2) {
             if (game.equippedWeapon == 5) playSound('explosion-sound');
             bulletsToRemove.add(i);
             continue;
@@ -1296,7 +1297,7 @@ function updateGameObjects() {
         // Stop projectile if it hits a wall
         const mapX = Math.floor(projectile.x);
         const mapY = Math.floor(projectile.y);
-        if (game.levels[game.currentLevel].map[mapY] && game.levels[game.currentLevel].map[mapY][mapX] === 2) {
+        if (map[mapY] && map[mapY][mapX] === 2) {
             if (projectile.type === 'rocket') {
                 playSound('explosion-sound');
             }
@@ -1340,7 +1341,6 @@ function updateGameObjects() {
             const dy = game.player.y - monster.y;
             const distSq = dx * dx + dy * dy;
             const currentTime = Date.now();
-            let map = game.levels[game.currentLevel].map;
 
             switch (monster.type) {
                 case 'alien':
