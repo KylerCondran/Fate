@@ -18,10 +18,10 @@
 - [x] ~~Player HUD~~
 - [ ] Plot/Lore
 - [ ] Code Optimization
-- [ ] More Sounds
 
 # More Existing Features
 
 - [ ] More Sprites - Sharks, Velociraptors, Dinosaurs
 - [ ] More Weapons - Boomerang
 - [ ] More Pickups - Speed Boost, Battery For Yeti Pistol
+- [ ] - [ ] More Sounds
