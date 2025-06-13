@@ -24,4 +24,4 @@
 - [ ] More Sprites - Sharks, Velociraptors, Dinosaurs
 - [ ] More Weapons - Boomerang
 - [ ] More Pickups - Speed Boost, Battery For Yeti Pistol
-- [ ] - [ ] More Sounds
+- [ ] More Sounds
