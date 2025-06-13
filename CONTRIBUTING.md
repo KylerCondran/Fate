@@ -8,17 +8,20 @@
 
 # To Do
 
-- [ ] More Sprites
 - [ ] Design Levels
-- [ ] More Weapons - Boomerang
 - [ ] Explosions
 - [x] ~~Win/Loss Screen~~
 - [x] ~~Player Taking Damage~~
 - [ ] More Environment Textures
 - [x] ~~Enemies Shooting Guns~~
 - [ ] Programmatic Map Generation
-- [ ] More Pickups
-- [ ] Player HUD
+- [x] ~~Player HUD~~
 - [ ] Plot/Lore
 - [ ] Code Optimization
 - [ ] More Sounds
+
+# To Do
+
+- [ ] More Sprites - Sharks, Velociraptors, Dinosaurs
+- [ ] More Weapons - Boomerang
+- [ ] More Pickups - Speed Boost, Battery For Yeti Pistol

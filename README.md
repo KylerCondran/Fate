@@ -73,6 +73,14 @@ git clone https://github.com/KylerCondran/Raycaster-FPS-Game.git
   <li>UFOs</li>
 </ul>
 
+## Pickups
+
+<ul>
+  <li>Ammo</li>
+  <li>Rocket Ammo</li>
+  <li>Weapons</li>
+</ul>
+
 ## Inspiration
 
 I have always been a fan of 3D MS-DOS FPS games like Wolfenstein and DOOM and with my background in software development I wanted to attempt to create something today that the geniuses of 1995 were able to create back then with less advanced software and hardware. I used AI tools like image generation and AI coding agents on some parts of this project to help me overcome my own shortcomings in the areas of mathematics and artistic design.
