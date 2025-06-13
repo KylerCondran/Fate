@@ -69,6 +69,7 @@ git clone https://github.com/KylerCondran/Raycaster-FPS-Game.git
   <li>Skeletons</li>
   <li>Crusaders</li>
   <li>King</li>
+  <li>Robots</li>
   <li>Aliens</li>
   <li>UFOs</li>
 </ul>
