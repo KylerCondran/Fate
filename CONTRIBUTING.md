@@ -20,7 +20,7 @@
 - [ ] Code Optimization
 - [ ] More Sounds
 
-# To Do
+# More Existing Features
 
 - [ ] More Sprites - Sharks, Velociraptors, Dinosaurs
 - [ ] More Weapons - Boomerang
