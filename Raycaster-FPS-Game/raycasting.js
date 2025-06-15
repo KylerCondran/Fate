@@ -9,6 +9,7 @@ let game = {
     equippedWeapon: 1,
     ammo: 0,
     rocketammo: 0,
+    boomerangammo: 0,
     lastShot: 0,
     shootCooldown: 600,
     bulletHitboxRadius: 0.25,
@@ -27,7 +28,8 @@ let game = {
         machinegun: false,
         yetipistol: false,
         rocketlauncher: false,
-        scepter: false
+        scepter: false,
+        boomerang: false
     },
     screen: {
         width: window.innerWidth,
@@ -324,7 +326,7 @@ let game = {
                 [2, 0, 0, 0, 0, 2, 1, 0, 0, 1, 2, 2, 0, 1, 0, 0, 1, 8, 0, 2],
                 [2, 0, 0, 0, 1, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
                 [2, 2, 2, 2, 0, 9, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 2, 0, 2],
-                [2, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 2, 2, 2, 0, 2, 0, 2, 2, 2],
+                [2, 0, 0, 0, 0, 26, 0, 1, 0, 0, 0, 2, 2, 2, 0, 2, 0, 2, 2, 2],
                 [2, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 2],
                 [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 2],
                 [2, 0, 8, 0, 0, 1, 0, 0, 0, 0, 0, 2, 0, 0, 12, 2, 0, 0, 0, 2],
@@ -391,6 +393,10 @@ let game = {
         },
         six: {
             code: "Digit6",
+            active: false
+        },
+        seven: {
+            code: "Digit7",
             active: false
         },
         strafeleft: {
@@ -508,6 +514,12 @@ let game = {
     },
     orbTexture: {
         id: 'orb-sprite',
+        width: 27,
+        height: 27,
+        data: null
+    },
+    boomerangTexture: {
+        id: 'boomerang-sprite',
         width: 27,
         height: 27,
         data: null
@@ -1031,6 +1043,10 @@ function loadLevel(levelIdx) {
                     game.monsters.push(robot);
                     game.monsterTotal++;
                     break;
+                case 26:
+                    game.sprites.push({ id: "boomerang-sprite", x: j, y: i, width: 27, height: 27, active: true, data: null });
+                    game.pickupTotal++;
+                    break;
                 default:
                     break;
             }
@@ -1169,6 +1185,9 @@ function handleShooting(e) {
         if ((game.equippedWeapon == 2 || game.equippedWeapon == 3) && game.ammo <= 0 || ((game.equippedWeapon == 5) && game.rocketammo <= 0)) {
             playSound('gunclick-sound');
             return;
+        } else if (game.equippedWeapon == 7 && game.boomerangammo <= 0) {
+            //boomerang fail throw
+            return;
         }
         // Start the bullet slightly in front of the player in the direction they're facing
         const startX = game.player.x + Math.cos(degreeToRadians(game.player.angle)) * game.bulletStartDistance;
@@ -1195,6 +1214,16 @@ function handleShooting(e) {
                 texture = game.orbTexture;
                 type = 'orb';
                 playSound('orb-sound');
+                break;
+            case 7:
+                texture = game.boomerangTexture;
+                type = 'boomerang';
+                playSound('boomerang-sound');
+                game.boomerangammo--;
+                if (game.boomerangammo <= 0) {
+                    game.weaponSprite = document.getElementById('blank-sprite');
+                    game.weaponsUnlocked.boomerang = false;
+                }
                 break;
             default:
                 texture = game.bulletTexture;
@@ -1256,6 +1285,13 @@ function updateGameObjects() {
                             } else {
                                 monster.health -= 25;
                             }
+                        } else if (game.equippedWeapon == 7) {
+                            monster.health -= 250;
+                            const dx = game.player.x - monster.x;
+                            const dy = game.player.y - monster.y;
+                            const angle = radiansToDegrees(Math.atan2(dy, dx));
+                            game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'boomerang', game.boomerangTexture, 'monster'));
+                            playSound('boomerang-sound');
                         } else {
                             monster.health -= 25;
                         }
@@ -1308,6 +1344,13 @@ function updateGameObjects() {
                 if (projectile.type === 'rocket') {
                     game.player.health -= 25; // rocket damage
                     playSound('explosion-sound');
+                } else if (projectile.type === 'boomerang') {
+                    game.boomerangammo += 1; // Boomerang pickup
+                    playSound('pickup-sound');
+                    if (game.boomerangammo >= 1) {
+                        game.weaponSprite = document.getElementById('boomerangwep-sprite');
+                        game.weaponsUnlocked.boomerang = true;
+                    }
                 } else {
                     game.player.health -= 5; // Laser damage
                 }
@@ -1588,6 +1631,13 @@ function movePlayer() {
                     }
                 }
                 break;
+            case 26:
+                game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
+                itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
+                game.weaponsUnlocked.boomerang = true;
+                game.boomerangammo++;
+                game.pickupCollected++;
+                break;
         }
     }
     if (game.key.one.active && game.weaponsUnlocked.knife == true) {
@@ -1619,6 +1669,11 @@ function movePlayer() {
         game.weaponSprite = document.getElementById('scepter-sprite');
         game.shootCooldown = 300;
         game.equippedWeapon = 6;
+    }
+    if (game.key.seven.active && game.weaponsUnlocked.boomerang == true) {
+        game.weaponSprite = document.getElementById('boomerangwep-sprite');
+        game.shootCooldown = 1000;
+        game.equippedWeapon = 7;
     }
 }
 
@@ -1663,6 +1718,10 @@ function setWeapon(id) {
         case 6:
             game.weaponSprite = document.getElementById('scepter-sprite');
             game.shootCooldown = 300;
+            break;
+        case 7:
+            game.weaponSprite = document.getElementById('boomerangwep-sprite');
+            game.shootCooldown = 1000;
             break;
     }
 }
@@ -1710,6 +1769,9 @@ document.addEventListener('keydown', (event) => {
         case game.key.straferight.code:
             game.key.straferight.active = true;
             break;
+        case game.key.seven.code:
+            game.key.seven.active = true;
+            break;
     }
 });
 
@@ -1755,6 +1817,9 @@ document.addEventListener('keyup', (event) => {
             break;
         case game.key.straferight.code:
             game.key.straferight.active = false;
+            break;
+        case game.key.seven.code:
+            game.key.seven.active = false;
             break;
     }
 });
@@ -1835,6 +1900,9 @@ function loadSprites() {
     }
     if (!game.orbTexture.data) {
         game.orbTexture.data = getTextureData(game.orbTexture);
+    }
+    if (!game.boomerangTexture.data) {
+        game.boomerangTexture.data = getTextureData(game.boomerangTexture);
     }
 }
 
@@ -2144,7 +2212,7 @@ function drawGun(ctx) {
 function drawHUD(ctx) {
     // Draw semi-transparent black background for HUD
     ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
-    ctx.fillRect(0, 0, 80, 20);
+    ctx.fillRect(0, 0, 80, 22);
 
     // Configure text style
     ctx.font = '5px "Lucida Console"';
@@ -2161,6 +2229,7 @@ function drawHUD(ctx) {
             case 4: return 'Yeti Pistol';
             case 5: return 'Rocket Launcher';
             case 6: return 'Scepter';
+            case 7: return 'Boomerang';
             default: return 'Unknown';
         }
     })();
@@ -2172,11 +2241,39 @@ function drawHUD(ctx) {
             return '∞'; 
         } else if (game.equippedWeapon === 5) {
             return `${game.rocketammo}`; // Special ammo type for rocket launcher
+        } else if (game.equippedWeapon === 7) {
+            return `${game.boomerangammo}`; // Special ammo type for boomerang
         } else {
             return `${game.ammo}`; // Regular ammo for guns
         }
     })();
     ctx.fillText(`Ammo: ${ammoText}`, 0, 15);
+    const unlocks = (() => {
+        let unlockText = '';
+        if (game.weaponsUnlocked.knife) {
+            unlockText += '1 ';
+        }
+        if (game.weaponsUnlocked.pistol) {
+            unlockText += '2 ';
+        }
+        if (game.weaponsUnlocked.machinegun) {
+            unlockText += '3 ';
+        }
+        if (game.weaponsUnlocked.yetipistol) {
+            unlockText += '4 ';
+        }
+        if (game.weaponsUnlocked.rocketlauncher) {
+            unlockText += '5 ';
+        }
+        if (game.weaponsUnlocked.scepter) {
+            unlockText += '6 ';
+        }
+        if (game.weaponsUnlocked.boomerang) {
+            unlockText += '7 ';
+        }
+        return unlockText;
+    })();
+    ctx.fillText(`Unlocked: ${unlocks}`, 0, 20);
 }
 
 function drawHealthBar(x, y, width, height, health, maxHealth) {

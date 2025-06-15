@@ -37,6 +37,7 @@ git clone https://github.com/KylerCondran/Raycaster-FPS-Game.git
   <li>Yeti Pistol</li>
   <li>Rocket Launcher</li>
   <li>Scepter</li>
+  <li>Boomerang</li>
 </ul>
 
 ## Levels
