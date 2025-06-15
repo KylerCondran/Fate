@@ -95,7 +95,8 @@ let game = {
             wall: 7,
             background: 0,
             startlocation: { x: 2, y: 2 },
-            equippedweapon: 1
+            equippedweapon: 1,
+            monstermovespeed: 0.02
         },
         {
             name: "Hell",
@@ -125,7 +126,8 @@ let game = {
             wall: 1,
             background: 1,
             startlocation: { x: 2, y: 2 },
-            equippedweapon: 1
+            equippedweapon: 1,
+            monstermovespeed: 0.02
         },
         {
             name: "Arctic",
@@ -155,7 +157,8 @@ let game = {
             wall: 4,
             background: 2,
             startlocation: { x: 2, y: 2 },
-            equippedweapon: 1
+            equippedweapon: 1,
+            monstermovespeed: 0.02
         },
         {
             name: "Labyrinth",
@@ -185,7 +188,8 @@ let game = {
             wall: 2,
             background: 1,
             startlocation: { x: 1, y: 1 },
-            equippedweapon: 1
+            equippedweapon: 1,
+            monstermovespeed: 0.02
         },
         {
             name: "Heaven",
@@ -216,7 +220,8 @@ let game = {
             background: 0,
             startlocation: { x: 2, y: 4 },
             portalcoords: [{ x: 11, y: 8, exitx: 3, exity: 8, exitangle: 90 }],
-            equippedweapon: 1
+            equippedweapon: 1,
+            monstermovespeed: 0.02
         },
         {
             name: "Death Pit",
@@ -256,7 +261,8 @@ let game = {
                 { x: 6, y: 13, exitx: 2, exity: 10, exitangle: 90 },
                 { x: 13, y: 6, exitx: 17, exity: 9, exitangle: 270 },
                 { x: 13, y: 13, exitx: 17, exity: 10, exitangle: 90 }],
-            equippedweapon: 1
+            equippedweapon: 1,
+            monstermovespeed: 0.02
         },
         {
             name: "Mothership",
@@ -270,11 +276,11 @@ let game = {
                 [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
                 [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
                 [2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 2],
-                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 22, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 25, 0, 22, 0, 0, 2],
                 [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
                 [2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 2],
                 [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
-                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 25, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
                 [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 23, 0, 0, 0, 0, 0, 2],
                 [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
                 [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 22, 0, 0, 0, 0, 0, 0, 0, 0, 2],
@@ -307,7 +313,8 @@ let game = {
             wall: 10,
             background: 3,
             startlocation: { x: 2, y: 2 },
-            equippedweapon: 1
+            equippedweapon: 1,
+            monstermovespeed: 0.04
         },
         {
             name: "Test Level",
@@ -337,7 +344,8 @@ let game = {
             wall: 1,
             background: 0,
             startlocation: { x: 2, y: 2 },
-            equippedweapon: 1
+            equippedweapon: 1,
+            monstermovespeed: 0.02
         }
     ],
     key: {
@@ -658,6 +666,7 @@ function loadLevel(levelIdx) {
     let map = game.levels[levelIdx].map;
     let mapy = map.length;
     let mapx = map[0].length;
+    game.monsterMoveSpeed = game.levels[levelIdx].monstermovespeed;
     for (let i = 0; i < mapy; i++) {
         for (let j = 0; j < mapx; j++) {
             switch (map[i][j]) {
@@ -999,6 +1008,27 @@ function loadLevel(levelIdx) {
                         rocketCooldown: 8000
                     };
                     game.monsters.push(ufo);
+                    game.monsterTotal++;
+                    break;
+                case 25:
+                    const robot = {
+                        id: `monster_${game.monsterTotal}`,
+                        type: 'robot',
+                        skin: 'robot-sprite',
+                        audio: 'robot',
+                        x: j,
+                        y: i,
+                        health: 250,
+                        isDead: false,
+                        width: 512,
+                        height: 512,
+                        active: false,
+                        data: null,
+                        damage: 10,
+                        lastAttack: 0,
+                        attackCooldown: 1000
+                    };
+                    game.monsters.push(robot);
                     game.monsterTotal++;
                     break;
                 default:
