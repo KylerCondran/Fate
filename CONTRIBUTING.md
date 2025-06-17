@@ -12,7 +12,6 @@
 - [ ] Explosions
 - [x] ~~Win/Loss Screen~~
 - [x] ~~Player Taking Damage~~
-- [ ] More Environment Textures
 - [x] ~~Enemies Shooting Guns~~
 - [ ] Programmatic Map Generation
 - [x] ~~Player HUD~~
@@ -22,6 +21,7 @@
 # More Existing Features
 
 - [ ] More Sprites - Sharks, Velociraptors, Dinosaurs
-- [ ] More Weapons - Boomerang
+- [ ] More Weapons
 - [ ] More Pickups - Speed Boost, Battery For Yeti Pistol
 - [ ] More Sounds
+- [ ] More Textures
