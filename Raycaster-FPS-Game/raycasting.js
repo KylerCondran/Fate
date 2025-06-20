@@ -267,6 +267,37 @@ let game = {
             monstermovespeed: 0.02
         },
         {
+            name: "Ninja Dojo",
+            map: [
+                [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 10, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 0, 8, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 27, 0, 8, 0, 2],
+                [2, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 28, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 27, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 28, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
+            ],
+            unlocked: true,
+            floor: 9,
+            wall: 2,
+            background: 1,
+            startlocation: { x: 2, y: 2 },
+            equippedweapon: 1,
+            monstermovespeed: 0.07
+        },
+        {
             name: "Mothership",
             map: [
                 [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
@@ -1046,6 +1077,48 @@ function loadLevel(levelIdx) {
                 case 26:
                     game.sprites.push({ id: "boomerang-sprite", x: j, y: i, width: 27, height: 27, active: true, data: null });
                     game.pickupTotal++;
+                    break;
+                case 27:
+                    const ninja1 = {
+                        id: `monster_${game.monsterTotal}`,
+                        type: 'ninja',
+                        skin: 'ninja1-sprite',
+                        audio: 'ninja',
+                        x: j,
+                        y: i,
+                        health: 250,
+                        isDead: false,
+                        width: 512,
+                        height: 512,
+                        active: false,
+                        data: null,
+                        damage: 15,
+                        lastAttack: 0,
+                        attackCooldown: 500
+                    };
+                    game.monsters.push(ninja1);
+                    game.monsterTotal++;
+                    break;
+                case 28:
+                    const ninja2 = {
+                        id: `monster_${game.monsterTotal}`,
+                        type: 'ninja',
+                        skin: 'ninja2-sprite',
+                        audio: 'ninja',
+                        x: j,
+                        y: i,
+                        health: 250,
+                        isDead: false,
+                        width: 512,
+                        height: 512,
+                        active: false,
+                        data: null,
+                        damage: 15,
+                        lastAttack: 0,
+                        attackCooldown: 500
+                    };
+                    game.monsters.push(ninja2);
+                    game.monsterTotal++;
                     break;
                 default:
                     break;
