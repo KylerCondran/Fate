@@ -1,6 +1,6 @@
 # Raycaster-FPS-Game
 
-This is a game I am developing with a working title of 'Fate'. It is a 3D Environment Raycasting FPS Game Engine built on pure JavaScript. Hunt And Shoot Monsters. Arrow Keys To Move, A & D To Strafe, Space To Shoot. 1 - 6 To Swap Weapons.
+This is a game I am developing with a working title of 'Fate'. It is a 3D Environment Raycasting FPS Game Engine built on pure JavaScript. Hunt And Shoot Monsters. Arrow Keys To Move, A & D To Strafe, Space To Shoot. Number Keys To Swap Weapons.
 
 <p align="center">
   <a href="https://kylercondran.github.io/Raycaster-FPS-Game/Raycaster-FPS-Game/raycasting.html">Play This Game</a>
@@ -49,6 +49,7 @@ git clone https://github.com/KylerCondran/Raycaster-FPS-Game.git
   <li>Labyrinth</li>
   <li>Heaven</li>
   <li>Death Pit</li>
+  <li>Ninja Dojo</li>
   <li>Mothership</li>
   <li>Test Level</li>
 </ul>
@@ -70,6 +71,7 @@ git clone https://github.com/KylerCondran/Raycaster-FPS-Game.git
   <li>Skeletons</li>
   <li>Crusaders</li>
   <li>King</li>
+  <li>Ninjas</li>
   <li>Robots</li>
   <li>Aliens</li>
   <li>UFOs</li>
