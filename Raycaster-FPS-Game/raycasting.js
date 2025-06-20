@@ -2451,11 +2451,8 @@ function endGameDeath() {
 // Render Buffer
 
 function renderBuffer() {
-    let canvas = document.createElement('canvas');
-    canvas.width = game.projection.width;
-    canvas.height = game.projection.height;
-    canvas.getContext('2d').putImageData(game.projection.imageData, 0, 0);
-    screenContext.drawImage(canvas, 0, 0);
+    screenContext.putImageData(game.projection.imageData, 0, 0);
+    screenContext.drawImage(screen, 0, 0);
 }
 
 // Clear Screen
