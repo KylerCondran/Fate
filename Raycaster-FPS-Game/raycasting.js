@@ -605,7 +605,7 @@ function main() {
     movePlayer();
     updateGameObjects();
     // WIN CONDITION: all monsters dead
-    if (game.monsters.length > 0 && game.monsters.every(monster => monster.isDead)) {
+    if (game.monsterTotal == game.monsterDefeated) {
         endGame();
         return;
     }
