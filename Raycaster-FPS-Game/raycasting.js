@@ -298,6 +298,37 @@ let game = {
             monstermovespeed: 0.07
         },
         {
+            name: "Army Base",
+            map: [
+                [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 29, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 30, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 29, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 32, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 31, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
+            ],
+            unlocked: false,
+            floor: 10,
+            wall: 1,
+            background: 0,
+            startlocation: { x: 2, y: 2 },
+            equippedweapon: 1,
+            monstermovespeed: 0.02
+        },
+        {
             name: "Mothership",
             map: [
                 [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
@@ -348,37 +379,6 @@ let game = {
             startlocation: { x: 2, y: 2 },
             equippedweapon: 1,
             monstermovespeed: 0.04
-        },
-        {
-            name: "Test Level",
-            map: [
-                [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
-                [2, 0, 0, 0, 0, 2, 0, 0, 0, 2, 2, 2, 0, 0, 0, 0, 0, 4, 0, 2],
-                [2, 0, 0, 0, 0, 2, 1, 0, 0, 1, 2, 2, 0, 1, 0, 0, 1, 8, 0, 2],
-                [2, 0, 0, 0, 1, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
-                [2, 2, 2, 2, 0, 9, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 0, 2, 0, 2],
-                [2, 0, 0, 0, 0, 26, 0, 1, 0, 0, 0, 2, 2, 2, 0, 2, 0, 2, 2, 2],
-                [2, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 2],
-                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 2],
-                [2, 0, 8, 0, 0, 1, 0, 0, 0, 0, 0, 2, 0, 0, 12, 2, 0, 0, 0, 2],
-                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0, 2],
-                [2, 0, 0, 0, 0, 0, 2, 0, 2, 0, 2, 2, 2, 2, 2, 2, 0, 13, 0, 2],
-                [2, 0, 13, 0, 0, 0, 2, 0, 2, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 2],
-                [2, 2, 0, 0, 0, 2, 2, 0, 2, 0, 0, 5, 2, 3, 8, 0, 0, 0, 0, 2],
-                [2, 2, 2, 2, 2, 2, 2, 0, 2, 2, 0, 2, 2, 2, 2, 2, 0, 2, 2, 2],
-                [2, 2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
-                [2, 0, 8, 1, 0, 0, 0, 1, 0, 2, 0, 0, 0, 0, 11, 0, 0, 0, 0, 2],
-                [2, 0, 0, 0, 10, 0, 0, 0, 0, 2, 0, 8, 0, 0, 0, 0, 1, 0, 0, 2],
-                [2, 6, 0, 0, 0, 0, 13, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 7, 2],
-                [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
-            ],
-            unlocked: false,
-            floor: 5,
-            wall: 1,
-            background: 0,
-            startlocation: { x: 2, y: 2 },
-            equippedweapon: 1,
-            monstermovespeed: 0.02
         }
     ],
     key: {
@@ -1120,6 +1120,92 @@ function loadLevel(levelIdx) {
                     game.monsters.push(ninja2);
                     game.monsterTotal++;
                     break;
+                case 29:
+                    const soldier = {
+                        id: `monster_${game.monsterTotal}`,
+                        type: 'soldier',
+                        skin: 'soldier-sprite',
+                        audio: 'soldier',
+                        x: j,
+                        y: i,
+                        health: 100,
+                        isDead: false,
+                        width: 512,
+                        height: 512,
+                        active: false,
+                        data: null,
+                        lastShot: 0,
+                        attackCooldown: 2000
+                    };
+                    game.monsters.push(soldier);
+                    game.monsterTotal++;
+                    break;
+                case 30:
+                    const apache = {
+                        id: `monster_${game.monsterTotal}`,
+                        type: 'apache',
+                        skin: 'apache-sprite',
+                        audio: 'apache',
+                        x: j,
+                        y: i,
+                        health: 1000,
+                        isDead: false,
+                        width: 512,
+                        height: 512,
+                        active: false,
+                        data: null,
+                        lastShot: 0,
+                        rocketlastShot: 0,
+                        attackCooldown: 2000,
+                        rocketCooldown: 8000
+                    };
+                    game.monsters.push(apache);
+                    game.monsterTotal++;
+                    break;
+                case 31:
+                    const fighterjet = {
+                        id: `monster_${game.monsterTotal}`,
+                        type: 'fighterjet',
+                        skin: 'fighterjet-sprite',
+                        audio: 'fighterjet',
+                        x: j,
+                        y: i,
+                        health: 1000,
+                        isDead: false,
+                        width: 512,
+                        height: 512,
+                        active: false,
+                        data: null,
+                        lastShot: 0,
+                        rocketlastShot: 0,
+                        attackCooldown: 1000,
+                        rocketCooldown: 2000
+                    };
+                    game.monsters.push(fighterjet);
+                    game.monsterTotal++;
+                    break;
+                case 32:
+                    const tank = {
+                        id: `monster_${game.monsterTotal}`,
+                        type: 'tank',
+                        skin: 'tank-sprite',
+                        audio: 'tank',
+                        x: j,
+                        y: i,
+                        health: 500,
+                        isDead: false,
+                        width: 512,
+                        height: 512,
+                        active: false,
+                        data: null,
+                        lastShot: 0,
+                        rocketlastShot: 0,
+                        attackCooldown: 10000,
+                        rocketCooldown: 5000
+                    };
+                    game.monsters.push(tank);
+                    game.monsterTotal++;
+                    break;
                 default:
                     break;
             }
@@ -1425,7 +1511,7 @@ function updateGameObjects() {
                         game.weaponsUnlocked.boomerang = true;
                     }
                 } else {
-                    game.player.health -= 5; // Laser damage
+                    game.player.health -= 5; // Laser damage & Bullet damage
                 }
                 playSound('injured-sound');
                 projectilesToRemove.add(i);
@@ -1489,6 +1575,93 @@ function updateGameObjects() {
                             monster.lastShot = currentTime;
                         }
                     }
+                    if (distSq < 100) {
+                        if (!monster.rocketlastShot || currentTime - monster.rocketlastShot >= monster.rocketCooldown) {
+                            const angle = radiansToDegrees(Math.atan2(dy, dx));
+                            game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'rocket', game.inboundrocketTexture, 'monster'));
+                            playSound('rocketlaunch-sound');
+                            monster.rocketlastShot = currentTime;
+                        }
+                    }
+                    if (distSq > 30 && distSq < 200) {
+                        const distance = Math.sqrt(distSq);
+                        const invDist = 1 / distance;
+                        const dirX = dx * invDist * game.monsterMoveSpeed;
+                        const dirY = dy * invDist * game.monsterMoveSpeed;
+                        // Try to move in X direction
+                        const newX = monster.x + dirX;
+                        if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2) {
+                            monster.x = newX;
+                        }
+                        // Try to move in Y direction
+                        const newY = monster.y + dirY;
+                        if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2) {
+                            monster.y = newY;
+                        }
+                    }
+                    break;
+                case 'soldier':
+                    if (distSq < 64) {
+                        if (!monster.lastShot || currentTime - monster.lastShot >= monster.attackCooldown) {
+                            const angle = radiansToDegrees(Math.atan2(dy, dx));
+                            game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'bullet', game.bulletTexture, 'monster'));
+                            playSound('shoot-sound');
+                            monster.lastShot = currentTime;
+                        }
+                    }
+                    if (distSq > 30 && distSq < 200) {
+                        const distance = Math.sqrt(distSq);
+                        const invDist = 1 / distance;
+                        const dirX = dx * invDist * game.monsterMoveSpeed;
+                        const dirY = dy * invDist * game.monsterMoveSpeed;
+                        // Try to move in X direction
+                        const newX = monster.x + dirX;
+                        if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2) {
+                            monster.x = newX;
+                        }
+                        // Try to move in Y direction
+                        const newY = monster.y + dirY;
+                        if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2) {
+                            monster.y = newY;
+                        }
+                    }
+                    break;
+                case 'apache':
+                case 'fighterjet':
+                    if (distSq < 64) {
+                        if (!monster.lastShot || currentTime - monster.lastShot >= monster.attackCooldown) {
+                            const angle = radiansToDegrees(Math.atan2(dy, dx));
+                            game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'bullet', game.bulletTexture, 'monster'));
+                            playSound('shoot-sound');
+                            monster.lastShot = currentTime;
+                        }
+                    }
+                    if (distSq < 100) {
+                        if (!monster.rocketlastShot || currentTime - monster.rocketlastShot >= monster.rocketCooldown) {
+                            const angle = radiansToDegrees(Math.atan2(dy, dx));
+                            game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'rocket', game.inboundrocketTexture, 'monster'));
+                            playSound('rocketlaunch-sound');
+                            monster.rocketlastShot = currentTime;
+                        }
+                    }
+                    if (distSq > 30 && distSq < 200) {
+                        const distance = Math.sqrt(distSq);
+                        const invDist = 1 / distance;
+                        const dirX = dx * invDist * game.monsterMoveSpeed;
+                        const dirY = dy * invDist * game.monsterMoveSpeed;
+                        // Try to move in X direction
+                        const newX = monster.x + dirX;
+                        if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2) {
+                            monster.x = newX;
+                        }
+                        // Try to move in Y direction
+                        const newY = monster.y + dirY;
+                        if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2) {
+                            monster.y = newY;
+                        }
+                    }
+                    break;
+                case 'tank':
                     if (distSq < 100) {
                         if (!monster.rocketlastShot || currentTime - monster.rocketlastShot >= monster.rocketCooldown) {
                             const angle = radiansToDegrees(Math.atan2(dy, dx));

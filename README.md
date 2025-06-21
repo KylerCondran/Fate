@@ -50,6 +50,7 @@ git clone https://github.com/KylerCondran/Raycaster-FPS-Game.git
   <li>Heaven</li>
   <li>Death Pit</li>
   <li>Ninja Dojo</li>
+  <li>Army Base</li>
   <li>Mothership</li>
   <li>Test Level</li>
 </ul>
@@ -71,6 +72,10 @@ git clone https://github.com/KylerCondran/Raycaster-FPS-Game.git
   <li>Skeletons</li>
   <li>Crusaders</li>
   <li>King</li>
+  <li>Soldiers</li>
+  <li>Apaches</li>
+  <li>Fighter Jets</li>
+  <li>Tanks</li>
   <li>Ninjas</li>
   <li>Robots</li>
   <li>Aliens</li>
