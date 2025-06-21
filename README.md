@@ -52,7 +52,6 @@ git clone https://github.com/KylerCondran/Raycaster-FPS-Game.git
   <li>Ninja Dojo</li>
   <li>Army Base</li>
   <li>Mothership</li>
-  <li>Test Level</li>
 </ul>
 
 ## Monsters
