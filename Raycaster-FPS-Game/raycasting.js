@@ -668,7 +668,6 @@ let mainLoop = null;
 
 function main() {
     mainLoop = setInterval(function () {
-    inactiveSprites();
     clearScreen();
     movePlayer();
     updateGameObjects();
@@ -753,16 +752,16 @@ function loadLevel(levelIdx) {
                 case 1:
                     switch (game.levels[levelIdx].name) {
                         case "Hell":
-                            game.sprites.push({ id: "cauldron-sprite", x: j, y: i, width: 512, height: 512, active: true, data: null });
+                            game.sprites.push({ id: "cauldron-sprite", x: j, y: i, width: 512, height: 512, data: null });
                             break;
                         case "Arctic":
-                            game.sprites.push({ id: "snowytree-sprite", x: j, y: i, width: 552, height: 552, active: true, data: null });
+                            game.sprites.push({ id: "snowytree-sprite", x: j, y: i, width: 552, height: 552, data: null });
                             break;
                         case "Heaven":
-                            game.sprites.push({ id: "pillar-sprite", x: j, y: i, width: 320, height: 640, active: true, data: null });
+                            game.sprites.push({ id: "pillar-sprite", x: j, y: i, width: 320, height: 640, data: null });
                             break;
                         default:
-                            game.sprites.push({ id: "tree-sprite", x: j, y: i, width: 8, height: 16, active: true, data: null });
+                            game.sprites.push({ id: "tree-sprite", x: j, y: i, width: 8, height: 16, data: null });
                             break;
                     }
                     break;
@@ -778,7 +777,6 @@ function loadLevel(levelIdx) {
                         isDead: false,
                         width: 484,
                         height: 499,
-                        active: false,
                         data: null,
                         damage: 10,
                         lastAttack: 0,
@@ -799,7 +797,6 @@ function loadLevel(levelIdx) {
                         isDead: false,
                         width: 665,
                         height: 725,
-                        active: false,
                         data: null,
                         damage: 20,
                         lastAttack: 0,
@@ -820,7 +817,6 @@ function loadLevel(levelIdx) {
                         isDead: false,
                         width: 256,
                         height: 201,
-                        active: false,
                         data: null,
                         damage: 15,
                         lastAttack: 0,
@@ -841,7 +837,6 @@ function loadLevel(levelIdx) {
                         isDead: false,
                         width: 220,
                         height: 237,
-                        active: false,
                         data: null,
                         damage: 25,
                         lastAttack: 0,
@@ -862,7 +857,6 @@ function loadLevel(levelIdx) {
                         isDead: false,
                         width: 326,
                         height: 384,
-                        active: false,
                         data: null,
                         damage: 10,
                         lastAttack: 0,
@@ -872,31 +866,31 @@ function loadLevel(levelIdx) {
                     game.monsterTotal++;
                     break;
                 case 8:
-                    game.sprites.push({ id: "ammo-sprite", x: j, y: i, width: 100, height: 81, active: true, data: null });
+                    game.sprites.push({ id: "ammo-sprite", x: j, y: i, width: 100, height: 81, data: null });
                     game.pickupTotal++;
                     break;
                 case 9:
-                    game.sprites.push({ id: "pistolpickup-sprite", x: j, y: i, width: 34, height: 19, active: true, data: null });
+                    game.sprites.push({ id: "pistolpickup-sprite", x: j, y: i, width: 34, height: 19, data: null });
                     game.pickupTotal++;
                     break;
                 case 10:
-                    game.sprites.push({ id: "machinegunpickup-sprite", x: j, y: i, width: 49, height: 30, active: true, data: null });
+                    game.sprites.push({ id: "machinegunpickup-sprite", x: j, y: i, width: 49, height: 30, data: null });
                     game.pickupTotal++;
                     break;
                 case 11:
-                    game.sprites.push({ id: "yetipistolpickup-sprite", x: j, y: i, width: 50, height: 33, active: true, data: null });
+                    game.sprites.push({ id: "yetipistolpickup-sprite", x: j, y: i, width: 50, height: 33, data: null });
                     game.pickupTotal++;
                     break;
                 case 12:
-                    game.sprites.push({ id: "rocketlauncherpickup-sprite", x: j, y: i, width: 80, height: 17, active: true, data: null });
+                    game.sprites.push({ id: "rocketlauncherpickup-sprite", x: j, y: i, width: 80, height: 17, data: null });
                     game.pickupTotal++;
                     break;
                 case 13:
-                    game.sprites.push({ id: "rocketammo-sprite", x: j, y: i, width: 35, height: 18, active: true, data: null });
+                    game.sprites.push({ id: "rocketammo-sprite", x: j, y: i, width: 35, height: 18, data: null });
                     game.pickupTotal++;
                     break;
                 case 14:
-                    game.sprites.push({ id: "scepterpickup-sprite", x: j, y: i, width: 64, height: 64, active: true, data: null });
+                    game.sprites.push({ id: "scepterpickup-sprite", x: j, y: i, width: 64, height: 64, data: null });
                     game.pickupTotal++;
                     break;
                 case 15:
@@ -911,7 +905,6 @@ function loadLevel(levelIdx) {
                         isDead: false,
                         width: 512,
                         height: 512,
-                        active: false,
                         data: null,
                         damage: 25,
                         lastAttack: 0,
@@ -932,7 +925,6 @@ function loadLevel(levelIdx) {
                         isDead: false,
                         width: 512,
                         height: 512,
-                        active: false,
                         data: null,
                         damage: 100,
                         lastAttack: 0,
@@ -953,7 +945,6 @@ function loadLevel(levelIdx) {
                         isDead: false,
                         width: 512,
                         height: 512,
-                        active: false,
                         data: null,
                         damage: 25,
                         lastAttack: 0,
@@ -974,7 +965,6 @@ function loadLevel(levelIdx) {
                         isDead: false,
                         width: 512,
                         height: 512,
-                        active: false,
                         data: null,
                         damage: 25,
                         lastAttack: 0,
@@ -995,7 +985,6 @@ function loadLevel(levelIdx) {
                         isDead: false,
                         width: 512,
                         height: 512,
-                        active: false,
                         data: null,
                         damage: 10,
                         lastAttack: 0,
@@ -1005,7 +994,7 @@ function loadLevel(levelIdx) {
                     game.monsterTotal++;
                     break;
                 case 20:
-                    game.sprites.push({ id: "portal-sprite", x: j, y: i, width: 1024, height: 1024, active: true, data: null });
+                    game.sprites.push({ id: "portal-sprite", x: j, y: i, width: 1024, height: 1024, data: null });
                     break
                 case 21:
                     const jackalope = {
@@ -1019,7 +1008,6 @@ function loadLevel(levelIdx) {
                         isDead: false,
                         width: 512,
                         height: 512,
-                        active: false,
                         data: null,
                         damage: 5,
                         lastAttack: 0,
@@ -1040,7 +1028,6 @@ function loadLevel(levelIdx) {
                         isDead: false,
                         width: 512,
                         height: 512,
-                        active: false,
                         data: null,
                         lastShot: 0,
                         attackCooldown: 2000
@@ -1060,7 +1047,6 @@ function loadLevel(levelIdx) {
                         isDead: false,
                         width: 512,
                         height: 512,
-                        active: false,
                         data: null,
                         lastShot: 0,
                         attackCooldown: 2000
@@ -1080,7 +1066,6 @@ function loadLevel(levelIdx) {
                         isDead: false,
                         width: 512,
                         height: 512,
-                        active: false,
                         data: null,
                         lastShot: 0,
                         rocketlastShot: 0,
@@ -1102,7 +1087,6 @@ function loadLevel(levelIdx) {
                         isDead: false,
                         width: 512,
                         height: 512,
-                        active: false,
                         data: null,
                         damage: 10,
                         lastAttack: 0,
@@ -1112,7 +1096,7 @@ function loadLevel(levelIdx) {
                     game.monsterTotal++;
                     break;
                 case 26:
-                    game.sprites.push({ id: "boomerang-sprite", x: j, y: i, width: 27, height: 27, active: true, data: null });
+                    game.sprites.push({ id: "boomerang-sprite", x: j, y: i, width: 27, height: 27, data: null });
                     game.pickupTotal++;
                     break;
                 case 27:
@@ -1127,7 +1111,6 @@ function loadLevel(levelIdx) {
                         isDead: false,
                         width: 512,
                         height: 512,
-                        active: false,
                         data: null,
                         damage: 15,
                         lastAttack: 0,
@@ -1148,7 +1131,6 @@ function loadLevel(levelIdx) {
                         isDead: false,
                         width: 512,
                         height: 512,
-                        active: false,
                         data: null,
                         damage: 15,
                         lastAttack: 0,
@@ -1169,7 +1151,6 @@ function loadLevel(levelIdx) {
                         isDead: false,
                         width: 512,
                         height: 512,
-                        active: false,
                         data: null,
                         lastShot: 0,
                         attackCooldown: 2000
@@ -1189,7 +1170,6 @@ function loadLevel(levelIdx) {
                         isDead: false,
                         width: 512,
                         height: 512,
-                        active: false,
                         data: null,
                         lastShot: 0,
                         rocketlastShot: 0,
@@ -1211,7 +1191,6 @@ function loadLevel(levelIdx) {
                         isDead: false,
                         width: 512,
                         height: 512,
-                        active: false,
                         data: null,
                         lastShot: 0,
                         rocketlastShot: 0,
@@ -1233,7 +1212,6 @@ function loadLevel(levelIdx) {
                         isDead: false,
                         width: 512,
                         height: 512,
-                        active: false,
                         data: null,
                         lastShot: 0,
                         rocketlastShot: 0,
@@ -1255,7 +1233,6 @@ function loadLevel(levelIdx) {
                         isDead: false,
                         width: 512,
                         height: 512,
-                        active: false,
                         data: null,
                         damage: 10,
                         lastAttack: 0,
@@ -1276,7 +1253,6 @@ function loadLevel(levelIdx) {
                         isDead: false,
                         width: 512,
                         height: 512,
-                        active: false,
                         data: null,
                         damage: 25,
                         lastAttack: 0,
@@ -1297,7 +1273,6 @@ function loadLevel(levelIdx) {
                         isDead: false,
                         width: 512,
                         height: 512,
-                        active: false,
                         data: null,
                         damage: 15,
                         lastAttack: 0,
@@ -1350,7 +1325,6 @@ function rayCasting() {
             rayX += rayCos;
             rayY += raySin;
             wall = currentMap[Math.floor(rayY)][Math.floor(rayX)];
-            activeSprites(rayX, rayY);
         } while (wall !== 2);
 
         // Distance calculation with fish-eye fix
@@ -1374,6 +1348,38 @@ function rayCasting() {
     }
 }
 
+// Check if sprite/monster is visible to player for draw calls
+
+function isVisibleToPlayer(monster) {
+    const map = game.levels[game.currentLevel].map;
+    let x0 = game.player.x;
+    let y0 = game.player.y;
+    let x1 = monster.x;
+    let y1 = monster.y;
+    const dx = x1 - x0;
+    const dy = y1 - y0;
+    const steps = Math.max(Math.abs(dx), Math.abs(dy)) * 4; // Increase factor for precision
+
+    for (let step = 0; step < steps; step++) {
+        const t = step / steps;
+        const x = x0 + dx * t;
+        const y = y0 + dy * t;
+        const mapX = Math.floor(x);
+        const mapY = Math.floor(y);
+
+        // Stop if we hit a wall (2)
+        if (map[mapY] && map[mapY][mapX] === 2) {
+            return false;
+        }
+
+        // If we reach the monster
+        if (Math.floor(x) === Math.floor(x1) && Math.floor(y) === Math.floor(y1)) {
+            return true;
+        }
+    }
+    return true;
+}
+
 // Degrees to radians conversion
 
 function degreeToRadians(degree) {
@@ -1385,34 +1391,6 @@ function degreeToRadians(degree) {
 
 function radiansToDegrees(radians) {
     return radians * rad_to_degree;
-}
-
-// Active monsters based on player position
-
-function activeSprites(x, y) {
-    const activationDistSq = game.activationDistance * game.activationDistance;
-
-    // Check activation for monsters since they are dynamic
-    for (let monster of game.monsters) {
-        if (monster.isDead || monster.active) continue;
-
-        const dx = x - monster.x;
-        const dy = y - monster.y;
-        const distSq = dx * dx + dy * dy;
-
-        if (distSq <= activationDistSq) {
-            monster.active = true;
-        }
-    }
-}
-
-// Inactive all monsters
-
-function inactiveSprites() {
-    // Only inactive monsters since they are dynamic
-    for (let monster of game.monsters) {
-        monster.active = false;
-    }
 }
 
 // Bullet Object
@@ -1561,13 +1539,13 @@ function updateGameObjects() {
                             switch (monster.type) {
                                 case 'crusader':
                                 case 'king':
-                                    game.sprites.push({ id: 'tombstone-sprite', x: monster.x, y: monster.y, width: 256, height: 256, active: true, data: null });
+                                    game.sprites.push({ id: 'tombstone-sprite', x: monster.x, y: monster.y, width: 256, height: 256, data: null });
                                     break;
                                 case 'alien':
-                                    game.sprites.push({ id: 'acid-sprite', x: monster.x, y: monster.y, width: 256, height: 256, active: true, data: null });
+                                    game.sprites.push({ id: 'acid-sprite', x: monster.x, y: monster.y, width: 256, height: 256, data: null });
                                     break;
                                 default:
-                                    game.sprites.push({ id: 'bones-sprite', x: monster.x, y: monster.y, width: 256, height: 256, active: true, data: null });
+                                    game.sprites.push({ id: 'bones-sprite', x: monster.x, y: monster.y, width: 256, height: 256, data: null });
                                     break;
                             }
                             for (let i = 0; i < game.sprites.length; i++) {
@@ -2374,17 +2352,20 @@ function drawBackground(x, y1, y2, background) {
 
 function drawSprites() {
     // Draw trees and other non-monster sprites
-    for (let i = 0; i < game.sprites.length; i++) {
-        const sprite = game.sprites[i];
+    for (let sprite of game.sprites) {
         if (sprite.data) {
-            drawSpriteInWorld(sprite);
+            if (isVisibleToPlayer(sprite)) {
+                drawSpriteInWorld(sprite);
+            }
         }
     }
 
     // Draw monsters
     for (let monster of game.monsters) {
-        if (!monster.isDead && monster.active && monster.data) {
-            drawSpriteInWorld(monster);
+        if (!monster.isDead && monster.data) {
+            if (isVisibleToPlayer(monster)) {
+                drawSpriteInWorld(monster);
+            }
         }
     }
 
