@@ -132,6 +132,37 @@ let game = {
             monstermovespeed: 0.02
         },
         {
+            name: "Ocean",
+            map: [
+                [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 33, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 34, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 35, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
+            ],
+            unlocked: false,
+            floor: 11,
+            wall: 11,
+            background: 0,
+            startlocation: { x: 2, y: 2 },
+            equippedweapon: 1,
+            monstermovespeed: 0.04
+        },
+        {
             name: "Arctic",
             map: [
                 [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
@@ -516,6 +547,12 @@ let game = {
             width: 16,
             height: 16,
             id: "tech-texture",
+            data: null
+        },
+        {
+            width: 16,
+            height: 16,
+            id: "water-texture",
             data: null
         }
     ],
@@ -1204,6 +1241,69 @@ function loadLevel(levelIdx) {
                         rocketCooldown: 5000
                     };
                     game.monsters.push(tank);
+                    game.monsterTotal++;
+                    break;
+                case 33:
+                    const piranha = {
+                        id: `monster_${game.monsterTotal}`,
+                        type: 'piranha',
+                        skin: 'piranha-sprite',
+                        audio: 'piranha',
+                        x: j,
+                        y: i,
+                        health: 25,
+                        isDead: false,
+                        width: 512,
+                        height: 512,
+                        active: false,
+                        data: null,
+                        damage: 10,
+                        lastAttack: 0,
+                        attackCooldown: 1000
+                    };
+                    game.monsters.push(piranha);
+                    game.monsterTotal++;
+                    break;
+                case 34:
+                    const shark = {
+                        id: `monster_${game.monsterTotal}`,
+                        type: 'shark',
+                        skin: 'shark-sprite',
+                        audio: 'shark',
+                        x: j,
+                        y: i,
+                        health: 250,
+                        isDead: false,
+                        width: 512,
+                        height: 512,
+                        active: false,
+                        data: null,
+                        damage: 25,
+                        lastAttack: 0,
+                        attackCooldown: 1000
+                    };
+                    game.monsters.push(shark);
+                    game.monsterTotal++;
+                    break;
+                case 35:
+                    const squid = {
+                        id: `monster_${game.monsterTotal}`,
+                        type: 'squid',
+                        skin: 'squid-sprite',
+                        audio: 'squid',
+                        x: j,
+                        y: i,
+                        health: 250,
+                        isDead: false,
+                        width: 512,
+                        height: 512,
+                        active: false,
+                        data: null,
+                        damage: 15,
+                        lastAttack: 0,
+                        attackCooldown: 1000
+                    };
+                    game.monsters.push(squid);
                     game.monsterTotal++;
                     break;
                 default:
