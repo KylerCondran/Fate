@@ -44,7 +44,8 @@ git clone https://github.com/KylerCondran/Raycaster-FPS-Game.git
 
 <ul>
   <li>Jungle</li>
-  <li>Hell</li> 
+  <li>Hell</li>
+  <li>Ocean</li>
   <li>Arctic</li>
   <li>Labyrinth</li>
   <li>Heaven</li>
@@ -71,6 +72,9 @@ git clone https://github.com/KylerCondran/Raycaster-FPS-Game.git
   <li>Skeletons</li>
   <li>Crusaders</li>
   <li>King</li>
+  <li>Piranhas</li>
+  <li>Squids</li>
+  <li>Sharks</li>
   <li>Soldiers</li>
   <li>Apaches</li>
   <li>Fighter Jets</li>

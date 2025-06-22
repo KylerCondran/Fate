@@ -20,8 +20,8 @@
 
 # More Existing Features
 
-- [ ] More Sprites - Sharks, Velociraptors, Dinosaurs
-- [ ] More Weapons
+- [ ] More Sprites - Velociraptors, Dinosaurs
+- [ ] More Weapons - Trident
 - [ ] More Pickups - Speed Boost, Battery For Yeti Pistol
 - [ ] More Sounds
 - [ ] More Textures
