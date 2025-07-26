@@ -3,7 +3,7 @@
 This is a game I am developing with a working title of 'Fate'. It is a 3D Environment Raycasting FPS Game Engine built on pure JavaScript. Hunt And Shoot Monsters. Arrow Keys To Move, A & D To Strafe, Space To Shoot. Number Keys To Swap Weapons.
 
 <p align="center">
-  <a href="https://kylercondran.github.io/Fate/Fate/raycasting.html">Play This Game</a>
+  <a href="https://kylercondran.github.io/Fate/Fate/Fate.html">Play This Game</a>
 </p>
 
 <img src="https://repository-images.githubusercontent.com/981807393/4cb9db2b-ae98-4ab3-abb3-62a6e15d6368" title="Fate">
