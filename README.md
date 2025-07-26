@@ -1,17 +1,17 @@
-# Raycaster-FPS-Game
+# Fate
 
 This is a game I am developing with a working title of 'Fate'. It is a 3D Environment Raycasting FPS Game Engine built on pure JavaScript. Hunt And Shoot Monsters. Arrow Keys To Move, A & D To Strafe, Space To Shoot. Number Keys To Swap Weapons.
 
 <p align="center">
-  <a href="https://kylercondran.github.io/Raycaster-FPS-Game/Raycaster-FPS-Game/raycasting.html">Play This Game</a>
+  <a href="https://kylercondran.github.io/Fate/Fate/raycasting.html">Play This Game</a>
 </p>
 
-<img src="https://repository-images.githubusercontent.com/981807393/4cb9db2b-ae98-4ab3-abb3-62a6e15d6368" title="Raycaster-FPS-Game">
+<img src="https://repository-images.githubusercontent.com/981807393/4cb9db2b-ae98-4ab3-abb3-62a6e15d6368" title="Fate">
 
 <p align="center">
-  <a href="https://github.com/KylerCondran/Raycaster-FPS-Game/issues/new">Report bug</a>
+  <a href="https://github.com/KylerCondran/Fate/issues/new">Report bug</a>
   ·
-  <a href="https://github.com/KylerCondran/Raycaster-FPS-Game/issues/new">Request feature</a>
+  <a href="https://github.com/KylerCondran/Fate/issues/new">Request feature</a>
 </p>
 
 ## Disclaimer
@@ -22,7 +22,7 @@ THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND. YOU MAY USE THIS
 
 1. Download
 ```
-git clone https://github.com/KylerCondran/Raycaster-FPS-Game.git
+git clone https://github.com/KylerCondran/Fate.git
 ```
 2. Setup An IIS Web Server To Host The Files
    
@@ -113,6 +113,6 @@ Here are some Youtube videos on the mechanics of creating your own Raycaster:<br
 See our contributing guide at [CONTRIBUTING.md](../master/CONTRIBUTING.md).
 
 ## Copyright and License
->The [MIT License](https://github.com/KylerCondran/Raycaster-FPS-Game/blob/master/LICENSE.txt)
+>The [MIT License](https://github.com/KylerCondran/Fate/blob/master/LICENSE.txt)
 >
 >Copyright (c) 2025 Kyler Condran
