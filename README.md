@@ -1,6 +1,8 @@
 # Fate
 
-This is a game I am developing with a working title of 'Fate'. It is a 3D Environment Raycasting FPS Game Engine built on pure JavaScript. Hunt And Shoot Monsters. Arrow Keys To Move, A & D To Strafe, Space To Shoot. Number Keys To Swap Weapons.
+Fate is a fast-paced first-person shooter where players battle dangerous mythical monsters from an array of unique fantasy environments. As the levels progress the enemies get more capable and more lethal. Can you survive until the end, or was it... Fate.
+
+Fate is a 3D FPS Game Engine built on pure JavaScript. Hunt And Shoot Monsters. Arrow Keys To Move, A & D To Strafe, Gather Pickups, Space To Shoot. Number Keys To Swap Weapons.
 
 <p align="center">
   <a href="https://kylercondran.github.io/Fate/Fate/Fate.html">Play This Game</a>
@@ -24,7 +26,7 @@ THIS SOFTWARE IS PROVIDED "AS IS" WITHOUT WARRANTY OF ANY KIND. YOU MAY USE THIS
 ```
 git clone https://github.com/KylerCondran/Fate.git
 ```
-2. Setup An IIS Web Server To Host The Files
+2. Setup A Web Server To Host The Files
    
 3. Copy The Files To The Web Server Root Directory
 
