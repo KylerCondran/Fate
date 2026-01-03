@@ -410,6 +410,37 @@ let game = {
             startlocation: { x: 2, y: 2 },
             equippedweapon: 1,
             monstermovespeed: 0.04
+        },
+        {
+            name: "Secret Cow Level",
+            map: [
+                [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 36, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 36, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 36, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 36, 0, 0, 0, 0, 0, 0, 0, 0, 36, 0, 0, 0, 2],
+                [2, 0, 0, 36, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 36, 0, 0, 0, 0, 0, 37, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
+            ],
+            unlocked: false,
+            floor: 5,
+            wall: 12,
+            background: 0,
+            startlocation: { x: 2, y: 2 },
+            equippedweapon: 1,
+            monstermovespeed: 0.01
         }
     ],
     key: {
@@ -553,6 +584,12 @@ let game = {
             width: 16,
             height: 16,
             id: "water-texture",
+            data: null
+        },
+        {
+            width: 16,
+            height: 16,
+            id: "fence-texture",
             data: null
         }
     ],
@@ -1279,6 +1316,46 @@ function loadLevel(levelIdx) {
                         attackCooldown: 1000
                     };
                     game.monsters.push(squid);
+                    game.monsterTotal++;
+                    break;
+                case 36:
+                    const cow = {
+                        id: `monster_${game.monsterTotal}`,
+                        type: 'cow',
+                        skin: 'cow-sprite',
+                        audio: 'cow',
+                        x: j,
+                        y: i,
+                        health: 100,
+                        isDead: false,
+                        width: 512,
+                        height: 512,
+                        data: null,
+                        damage: 10,
+                        lastAttack: 0,
+                        attackCooldown: 1000
+                    };
+                    game.monsters.push(cow);
+                    game.monsterTotal++;
+                    break;
+                case 37:
+                    const cowking = {
+                        id: `monster_${game.monsterTotal}`,
+                        type: 'cow',
+                        skin: 'cowking-sprite',
+                        audio: 'cow',
+                        x: j,
+                        y: i,
+                        health: 400,
+                        isDead: false,
+                        width: 512,
+                        height: 512,
+                        data: null,
+                        damage: 40,
+                        lastAttack: 0,
+                        attackCooldown: 1000
+                    };
+                    game.monsters.push(cowking);
                     game.monsterTotal++;
                     break;
                 default:
@@ -2710,7 +2787,10 @@ function createStartScreen() {
         }
         let td = document.createElement('td');
         let btn = document.createElement('button');
-        if (game.levels[idx].unlocked == false) {
+        if (game.levels[idx].name == 'Secret Cow Level' && game.levels[idx].unlocked == false) {
+            btn.textContent = 'Secret';
+            btn.style.backgroundColor = '#3B0F0F';
+        } else if (game.levels[idx].unlocked == false) {
             btn.textContent = 'Locked';
             btn.style.backgroundColor = '#3b3b3b';
         } else {
