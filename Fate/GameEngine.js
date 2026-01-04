@@ -31,6 +31,9 @@ let game = {
         scepter: false,
         boomerang: false
     },
+    keysUnlocked: {
+        cowkey: false
+    },
     screen: {
         width: window.innerWidth,
         height: window.innerHeight,
@@ -197,10 +200,10 @@ let game = {
             name: "Labyrinth",
             map: [
                 [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
-                [2, 0, 0, 0, 8, 0, 0, 8, 0, 0, 0, 2, 17, 0, 0, 2, 17, 0, 0, 2],
-                [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 2, 0, 0, 0, 2, 0, 0, 0, 2],
-                [2, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2, 2, 2, 0, 2, 2, 2, 0, 2],
-                [2, 0, 2, 2, 2, 2, 2, 2, 0, 2, 0, 2, 0, 0, 0, 2, 0, 2, 0, 2],
+                [2, 0, 0, 0, 8, 0, 0, 8, 0, 0, 0, 2, 17, 0, 0, 2, 0, 0, 17, 2],
+                [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 2, 0, 0, 0, 2, 0, 38, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2, 2, 2, 0, 2, 0, 0, 0, 2],
+                [2, 0, 2, 2, 2, 2, 2, 2, 0, 2, 0, 2, 0, 0, 0, 2, 2, 2, 0, 2],
                 [2, 0, 0, 8, 0, 0, 0, 2, 0, 2, 0, 2, 0, 2, 0, 2, 0, 2, 0, 2],
                 [2, 2, 2, 2, 2, 2, 0, 2, 0, 2, 0, 2, 0, 0, 0, 0, 0, 2, 0, 2],
                 [2, 0, 0, 0, 8, 0, 0, 2, 0, 2, 0, 2, 2, 2, 0, 2, 0, 2, 0, 2],
@@ -399,7 +402,7 @@ let game = {
                 [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 23, 0, 0, 0, 0, 0, 2],
                 [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
                 [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 22, 0, 0, 0, 0, 0, 24, 0, 0, 2],
-                [2, 0, 0, 0, 24, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 24, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 39, 0, 2],
                 [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
                 [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
             ],
@@ -1358,6 +1361,16 @@ function loadLevel(levelIdx) {
                     game.monsters.push(cowking);
                     game.monsterTotal++;
                     break;
+                case 38:
+                    //cow chest
+                    game.sprites.push({ id: "lockedchest-sprite", x: j, y: i, width: 512, height: 512, data: null });
+                    game.pickupTotal++;
+                    break;
+                case 39:
+                    //cow key
+                    game.sprites.push({ id: "key-sprite", x: j, y: i, width: 64, height: 64, data: null });
+                    game.pickupTotal++;
+                    break;
                 default:
                     break;
             }
@@ -2032,12 +2045,31 @@ function movePlayer() {
                     }
                 }
                 break;
+            // Boomerang pickup
             case 26:
                 game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
                 itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
                 game.weaponsUnlocked.boomerang = true;
                 game.boomerangammo++;
                 game.pickupCollected++;
+                break;
+            // Cow Chest pickup
+            case 38:
+                if (game.keysUnlocked.cowkey) {
+                    game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
+                    //drop secret totem
+                    secretUnlock(Math.floor(game.player.y), Math.floor(game.player.x));
+                    game.pickupCollected++;
+                    game.levels[10].unlocked = true;
+                    game.keysUnlocked.cowkey = false;
+                }                
+                break;
+            // Cow Key pickup
+            case 39:
+                game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
+                itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
+                game.pickupCollected++;
+                game.keysUnlocked.cowkey = true;
                 break;
         }
     }
@@ -2229,6 +2261,18 @@ document.addEventListener('keyup', (event) => {
 
 function itemPickup(ycoords, xcoords) {
     playSound('pickup-sound');
+    let spritenum = 0;
+    for (let sprite of game.sprites) {
+        if (sprite.x == xcoords && sprite.y == ycoords) {
+            game.sprites.splice(spritenum, 1);
+            break;
+        }
+        spritenum++;
+    }
+}
+
+function secretUnlock(ycoords, xcoords) {
+    playSound('secretunlock-sound');
     let spritenum = 0;
     for (let sprite of game.sprites) {
         if (sprite.x == xcoords && sprite.y == ycoords) {
@@ -2616,7 +2660,7 @@ function drawGun(ctx) {
 function drawHUD(ctx) {
     // Draw semi-transparent black background for HUD
     ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
-    ctx.fillRect(0, 0, 80, 22);
+    ctx.fillRect(0, 0, 80, 27);
 
     // Configure text style
     ctx.font = '5px "Lucida Console"';
@@ -2678,6 +2722,14 @@ function drawHUD(ctx) {
         return unlockText;
     })();
     ctx.fillText(`Unlocked: ${unlocks}`, 0, 20);
+    const keys = (() => {
+        let keyText = '';
+        if (game.keysUnlocked.cowkey) {
+            keyText += 'Cow ';
+        }
+        return keyText;
+    })();
+    ctx.fillText(`Keys: ${keys}`, 0, 25);
 }
 
 function drawHealthBar(x, y, width, height, health, maxHealth) {
@@ -2787,9 +2839,14 @@ function createStartScreen() {
         }
         let td = document.createElement('td');
         let btn = document.createElement('button');
-        if (game.levels[idx].name == 'Secret Cow Level' && game.levels[idx].unlocked == false) {
-            btn.textContent = 'Secret';
-            btn.style.backgroundColor = '#3B0F0F';
+        if (game.levels[idx].name == 'Secret Cow Level') {
+            if (game.levels[idx].unlocked) {
+                btn.textContent = level.name;
+                btn.style.backgroundColor = '#A96A6A';
+            } else {
+                btn.textContent = 'Secret';
+                btn.style.backgroundColor = '#3B0F0F';
+            }
         } else if (game.levels[idx].unlocked == false) {
             btn.textContent = 'Locked';
             btn.style.backgroundColor = '#3b3b3b';
@@ -2834,7 +2891,7 @@ function endGame() {
         mainLoop = null;
     }
     createWinScreen();
-    if (game.currentLevel != game.levels.length - 1) {
+    if (game.currentLevel != game.levels.length - 2 && game.currentLevel != game.levels.length - 1) {
         game.levels[game.currentLevel + 1].unlocked = true;
     }
     setTimeout(() => {
