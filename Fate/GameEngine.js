@@ -2062,6 +2062,8 @@ function movePlayer() {
                     game.pickupCollected++;
                     game.levels[10].unlocked = true;
                     game.keysUnlocked.cowkey = false;
+                } else {
+                    playSound('locked-sound');
                 }                
                 break;
             // Cow Key pickup
