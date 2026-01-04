@@ -22,6 +22,6 @@
 
 - [ ] More Sprites - Velociraptors, Dinosaurs
 - [ ] More Weapons - Trident
-- [ ] More Pickups - Speed Boost, Battery For Yeti Pistol
+- [ ] More Pickups - Med Kit, Battery For Yeti Pistol
 - [ ] More Sounds
 - [ ] More Textures

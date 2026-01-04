@@ -312,14 +312,14 @@ let game = {
                 [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 27, 0, 8, 0, 2],
                 [2, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
                 [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
                 [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 28, 0, 0, 0, 2],
                 [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
                 [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
                 [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 27, 0, 0, 0, 0, 0, 0, 2],
                 [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
-                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
                 [2, 0, 0, 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
-                [2, 0, 0, 0, 0, 0, 0, 0, 28, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 2],
+                [2, 0, 0, 0, 40, 0, 0, 0, 28, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 2],
                 [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
                 [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
             ],
@@ -632,6 +632,12 @@ let game = {
         height: 27,
         data: null
     },
+    shurikenTexture: {
+        id: 'shuriken-sprite',
+        width: 27,
+        height: 27,
+        data: null
+    },
     backgrounds: [
         {
             width: 360,
@@ -786,6 +792,7 @@ function loadLevel(levelIdx) {
     let mapy = map.length;
     let mapx = map[0].length;
     game.monsterMoveSpeed = game.levels[levelIdx].monstermovespeed;
+    game.player.speed.movement = 0.08;
     for (let i = 0; i < mapy; i++) {
         for (let j = 0; j < mapx; j++) {
             switch (map[i][j]) {
@@ -1154,7 +1161,8 @@ function loadLevel(levelIdx) {
                         data: null,
                         damage: 15,
                         lastAttack: 0,
-                        attackCooldown: 500
+                        lastShot: 0,
+                        attackCooldown: 1500
                     };
                     game.monsters.push(ninja1);
                     game.monsterTotal++;
@@ -1174,7 +1182,8 @@ function loadLevel(levelIdx) {
                         data: null,
                         damage: 15,
                         lastAttack: 0,
-                        attackCooldown: 500
+                        lastShot: 0,
+                        attackCooldown: 1500
                     };
                     game.monsters.push(ninja2);
                     game.monsterTotal++;
@@ -1369,6 +1378,10 @@ function loadLevel(levelIdx) {
                 case 39:
                     //cow key
                     game.sprites.push({ id: "key-sprite", x: j, y: i, width: 64, height: 64, data: null });
+                    game.pickupTotal++;
+                    break;
+                case 40:
+                    game.sprites.push({ id: "speedboost-sprite", x: j, y: i, width: 512, height: 512, data: null });
                     game.pickupTotal++;
                     break;
                 default:
@@ -1794,6 +1807,63 @@ function updateGameObjects() {
                         }
                     }
                     break;
+                case 'ninja':
+                    if (monster.health > 75) {
+                        if (distSq > 0.25 && distSq < 100) {
+                            const distance = Math.sqrt(distSq);
+                            const invDist = 1 / distance;
+                            const dirX = dx * invDist * game.monsterMoveSpeed;
+                            const dirY = dy * invDist * game.monsterMoveSpeed;
+                            // Try to move in X direction
+                            const newX = monster.x + dirX;
+                            if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2) {
+                                monster.x = newX;
+                            }
+                            // Try to move in Y direction
+                            const newY = monster.y + dirY;
+                            if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2) {
+                                monster.y = newY;
+                            }
+                        }
+                        if (distSq < 0.5 && (!monster.lastAttack || currentTime - monster.lastAttack >= monster.attackCooldown)) {
+                            // Attack the player
+                            game.player.health -= monster.damage;
+                            monster.lastAttack = currentTime;
+                            // Play monster attack sound
+                            playSound('injured-sound');
+                            // Check if player died
+                            if (game.player.health <= 0) {
+                                playSound('death-sound');
+                                endGameDeath();
+                            }
+                        }
+                    } else {
+                        if (distSq < 64) {
+                            if (!monster.lastShot || currentTime - monster.lastShot >= monster.attackCooldown) {
+                                const angle = radiansToDegrees(Math.atan2(dy, dx));
+                                game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'shuriken', game.shurikenTexture, 'monster'));
+                                playSound('shuriken-sound');
+                                monster.lastShot = currentTime;
+                            }
+                        }
+                        if (distSq > 30 && distSq < 100) {
+                            const distance = Math.sqrt(distSq);
+                            const invDist = 1 / distance;
+                            const dirX = dx * invDist * game.monsterMoveSpeed;
+                            const dirY = dy * invDist * game.monsterMoveSpeed;
+                            // Try to move in X direction
+                            const newX = monster.x + dirX;
+                            if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2) {
+                                monster.x = newX;
+                            }
+                            // Try to move in Y direction
+                            const newY = monster.y + dirY;
+                            if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2) {
+                                monster.y = newY;
+                            }
+                        }
+                    }
+                    break;
                 case 'apache':
                 case 'fighterjet':
                     if (distSq < 64) {
@@ -2073,6 +2143,13 @@ function movePlayer() {
                 game.pickupCollected++;
                 game.keysUnlocked.cowkey = true;
                 break;
+            // Speed Boost pickup
+            case 40:
+                game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
+                itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
+                game.pickupCollected++;
+                game.player.speed.movement = 0.12;
+                break;
         }
     }
     if (game.key.one.active && game.weaponsUnlocked.knife == true) {
@@ -2350,6 +2427,9 @@ function loadSprites() {
     }
     if (!game.boomerangTexture.data) {
         game.boomerangTexture.data = getTextureData(game.boomerangTexture);
+    }
+    if (!game.shurikenTexture.data) {
+        game.shurikenTexture.data = getTextureData(game.shurikenTexture);
     }
 }
 

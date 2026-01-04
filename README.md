@@ -97,6 +97,7 @@ git clone https://github.com/KylerCondran/Fate.git
   <li>Portals</li>
   <li>Keys</li>
   <li>Chests</li>
+  <li>Speed Boost</li>
 </ul>
 
 ## Inspiration
