@@ -55,6 +55,7 @@ git clone https://github.com/KylerCondran/Fate.git
   <li>Ninja Dojo</li>
   <li>Army Base</li>
   <li>Mothership</li>
+  <li>Secret Levels</li>
 </ul>
 
 ## Monsters
@@ -93,6 +94,9 @@ git clone https://github.com/KylerCondran/Fate.git
   <li>Ammo</li>
   <li>Rocket Ammo</li>
   <li>Weapons</li>
+  <li>Portals</li>
+  <li>Keys</li>
+  <li>Chests</li>
 </ul>
 
 ## Inspiration
