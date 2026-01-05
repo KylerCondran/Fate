@@ -78,6 +78,7 @@ git clone https://github.com/KylerCondran/Fate.git
   <li>Piranhas</li>
   <li>Squids</li>
   <li>Sharks</li>
+  <li>Zeus</li>
   <li>Soldiers</li>
   <li>Apaches</li>
   <li>Fighter Jets</li>

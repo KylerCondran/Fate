@@ -140,21 +140,21 @@ let game = {
                 [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
                 [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
                 [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 2],
+                [2, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 2],
+                [2, 0, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 2],
+                [2, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
                 [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
-                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
-                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
-                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 33, 0, 0, 2],
-                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
-                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
-                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
-                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
-                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 41, 0, 0, 2],
-                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
-                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
-                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 34, 0, 0, 0, 0, 2],
-                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
-                [2, 0, 0, 35, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
-                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 41, 0, 0, 0, 0, 0, 0, 1, 0, 0, 2],
+                [2, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 2],
                 [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
             ],
             unlocked: false,
@@ -813,6 +813,9 @@ function loadLevel(levelIdx) {
                         case "Heaven":
                             game.sprites.push({ id: "pillar-sprite", x: j, y: i, width: 320, height: 640, data: null });
                             break;
+                        case "Ocean":
+                            game.sprites.push({ id: "kelp-sprite", x: j, y: i, width: 512, height: 512, data: null });
+                            break;
                         default:
                             game.sprites.push({ id: "tree-sprite", x: j, y: i, width: 8, height: 16, data: null });
                             break;
@@ -1405,7 +1408,10 @@ function loadLevel(levelIdx) {
                         data: null,
                         lastShot: 0,
                         attackCooldown: 5000,
-                        shotsInBurst: 0
+                        shotsInBurst: 0,
+                        spawnPirahna: false,
+                        spawnSquid: false,
+                        spawnShark: false
                     };
                     game.monsters.push(zeus);
                     game.monsterTotal++;
@@ -1904,7 +1910,7 @@ function updateGameObjects() {
                             }
                         }
                     }
-                    if (distSq > 30 && distSq < 200) {
+                    if (distSq > 20 && distSq < 200) {
                         const distance = Math.sqrt(distSq);
                         const invDist = 1 / distance;
                         const dirX = dx * invDist * game.monsterMoveSpeed;
@@ -1919,6 +1925,100 @@ function updateGameObjects() {
                         if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2) {
                             monster.y = newY;
                         }
+                    }
+                    if (monster.health < 800 && !monster.spawnPirahna) {
+                        monster.spawnPirahna = true;
+                        for (i = 0; i < 3; i++) {
+                            game.monsterTotal++;
+                            var rndX = Math.floor(Math.random() * 5) - 2;
+                            var rndY = Math.floor(Math.random() * 5) - 2;
+                            const piranha = {
+                                id: `monster_${game.monsterTotal}`,
+                                type: 'piranha',
+                                skin: 'piranha-sprite',
+                                audio: 'piranha',
+                                x: monster.x + rndX,
+                                y: monster.y + rndY,
+                                health: 25,
+                                isDead: false,
+                                width: 512,
+                                height: 512,
+                                data: null,
+                                damage: 10,
+                                lastAttack: 0,
+                                attackCooldown: 1000
+                            };
+                            const monsterTexture = {
+                                id: piranha.skin,
+                                width: piranha.width,
+                                height: piranha.height
+                            };
+                            piranha.data = getTextureData(monsterTexture);
+                            game.monsters.push(piranha);
+                        }
+                        playSound('portal-sound');
+                    }
+                    if (monster.health < 600 && !monster.spawnSquid) {
+                        monster.spawnSquid = true;
+                        for (i = 0; i < 2; i++) {
+                            game.monsterTotal++;
+                            var rndX = Math.floor(Math.random() * 5) - 2;
+                            var rndY = Math.floor(Math.random() * 5) - 2;
+                            const squid = {
+                                id: `monster_${game.monsterTotal}`,
+                                type: 'squid',
+                                skin: 'squid-sprite',
+                                audio: 'squid',
+                                x: monster.x + rndX,
+                                y: monster.y + rndY,
+                                health: 100,
+                                isDead: false,
+                                width: 512,
+                                height: 512,
+                                data: null,
+                                damage: 15,
+                                lastAttack: 0,
+                                attackCooldown: 1000
+                            };
+                            const monsterTexture = {
+                                id: squid.skin,
+                                width: squid.width,
+                                height: squid.height
+                            };
+                            squid.data = getTextureData(monsterTexture);
+                            game.monsters.push(squid);
+                        }
+                        playSound('portal-sound');
+                    }
+                    if (monster.health < 400 && !monster.spawnShark) {
+                        monster.spawnShark = true;
+                        game.monsterTotal++;
+                        var rndX = Math.floor(Math.random() * 5) - 2;
+                        var rndY = Math.floor(Math.random() * 5) - 2;
+                        const shark = {
+                            id: `monster_${game.monsterTotal}`,
+                            type: 'shark',
+                            skin: 'shark-sprite',
+                            audio: 'shark',
+                            x: monster.x + rndX,
+                            y: monster.y + rndY,
+                            health: 250,
+                            isDead: false,
+                            width: 512,
+                            height: 512,
+                            data: null,
+                            damage: 25,
+                            lastAttack: 0,
+                            attackCooldown: 1000
+                        };
+                        const monsterTexture = {
+                            id: shark.skin,
+                            width: shark.width,
+                            height: shark.height
+                        };
+                        shark.data = getTextureData(monsterTexture);
+                        game.monsters.push(shark);
+                        playSound('portal-sound');
                     }
                     break;
                 case 'apache':
