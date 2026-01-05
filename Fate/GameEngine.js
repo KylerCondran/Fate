@@ -148,7 +148,7 @@ let game = {
                 [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
                 [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
                 [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
-                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 41, 0, 0, 2],
                 [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
                 [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
                 [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 34, 0, 0, 0, 0, 2],
@@ -634,6 +634,12 @@ let game = {
     },
     shurikenTexture: {
         id: 'shuriken-sprite',
+        width: 27,
+        height: 27,
+        data: null
+    },
+    waterorbTexture: {
+        id: 'waterorb-sprite',
         width: 27,
         height: 27,
         data: null
@@ -1384,6 +1390,26 @@ function loadLevel(levelIdx) {
                     game.sprites.push({ id: "speedboost-sprite", x: j, y: i, width: 512, height: 512, data: null });
                     game.pickupTotal++;
                     break;
+                case 41:
+                    const zeus = {
+                        id: `monster_${game.monsterTotal}`,
+                        type: 'zeus',
+                        skin: 'zeus-sprite',
+                        audio: 'zeus',
+                        x: j,
+                        y: i,
+                        health: 1000,
+                        isDead: false,
+                        width: 512,
+                        height: 512,
+                        data: null,
+                        lastShot: 0,
+                        attackCooldown: 5000,
+                        shotsInBurst: 0
+                    };
+                    game.monsters.push(zeus);
+                    game.monsterTotal++;
+                    break;
                 default:
                     break;
             }
@@ -1861,6 +1887,37 @@ function updateGameObjects() {
                             if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2) {
                                 monster.y = newY;
                             }
+                        }
+                    }
+                    break;
+                case 'zeus':
+                    if (distSq < 64) {
+                        const delay = monster.shotsInBurst < 3 ? 1000 : monster.attackCooldown;
+                        if (!monster.lastShot || currentTime - monster.lastShot >= delay) {
+                            const angle = radiansToDegrees(Math.atan2(dy, dx));
+                            game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'waterorb', game.waterorbTexture, 'monster'));
+                            playSound('waterorb-sound');
+                            monster.lastShot = currentTime;
+                            monster.shotsInBurst++;
+                            if (monster.shotsInBurst > 3) {
+                                monster.shotsInBurst = 1;
+                            }
+                        }
+                    }
+                    if (distSq > 30 && distSq < 200) {
+                        const distance = Math.sqrt(distSq);
+                        const invDist = 1 / distance;
+                        const dirX = dx * invDist * game.monsterMoveSpeed;
+                        const dirY = dy * invDist * game.monsterMoveSpeed;
+                        // Try to move in X direction
+                        const newX = monster.x + dirX;
+                        if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2) {
+                            monster.x = newX;
+                        }
+                        // Try to move in Y direction
+                        const newY = monster.y + dirY;
+                        if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2) {
+                            monster.y = newY;
                         }
                     }
                     break;
@@ -2430,6 +2487,9 @@ function loadSprites() {
     }
     if (!game.shurikenTexture.data) {
         game.shurikenTexture.data = getTextureData(game.shurikenTexture);
+    }
+    if (!game.waterorbTexture.data) {
+        game.waterorbTexture.data = getTextureData(game.waterorbTexture);
     }
 }
 
