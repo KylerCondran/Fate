@@ -1362,7 +1362,7 @@ function loadLevel(levelIdx) {
                 case 37:
                     const cowking = {
                         id: `monster_${game.monsterTotal}`,
-                        type: 'cow',
+                        type: 'cowking',
                         skin: 'cowking-sprite',
                         audio: 'cow',
                         x: j,
@@ -1374,7 +1374,9 @@ function loadLevel(levelIdx) {
                         data: null,
                         damage: 40,
                         lastAttack: 0,
-                        attackCooldown: 1000
+                        attackCooldown: 1000,
+                        lastSpawn: 0,
+                        spawnCooldown: 15000
                     };
                     game.monsters.push(cowking);
                     game.monsterTotal++;
@@ -2079,6 +2081,68 @@ function updateGameObjects() {
                         const newY = monster.y + dirY;
                         if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2) {
                             monster.y = newY;
+                        }
+                    }
+                    break;
+                case 'cowking':
+                    if (distSq > 0.25 && distSq < 100) {
+                        const distance = Math.sqrt(distSq);
+                        const invDist = 1 / distance;
+                        const dirX = dx * invDist * game.monsterMoveSpeed;
+                        const dirY = dy * invDist * game.monsterMoveSpeed;
+                        // Try to move in X direction
+                        const newX = monster.x + dirX;
+                        if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2) {
+                            monster.x = newX;
+                        }
+                        // Try to move in Y direction
+                        const newY = monster.y + dirY;
+                        if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2) {
+                            monster.y = newY;
+                        }
+                        if (!monster.lastSpawn || currentTime - monster.lastSpawn >= monster.spawnCooldown) {
+                            monster.lastSpawn = currentTime;
+                            for (i = 0; i < 2; i++) {
+                                game.monsterTotal++;
+                                var rndX = Math.floor(Math.random() * 5) - 2;
+                                var rndY = Math.floor(Math.random() * 5) - 2;
+                                const cow = {
+                                    id: `monster_${game.monsterTotal}`,
+                                    type: 'cow',
+                                    skin: 'cow-sprite',
+                                    audio: 'cow',
+                                    x: monster.x + rndX,
+                                    y: monster.y + rndY,
+                                    health: 100,
+                                    isDead: false,
+                                    width: 512,
+                                    height: 512,
+                                    data: null,
+                                    damage: 10,
+                                    lastAttack: 0,
+                                    attackCooldown: 1000
+                                };
+                                const monsterTexture = {
+                                    id: cow.skin,
+                                    width: cow.width,
+                                    height: cow.height
+                                };
+                                cow.data = getTextureData(monsterTexture);
+                                game.monsters.push(cow);
+                            }
+                            playSound('portal-sound');
+                        }
+                    }
+                    if (distSq < 0.5 && (!monster.lastAttack || currentTime - monster.lastAttack >= monster.attackCooldown)) {
+                        // Attack the player
+                        game.player.health -= monster.damage;
+                        monster.lastAttack = currentTime;
+                        // Play monster attack sound
+                        playSound('injured-sound');
+                        // Check if player died
+                        if (game.player.health <= 0) {
+                            playSound('death-sound');
+                            endGameDeath();
                         }
                     }
                     break;
