@@ -1271,9 +1271,10 @@ function loadLevel(levelIdx) {
                         width: 512,
                         height: 512,
                         data: null,
-                        lastShot: 0,
-                        rocketlastShot: 0,
+                        damage: 100,
+                        lastAttack: 0,
                         attackCooldown: 10000,
+                        rocketlastShot: 0,                        
                         rocketCooldown: 5000
                     };
                     game.monsters.push(tank);
@@ -2067,7 +2068,7 @@ function updateGameObjects() {
                             monster.rocketlastShot = currentTime;
                         }
                     }
-                    if (distSq > 30 && distSq < 200) {
+                    if (distSq > 0.25 && distSq < 200) {
                         const distance = Math.sqrt(distSq);
                         const invDist = 1 / distance;
                         const dirX = dx * invDist * game.monsterMoveSpeed;
@@ -2081,6 +2082,18 @@ function updateGameObjects() {
                         const newY = monster.y + dirY;
                         if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2) {
                             monster.y = newY;
+                        }
+                    }
+                    if (distSq < 0.5 && (!monster.lastAttack || currentTime - monster.lastAttack >= monster.attackCooldown)) {
+                        // Attack the player
+                        game.player.health -= monster.damage;
+                        monster.lastAttack = currentTime;
+                        // Play monster attack sound
+                        playSound('squish-sound');
+                        // Check if player died
+                        if (game.player.health <= 0) {
+                            playSound('death-sound');
+                            endGameDeath();
                         }
                     }
                     break;
