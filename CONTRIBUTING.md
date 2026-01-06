@@ -29,9 +29,9 @@
 # General Ideas
 
 - enemy/pet spawning gun (trident?), fires 5 feet infront, portal sound, blue flash, spawns enemy or friend
-- allegiance flag on monsters
+- allegiance flag on monsters (traitor gun? swaps allegiance)
 - zeus drops trident, has dangerous attack when gets to 100 hp
-- udder gun
+- udder gun dropped by cow king
 - army base has huge fight between factions, winning faction helps you in mothership level
 - cheat codes
 - warcraft level, human knights and orcs, ogre mage
