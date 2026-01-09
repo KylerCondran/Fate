@@ -1419,6 +1419,9 @@ function loadLevel(levelIdx) {
                     game.monsters.push(zeus);
                     game.monsterTotal++;
                     break;
+                case 42:
+                    game.sprites.push({ id: 'acid-sprite', x: j, y: i, width: 256, height: 256, data: null });
+                    break;
                 default:
                     break;
             }
@@ -1681,6 +1684,7 @@ function updateGameObjects() {
                                     break;
                                 case 'alien':
                                     game.sprites.push({ id: 'acid-sprite', x: monster.x, y: monster.y, width: 256, height: 256, data: null });
+                                    game.levels[game.currentLevel].map[Math.floor(monster.y)][Math.floor(monster.x)] = 42;
                                     break;
                                 default:
                                     game.sprites.push({ id: 'bones-sprite', x: monster.x, y: monster.y, width: 256, height: 256, data: null });
@@ -2383,6 +2387,15 @@ function movePlayer() {
                 itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
                 game.pickupCollected++;
                 game.player.speed.movement = 0.12;
+                break;
+            // Acid Damage
+            case 42:
+                game.player.health -= 1;
+                playSound('injured-sound');    
+                if (game.player.health <= 0) {
+                    playSound('death-sound');
+                    endGameDeath();
+                }
                 break;
         }
     }

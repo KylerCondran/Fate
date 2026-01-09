@@ -39,7 +39,6 @@
 - energy shield / physical shield that absorbs 1000 dmg
 - breakable ufo stasis chambers
 - enemy ai, patroling, fleeing
-- alien acid hurts you
 - upgrade assets, make matrix for missing artifacts
 - tribal warriors
 - army vs terminators
