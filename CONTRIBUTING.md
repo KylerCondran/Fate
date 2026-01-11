@@ -40,12 +40,12 @@
 - breakable ufo stasis chambers
 - enemy ai, patroling, fleeing
 - upgrade assets, make matrix for missing artifacts
-- tribal warriors
 - army vs terminators
 - fast cheetah
 - rhino charging
-- africa level
 - eyeball that shoots eyeballs in a spray pattern
 - dead bones decay system
 - alien2 should have burst fire
+- witch doctors can teleport you to random places on the map
+- wolf still unused
 - killed by endgame notification

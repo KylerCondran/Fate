@@ -33,7 +33,8 @@ let game = {
         lasershotgun: false
     },
     keysUnlocked: {
-        cowkey: false
+        cowkey: false,
+        monkeykey: false
     },
     screen: {
         width: window.innerWidth,
@@ -92,8 +93,8 @@ let game = {
                 [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 2, 2, 0, 1, 0, 0, 2],
                 [2, 2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 2, 2, 0, 0, 0, 0, 2],
                 [2, 0, 8, 1, 0, 0, 0, 1, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
-                [2, 0, 0, 0, 10, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 1, 0, 0, 2],
-                [2, 6, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 4, 2],
+                [2, 0, 0, 6, 10, 0, 0, 0, 0, 0, 0, 8, 0, 0, 0, 0, 1, 0, 0, 2],
+                [2, 48, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 4, 2],
                 [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
             ],
             unlocked: true,
@@ -183,10 +184,10 @@ let game = {
                 [2, 0, 0, 0, 0, 0, 2, 0, 2, 21, 0, 0, 2, 0, 0, 0, 0, 0, 0, 2],
                 [2, 2, 0, 0, 0, 2, 2, 0, 2, 0, 0, 7, 2, 0, 0, 0, 0, 0, 0, 2],
                 [2, 2, 2, 2, 2, 2, 2, 0, 2, 2, 0, 2, 2, 2, 2, 2, 0, 2, 2, 2],
-                [2, 2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
-                [2, 0, 0, 1, 0, 0, 0, 1, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 21, 2],
-                [2, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 11, 0, 0, 0, 1, 0, 0, 2],
-                [2, 7, 0, 0, 0, 0, 0, 0, 21, 2, 0, 0, 0, 0, 0, 0, 0, 0, 7, 2],
+                [2, 0, 1, 1, 0, 0, 1, 0, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 1, 0, 1, 0, 0, 1, 1, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 21, 2],
+                [2, 7, 1, 1, 0, 1, 0, 1, 1, 2, 0, 0, 11, 0, 0, 0, 1, 0, 0, 2],
+                [2, 49, 1, 1, 0, 1, 1, 0, 21, 2, 0, 0, 0, 0, 0, 0, 0, 0, 7, 2],
                 [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
             ],
             unlocked: false,
@@ -445,6 +446,58 @@ let game = {
             startlocation: { x: 2, y: 2 },
             equippedweapon: 1,
             monstermovespeed: 0.01
+        },
+        {
+            name: "Beastlands",
+            map: [
+                [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 26, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 26, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 26, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 45, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 46, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 26, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 4, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 0, 4, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 2, 2, 2, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 47, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 1, 0, 1, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 47, 0, 0, 0, 47, 0, 2, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 47, 0, 0, 0, 0, 47, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 47, 0, 47, 0, 47, 0, 2, 0, 0, 0, 0, 47, 0, 1, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
+            ],
+            unlocked: false,
+            floor: 5,
+            wall: 7,
+            background: 1,
+            startlocation: { x: 2, y: 2 },
+            equippedweapon: 1,
+            monstermovespeed: 0.02
         }
     ],
     key: {
@@ -810,6 +863,7 @@ function loadLevel(levelIdx) {
                 case 1:
                     switch (game.levels[levelIdx].name) {
                         case "Hell":
+                        case "Beastlands":
                             game.sprites.push({ id: "cauldron-sprite", x: j, y: i, width: 512, height: 512, data: null });
                             break;
                         case "Arctic":
@@ -1433,6 +1487,76 @@ function loadLevel(levelIdx) {
                     break;
                 case 44:
                     game.sprites.push({ id: 'burningdebris-sprite', x: j, y: i, width: 512, height: 512, data: null });
+                    break;
+                case 45:
+                    const rhino = {
+                        id: `monster_${game.monsterTotal}`,
+                        type: 'rhino',
+                        skin: 'rhino-sprite',
+                        audio: 'rhino',
+                        x: j,
+                        y: i,
+                        health: 400,
+                        isDead: false,
+                        width: 512,
+                        height: 512,
+                        data: null,
+                        damage: 40,
+                        lastAttack: 0,
+                        attackCooldown: 1000
+                    };
+                    game.monsters.push(rhino);
+                    game.monsterTotal++;
+                    break;
+                case 46:
+                    const cheetah = {
+                        id: `monster_${game.monsterTotal}`,
+                        type: 'cheetah',
+                        skin: 'cheetah-sprite',
+                        audio: 'cheetah',
+                        x: j,
+                        y: i,
+                        health: 400,
+                        isDead: false,
+                        width: 512,
+                        height: 512,
+                        data: null,
+                        damage: 40,
+                        lastAttack: 0,
+                        attackCooldown: 1000
+                    };
+                    game.monsters.push(cheetah);
+                    game.monsterTotal++;
+                    break;
+                case 47:
+                    const witchdoctor = {
+                        id: `monster_${game.monsterTotal}`,
+                        type: 'witchdoctor',
+                        skin: 'witchdoctor-sprite',
+                        audio: 'witchdoctor',
+                        x: j,
+                        y: i,
+                        health: 400,
+                        isDead: false,
+                        width: 512,
+                        height: 512,
+                        data: null,
+                        damage: 40,
+                        lastAttack: 0,
+                        attackCooldown: 1000
+                    };
+                    game.monsters.push(witchdoctor);
+                    game.monsterTotal++;
+                    break;
+                case 48:
+                    //monkey chest
+                    game.sprites.push({ id: "lockedchest-sprite", x: j, y: i, width: 512, height: 512, data: null });
+                    game.pickupTotal++;
+                    break;
+                case 49:
+                    //monkey key
+                    game.sprites.push({ id: "key-sprite", x: j, y: i, width: 64, height: 64, data: null });
+                    game.pickupTotal++;
                     break;
                 default:
                     break;
@@ -2476,6 +2600,26 @@ function movePlayer() {
                     endGameDeath();
                 }
                 break;
+            // Monkey Chest pickup
+            case 48:
+                if (game.keysUnlocked.monkeykey) {
+                    game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
+                    //drop secret totem
+                    secretUnlock(Math.floor(game.player.y), Math.floor(game.player.x));
+                    game.pickupCollected++;
+                    game.levels[11].unlocked = true;
+                    game.keysUnlocked.monkeykey = false;
+                } else {
+                    playSound('locked-sound');
+                }
+                break;
+            // Monkey Key pickup
+            case 49:
+                game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
+                itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
+                game.pickupCollected++;
+                game.keysUnlocked.monkeykey = true;
+                break;
         }
     }
     if (game.key.one.active && game.weaponsUnlocked.knife == true) {
@@ -3157,6 +3301,9 @@ function drawHUD(ctx) {
         if (game.keysUnlocked.cowkey) {
             keyText += 'Cow ';
         }
+        if (game.keysUnlocked.monkeykey) {
+            keyText += 'Monkey ';
+        }
         return keyText;
     })();
     ctx.fillText(`Keys: ${keys}`, 0, 25);
@@ -3269,7 +3416,7 @@ function createStartScreen() {
         }
         let td = document.createElement('td');
         let btn = document.createElement('button');
-        if (game.levels[idx].name == 'Secret Cow Level') {
+        if (game.levels[idx].name == 'Secret Cow Level' || game.levels[idx].name == 'Beastlands') {
             if (game.levels[idx].unlocked) {
                 btn.textContent = level.name;
                 btn.style.backgroundColor = '#A96A6A';
@@ -3321,7 +3468,7 @@ function endGame() {
         mainLoop = null;
     }
     createWinScreen();
-    if (game.currentLevel != game.levels.length - 2 && game.currentLevel != game.levels.length - 1) {
+    if (game.currentLevel != game.levels.length - 3 && game.currentLevel != game.levels.length - 2 && game.currentLevel != game.levels.length - 1) {
         game.levels[game.currentLevel + 1].unlocked = true;
     }
     setTimeout(() => {
