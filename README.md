@@ -32,16 +32,16 @@ git clone https://github.com/KylerCondran/Fate.git
 
 ## Weapons
 
-<ul>
-  <li>1: Knife</li>
-  <li>2: Pistol</li>
-  <li>3: Machine Gun</li>
-  <li>4: Yeti Pistol</li>
-  <li>5: Rocket Launcher</li>
-  <li>6: Scepter</li>
-  <li>7: Boomerang</li>
-  <li>8: Laser Shotgun</li>
-</ul>
+<ol>
+  <li>Knife</li>
+  <li>Pistol</li>
+  <li>Machine Gun</li>
+  <li>Yeti Pistol</li>
+  <li>Rocket Launcher</li>
+  <li>Scepter</li>
+  <li>Boomerang</li>
+  <li>Laser Shotgun</li>
+</ol>
 
 ## Levels
 
