@@ -22,7 +22,7 @@
 
 - [ ] More Sprites - Velociraptors, Dinosaurs
 - [ ] More Weapons - Trident
-- [ ] More Pickups - Med Kit, Battery For Yeti Pistol
+- [ ] More Pickups - Med Kit, Battery For Laser Weapons
 - [ ] More Sounds
 - [ ] More Textures
 
@@ -43,6 +43,9 @@
 - tribal warriors
 - army vs terminators
 - fast cheetah
-- eyeball that shoots eyeballs
+- rhino charging
+- africa level
+- eyeball that shoots eyeballs in a spray pattern
 - dead bones decay system
+- alien2 should have burst fire
 - killed by endgame notification

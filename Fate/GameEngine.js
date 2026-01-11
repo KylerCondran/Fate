@@ -1431,6 +1431,9 @@ function loadLevel(levelIdx) {
                     game.sprites.push({ id: "lasershotgunpickup-sprite", x: j, y: i, width: 80, height: 29, data: null });
                     game.pickupTotal++;
                     break;
+                case 44:
+                    game.sprites.push({ id: 'burningdebris-sprite', x: j, y: i, width: 512, height: 512, data: null });
+                    break;
                 default:
                     break;
             }
@@ -1711,6 +1714,40 @@ function updateGameObjects() {
                                 case 'alien':
                                     game.sprites.push({ id: 'acid-sprite', x: monster.x, y: monster.y, width: 256, height: 256, data: null });
                                     game.levels[game.currentLevel].map[Math.floor(monster.y)][Math.floor(monster.x)] = 42;
+                                    break;
+                                case 'tank':
+                                case 'apache':
+                                case 'robot':
+                                case 'fighterjet':
+                                    game.sprites.push({ id: 'burningdebris-sprite', x: monster.x, y: monster.y, width: 512, height: 512, data: null });
+                                    game.levels[game.currentLevel].map[Math.floor(monster.y)][Math.floor(monster.x)] = 44;
+                                    break;
+                                case 'ufo':
+                                    game.sprites.push({ id: 'burningdebris-sprite', x: monster.x, y: monster.y, width: 512, height: 512, data: null });
+                                    game.levels[game.currentLevel].map[Math.floor(monster.y)][Math.floor(monster.x)] = 44;
+                                    game.monsterTotal++;
+                                    const alien1 = {
+                                        id: `monster_${game.monsterTotal}`,
+                                        type: 'alien',
+                                        skin: 'alien1-sprite',
+                                        audio: 'alien',
+                                        x: monster.x,
+                                        y: monster.y,
+                                        health: 350,
+                                        isDead: false,
+                                        width: 512,
+                                        height: 512,
+                                        data: null,
+                                        lastShot: 0,
+                                        attackCooldown: 2000
+                                    };
+                                    const monsterTexture = {
+                                        id: alien1.skin,
+                                        width: alien1.width,
+                                        height: alien1.height
+                                    };
+                                    alien1.data = getTextureData(monsterTexture);
+                                    game.monsters.push(alien1);
                                     break;
                                 default:
                                     game.sprites.push({ id: 'bones-sprite', x: monster.x, y: monster.y, width: 256, height: 256, data: null });
@@ -2429,6 +2466,15 @@ function movePlayer() {
                 itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
                 game.weaponsUnlocked.lasershotgun = true;
                 game.pickupCollected++;
+                break;
+            // Burning Debris Damage
+            case 44:
+                game.player.health -= 1;
+                playSound('injured-sound');
+                if (game.player.health <= 0) {
+                    playSound('death-sound');
+                    endGameDeath();
+                }
                 break;
         }
     }
