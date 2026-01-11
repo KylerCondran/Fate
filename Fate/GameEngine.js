@@ -29,7 +29,8 @@ let game = {
         yetipistol: false,
         rocketlauncher: false,
         scepter: false,
-        boomerang: false
+        boomerang: false,
+        lasershotgun: false
     },
     keysUnlocked: {
         cowkey: false
@@ -387,7 +388,7 @@ let game = {
                 [2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2],
                 [2, 2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2],
                 [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
-                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 24, 0, 2],
+                [2, 0, 43, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 24, 0, 2],
                 [2, 0, 0, 24, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
                 [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 23, 0, 2],
                 [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
@@ -493,6 +494,10 @@ let game = {
         },
         seven: {
             code: "Digit7",
+            active: false
+        },
+        eight: {
+            code: "Digit8",
             active: false
         },
         strafeleft: {
@@ -1422,6 +1427,10 @@ function loadLevel(levelIdx) {
                 case 42:
                     game.sprites.push({ id: 'acid-sprite', x: j, y: i, width: 256, height: 256, data: null });
                     break;
+                case 43:
+                    game.sprites.push({ id: "lasershotgunpickup-sprite", x: j, y: i, width: 80, height: 29, data: null });
+                    game.pickupTotal++;
+                    break;
                 default:
                     break;
             }
@@ -1603,6 +1612,11 @@ function handleShooting(e) {
                     game.weaponsUnlocked.boomerang = false;
                 }
                 break;
+            case 8:
+                texture = game.laserTexture;
+                type = 'laser';
+                playSound('laserblast-sound');
+                break;
             default:
                 texture = game.bulletTexture;
                 type = 'bullet';
@@ -1610,7 +1624,19 @@ function handleShooting(e) {
                 game.ammo--;
                 break;
         }
-        game.projectiles.push(new Projectile(startX, startY, game.player.angle, type, texture, 'player'));
+        switch (game.equippedWeapon) {
+            case 8:
+                game.projectiles.push(new Projectile(startX, startY, game.player.angle, type, texture, 'player'));
+                game.projectiles.push(new Projectile(startX, startY, game.player.angle + 2, type, texture, 'player'));
+                game.projectiles.push(new Projectile(startX, startY, game.player.angle + 4, type, texture, 'player'));
+                game.projectiles.push(new Projectile(startX, startY, game.player.angle - 2, type, texture, 'player'));
+                game.projectiles.push(new Projectile(startX, startY, game.player.angle - 4, type, texture, 'player'));
+                break;
+            default:
+                game.projectiles.push(new Projectile(startX, startY, game.player.angle, type, texture, 'player'));
+                break;
+        }
+        
     }
 }
 
@@ -1733,13 +1759,14 @@ function updateGameObjects() {
                 } else {
                     game.player.health -= 5; // Laser damage & Bullet damage
                 }
-                playSound('injured-sound');
+                if (!(projectile.type === 'boomerang')) {
+                    playSound('injured-sound');
+                }           
                 projectilesToRemove.add(i);
                 if (game.player.health <= 0) {
                     playSound('death-sound');
                     endGameDeath();
                 }
-                projectilesToRemove.add(i);
             }
             // Remove if out of range
             if (distSq > game.bulletRange) {
@@ -2397,6 +2424,12 @@ function movePlayer() {
                     endGameDeath();
                 }
                 break;
+            case 43:
+                game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
+                itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
+                game.weaponsUnlocked.lasershotgun = true;
+                game.pickupCollected++;
+                break;
         }
     }
     if (game.key.one.active && game.weaponsUnlocked.knife == true) {
@@ -2433,6 +2466,11 @@ function movePlayer() {
         game.weaponSprite = document.getElementById('boomerangwep-sprite');
         game.shootCooldown = 1000;
         game.equippedWeapon = 7;
+    }
+    if (game.key.eight.active && game.weaponsUnlocked.lasershotgun == true) {
+        game.weaponSprite = document.getElementById('lasershotgun-sprite');
+        game.shootCooldown = 600;
+        game.equippedWeapon = 8;
     }
 }
 
@@ -2481,6 +2519,10 @@ function setWeapon(id) {
         case 7:
             game.weaponSprite = document.getElementById('boomerangwep-sprite');
             game.shootCooldown = 1000;
+            break;
+        case 8:
+            game.weaponSprite = document.getElementById('lasershotgun-sprite');
+            game.shootCooldown = 600;
             break;
     }
 }
@@ -2531,6 +2573,9 @@ document.addEventListener('keydown', (event) => {
         case game.key.seven.code:
             game.key.seven.active = true;
             break;
+        case game.key.eight.code:
+            game.key.eight.active = true;
+            break;
     }
 });
 
@@ -2579,6 +2624,9 @@ document.addEventListener('keyup', (event) => {
             break;
         case game.key.seven.code:
             game.key.seven.active = false;
+            break;
+        case game.key.eight.code:
+            game.key.eight.active = false;
             break;
     }
 });
@@ -3010,6 +3058,7 @@ function drawHUD(ctx) {
             case 5: return 'Rocket Launcher';
             case 6: return 'Scepter';
             case 7: return 'Boomerang';
+            case 8: return 'Laser Shotgun';
             default: return 'Unknown';
         }
     })();
@@ -3017,7 +3066,7 @@ function drawHUD(ctx) {
 
     // Draw ammo count
     const ammoText = (() => {
-        if (game.equippedWeapon === 1 || game.equippedWeapon === 4 || game.equippedWeapon == 6) {
+        if (game.equippedWeapon === 1 || game.equippedWeapon === 4 || game.equippedWeapon == 6 || game.equippedWeapon == 8) {
             return '∞'; 
         } else if (game.equippedWeapon === 5) {
             return `${game.rocketammo}`; // Special ammo type for rocket launcher
@@ -3050,6 +3099,9 @@ function drawHUD(ctx) {
         }
         if (game.weaponsUnlocked.boomerang) {
             unlockText += '7 ';
+        }
+        if (game.weaponsUnlocked.lasershotgun) {
+            unlockText += '8 ';
         }
         return unlockText;
     })();
