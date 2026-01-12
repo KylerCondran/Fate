@@ -41,9 +41,7 @@
 - enemy ai, patroling, fleeing
 - upgrade assets, make matrix for missing artifacts
 - army vs terminators
-- fast cheetah
 - rhino charging
-- eyeball that shoots eyeballs in a spray pattern
 - dead bones decay system
 - alien2 should have burst fire
 - witch doctors can teleport you to random places on the map
