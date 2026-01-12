@@ -448,7 +448,7 @@ let game = {
             monstermovespeed: 0.01
         },
         {
-            name: "Beastlands",
+            name: "Dark Continent",
             map: [
                 [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2],
                 [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
@@ -484,9 +484,9 @@ let game = {
                 [2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
                 [2, 0, 0, 0, 47, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
                 [2, 0, 0, 0, 1, 0, 1, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
-                [2, 0, 47, 0, 0, 0, 47, 0, 2, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 2],
+                [2, 0, 47, 0, 0, 0, 47, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 2],
                 [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 47, 0, 0, 0, 0, 47, 0, 2],
-                [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 2],
+                [2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 2],
                 [2, 0, 47, 0, 47, 0, 47, 0, 2, 0, 0, 0, 0, 47, 0, 1, 0, 0, 0, 2],
                 [2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
                 [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
@@ -702,6 +702,18 @@ let game = {
         height: 27,
         data: null
     },
+    eyeballTexture: {
+        id: 'eyeballprojectile-sprite',
+        width: 27,
+        height: 27,
+        data: null
+    },
+    fireballTexture: {
+        id: 'fireball-sprite',
+        width: 27,
+        height: 27,
+        data: null
+    },
     backgrounds: [
         {
             width: 360,
@@ -863,7 +875,7 @@ function loadLevel(levelIdx) {
                 case 1:
                     switch (game.levels[levelIdx].name) {
                         case "Hell":
-                        case "Beastlands":
+                        case "Dark Continent":
                             game.sprites.push({ id: "cauldron-sprite", x: j, y: i, width: 512, height: 512, data: null });
                             break;
                         case "Arctic":
@@ -1541,9 +1553,9 @@ function loadLevel(levelIdx) {
                         width: 512,
                         height: 512,
                         data: null,
-                        damage: 40,
-                        lastAttack: 0,
-                        attackCooldown: 1000
+                        lastShot: 0,
+                        attackCooldown: 3000,
+                        spawnEyeball: false
                     };
                     game.monsters.push(witchdoctor);
                     game.monsterTotal++;
@@ -1557,6 +1569,26 @@ function loadLevel(levelIdx) {
                     //monkey key
                     game.sprites.push({ id: "key-sprite", x: j, y: i, width: 64, height: 64, data: null });
                     game.pickupTotal++;
+                    break;
+                case 50:
+                    const eyeball = {
+                        id: `monster_${game.monsterTotal}`,
+                        type: 'eyeball',
+                        skin: 'eyeball-sprite',
+                        audio: 'eyeball',
+                        x: j,
+                        y: i,
+                        health: 300,
+                        isDead: false,
+                        width: 1024,
+                        height: 1024,
+                        data: null,
+                        lastShot: 0,
+                        attackCooldown: 700,
+                        attackAngle: 0
+                    };
+                    game.monsters.push(eyeball);
+                    game.monsterTotal++;
                     break;
                 default:
                     break;
@@ -2351,6 +2383,125 @@ function updateGameObjects() {
                         }
                     }
                     break;
+                case 'eyeball':
+                    if (distSq < 84) {
+                        if (!monster.lastShot || currentTime - monster.lastShot >= monster.attackCooldown) {
+                            const angle = radiansToDegrees(Math.atan2(dy, dx));
+                            game.projectiles.push(new Projectile(monster.x, monster.y, angle + monster.attackAngle, 'eyeball', game.eyeballTexture, 'monster'));
+                            playSound('squish-sound');
+                            monster.attackAngle += 3;
+                            if (monster.attackAngle > 6) {
+                                monster.attackAngle = -6;
+                            }
+                            monster.lastShot = currentTime;
+                        }
+                    }
+                    if (distSq > 30 && distSq < 200) {
+                        const distance = Math.sqrt(distSq);
+                        const invDist = 1 / distance;
+                        const dirX = dx * invDist * 0.04;
+                        const dirY = dy * invDist * 0.04;
+                        // Try to move in X direction
+                        const newX = monster.x + dirX;
+                        if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2) {
+                            monster.x = newX;
+                        }
+                        // Try to move in Y direction
+                        const newY = monster.y + dirY;
+                        if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2) {
+                            monster.y = newY;
+                        }
+                    }
+                    break;
+                case 'witchdoctor':
+                    if (distSq < 84) {
+                        if (!monster.lastShot || currentTime - monster.lastShot >= monster.attackCooldown) {
+                            if (!monster.spawnEyeball) {
+                                var rndVal = Math.floor(Math.random() * 100) + 1;
+                                if (rndVal > 94) {
+                                    monster.spawnEyeball = true;
+                                    game.monsterTotal++;
+                                    var rndX = Math.floor(Math.random() * 3) - 1;
+                                    var rndY = Math.floor(Math.random() * 3) - 1;
+                                    const eyeball = {
+                                        id: `monster_${game.monsterTotal}`,
+                                        type: 'eyeball',
+                                        skin: 'eyeball-sprite',
+                                        audio: 'eyeball',
+                                        x: monster.x + rndX,
+                                        y: monster.y + rndY,
+                                        health: 300,
+                                        isDead: false,
+                                        width: 1024,
+                                        height: 1024,
+                                        data: null,
+                                        lastShot: 0,
+                                        attackCooldown: 700,
+                                        attackAngle: 0
+                                    };
+                                    const monsterTexture = {
+                                        id: eyeball.skin,
+                                        width: eyeball.width,
+                                        height: eyeball.height
+                                    };
+                                    eyeball.data = getTextureData(monsterTexture);
+                                    game.monsters.push(eyeball);
+                                    playSound('portal-sound');
+                                }
+                            }
+                            const angle = radiansToDegrees(Math.atan2(dy, dx));
+                            game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'fireball', game.fireballTexture, 'monster'));
+                            playSound('fireball-sound');
+                            monster.lastShot = currentTime;
+                        }
+                    }
+                    if (distSq > 30 && distSq < 100) {
+                        const distance = Math.sqrt(distSq);
+                        const invDist = 1 / distance;
+                        const dirX = dx * invDist * game.monsterMoveSpeed;
+                        const dirY = dy * invDist * game.monsterMoveSpeed;
+                        // Try to move in X direction
+                        const newX = monster.x + dirX;
+                        if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2) {
+                            monster.x = newX;
+                        }
+                        // Try to move in Y direction
+                        const newY = monster.y + dirY;
+                        if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2) {
+                            monster.y = newY;
+                        }
+                    }
+                    break;
+                case 'cheetah':
+                    if (distSq > 0.25 && distSq < 100) {
+                        const distance = Math.sqrt(distSq);
+                        const invDist = 1 / distance;
+                        const dirX = dx * invDist * 0.08;
+                        const dirY = dy * invDist * 0.08;
+                        // Try to move in X direction
+                        const newX = monster.x + dirX;
+                        if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2) {
+                            monster.x = newX;
+                        }
+                        // Try to move in Y direction
+                        const newY = monster.y + dirY;
+                        if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2) {
+                            monster.y = newY;
+                        }
+                    }
+                    if (distSq < 0.5 && (!monster.lastAttack || currentTime - monster.lastAttack >= monster.attackCooldown)) {
+                        // Attack the player
+                        game.player.health -= monster.damage;
+                        monster.lastAttack = currentTime;
+                        // Play monster attack sound
+                        playSound('injured-sound');
+                        // Check if player died
+                        if (game.player.health <= 0) {
+                            playSound('death-sound');
+                            endGameDeath();
+                        }
+                    }
+                    break;
                 default:
                     if (distSq > 0.25 && distSq < 100) {
                         const distance = Math.sqrt(distSq);
@@ -2919,6 +3070,12 @@ function loadSprites() {
     if (!game.waterorbTexture.data) {
         game.waterorbTexture.data = getTextureData(game.waterorbTexture);
     }
+    if (!game.eyeballTexture.data) {
+        game.eyeballTexture.data = getTextureData(game.eyeballTexture);
+    }
+    if (!game.fireballTexture.data) {
+        game.fireballTexture.data = getTextureData(game.fireballTexture);
+    }
 }
 
 // Get texture data from an image element
@@ -3416,7 +3573,7 @@ function createStartScreen() {
         }
         let td = document.createElement('td');
         let btn = document.createElement('button');
-        if (game.levels[idx].name == 'Secret Cow Level' || game.levels[idx].name == 'Beastlands') {
+        if (game.levels[idx].name == 'Secret Cow Level' || game.levels[idx].name == 'Dark Continent') {
             if (game.levels[idx].unlocked) {
                 btn.textContent = level.name;
                 btn.style.backgroundColor = '#A96A6A';
