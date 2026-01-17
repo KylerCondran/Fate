@@ -1163,6 +1163,10 @@ function loadLevel(levelIdx) {
                     game.monsters.push(eyeball);
                     game.monsterTotal++;
                     break;
+                case 51:
+                    game.sprites.push({ id: "medkit-sprite", x: j, y: i, width: 512, height: 512, data: null });
+                    game.pickupTotal++;
+                    break;
                 default:
                     break;
             }
@@ -2309,6 +2313,7 @@ function movePlayer() {
                     endGameDeath();
                 }
                 break;
+            // Laser Shotgun pickup
             case 43:
                 game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
                 itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
@@ -2343,6 +2348,17 @@ function movePlayer() {
                 itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
                 game.pickupCollected++;
                 game.keysUnlocked.monkeykey = true;
+                break;
+            // Medkit pickup
+            case 51:
+                if (game.player.health <= 50) {
+                    game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
+                    itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
+                    game.pickupCollected++;
+                    game.player.health += 50;
+                } else {
+                    playSound('invalid-sound');
+                }
                 break;
         }
     }

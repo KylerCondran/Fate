@@ -22,7 +22,7 @@
 
 - [ ] More Sprites - Velociraptors, Dinosaurs
 - [ ] More Weapons - Trident
-- [ ] More Pickups - Med Kit, Battery For Laser Weapons
+- [ ] More Pickups - Battery For Laser Weapons
 - [ ] More Sounds
 - [ ] More Textures
 
