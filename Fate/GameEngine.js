@@ -22,6 +22,7 @@ let game = {
     monsterDefeated: 0,
     pickupTotal: 0,
     pickupCollected: 0,
+    checkpointTotal: 0,
     weaponsUnlocked: {
         knife: true,
         pistol: false,
@@ -460,6 +461,9 @@ function loadLevel(levelIdx) {
                         case "Ocean":
                             game.sprites.push({ id: "kelp-sprite", x: j, y: i, width: 512, height: 512, data: null });
                             break;
+                        case "Army Base":
+                            game.sprites.push({ id: "militarytent-sprite", x: j, y: i, width: 512, height: 512, data: null });
+                            break;
                         default:
                             game.sprites.push({ id: "tree-sprite", x: j, y: i, width: 8, height: 16, data: null });
                             break;
@@ -874,9 +878,10 @@ function loadLevel(levelIdx) {
                         height: 512,
                         data: null,
                         lastShot: 0,
-                        rocketlastShot: 0,
                         attackCooldown: 2000,
-                        rocketCooldown: 8000
+                        lastSpawn: 0,
+                        spawnCooldown: 15000,
+                        activeCheckpoint: 0,
                     };
                     game.monsters.push(apache);
                     game.monsterTotal++;
@@ -1186,6 +1191,22 @@ function loadLevel(levelIdx) {
                     };
                     game.monsters.push(stasischamber);
                     game.monsterTotal++;
+                    break;
+                case 53:
+                    game.sprites.push({ id: "checkpoint-sprite", type: 'checkpoint_0', x: j, y: i, width: 1, height: 1, data: null });
+                    game.checkpointTotal++;
+                    break;
+                case 54:
+                    game.sprites.push({ id: "checkpoint-sprite", type: 'checkpoint_1', x: j, y: i, width: 1, height: 1, data: null });
+                    game.checkpointTotal++;
+                    break;
+                case 55:
+                    game.sprites.push({ id: "checkpoint-sprite", type: 'checkpoint_2', x: j, y: i, width: 1, height: 1, data: null });
+                    game.checkpointTotal++;
+                    break;
+                case 56:
+                    game.sprites.push({ id: "checkpoint-sprite", type: 'checkpoint_3', x: j, y: i, width: 1, height: 1, data: null });
+                    game.checkpointTotal++;
                     break;
                 default:
                     break;
@@ -1850,6 +1871,66 @@ function updateGameObjects() {
                     }
                     break;
                 case 'apache':
+                    // Checkpoint route movement code
+                    const checkpointX = game.sprites.find(sprite => sprite.type == `checkpoint_${monster.activeCheckpoint}`)?.x - monster.x;
+                    const checkpointY = game.sprites.find(sprite => sprite.type == `checkpoint_${monster.activeCheckpoint}`)?.y - monster.y;
+                    const checkpointdistSq = checkpointX * checkpointX + checkpointY * checkpointY;
+                    const distance = Math.sqrt(checkpointdistSq);
+                    const invDist = 1 / distance;
+                    const dirX = checkpointX * invDist * game.monsterMoveSpeed;
+                    const dirY = checkpointY * invDist * game.monsterMoveSpeed;
+                    // Try to move in X direction
+                    const newX = monster.x + dirX;
+                    if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2) {
+                        monster.x = newX;
+                    }
+                    // Try to move in Y direction
+                    const newY = monster.y + dirY;
+                    if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2) {
+                        monster.y = newY;
+                    }
+                    if (checkpointdistSq < 1) {
+                        monster.activeCheckpoint++;
+                        if (monster.activeCheckpoint >= game.checkpointTotal) {
+                            monster.activeCheckpoint = 0;
+                        }
+                    }
+                    if (distSq < 50) {
+                        if (!monster.lastShot || currentTime - monster.lastShot >= monster.attackCooldown) {
+                            const angle = radiansToDegrees(Math.atan2(dy, dx));
+                            game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'bullet', game.bulletTexture, 'monster'));
+                            playSound('shoot-sound');
+                            monster.lastShot = currentTime;
+                        }
+                    }
+                    if (!monster.lastSpawn || currentTime - monster.lastSpawn >= monster.spawnCooldown) {
+                        monster.lastSpawn = currentTime;
+                        game.monsterTotal++;
+                        const soldier = {
+                            id: `monster_${game.monsterTotal}`,
+                            type: 'soldier',
+                            skin: 'soldier-sprite',
+                            audio: 'soldier',
+                            x: monster.x,
+                            y: monster.y,
+                            health: 100,
+                            isDead: false,
+                            width: 512,
+                            height: 512,
+                            data: null,
+                            lastShot: 0,
+                            attackCooldown: 2000
+                        };
+                        const monsterTexture = {
+                            id: soldier.skin,
+                            width: soldier.width,
+                            height: soldier.height
+                        };
+                        soldier.data = getTextureData(monsterTexture);
+                        game.monsters.push(soldier);
+                        playSound('portal-sound');
+                    }
+                    break;
                 case 'fighterjet':
                     if (distSq < 64) {
                         if (!monster.lastShot || currentTime - monster.lastShot >= monster.attackCooldown) {
@@ -2238,7 +2319,7 @@ function movePlayer() {
             case 8:
                 game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
                 itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
-                game.ammo += 8;
+                game.ammo += 12;
                 game.pickupCollected++;
                 break;
             // Pistol pickup

@@ -37,6 +37,9 @@
 - warcraft level, human knights and orcs, ogre mage
 - melee axe / katana
 - energy shield / physical shield that absorbs 1000 dmg
+- ufos hover side to side when attacking
+- enemies no longer stack
+- ufo tractor beams?
 - enemy ai, patroling, fleeing
 - upgrade assets, make matrix for missing artifacts
 - army vs terminators
