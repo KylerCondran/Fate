@@ -1167,6 +1167,26 @@ function loadLevel(levelIdx) {
                     game.sprites.push({ id: "medkit-sprite", x: j, y: i, width: 512, height: 512, data: null });
                     game.pickupTotal++;
                     break;
+                case 52:
+                    const stasischamber = {
+                        id: `monster_${game.monsterTotal}`,
+                        type: 'stasischamber',
+                        skin: 'stasischamber-sprite',
+                        audio: 'stasischamber',
+                        x: j,
+                        y: i,
+                        health: 10,
+                        isDead: false,
+                        width: 512,
+                        height: 512,
+                        data: null,
+                        damage: 0,
+                        lastAttack: 0,
+                        attackCooldown: 1000
+                    };
+                    game.monsters.push(stasischamber);
+                    game.monsterTotal++;
+                    break;
                 default:
                     break;
             }
@@ -1447,6 +1467,10 @@ function updateGameObjects() {
                                 case 'alien':
                                     game.sprites.push({ id: 'acid-sprite', x: monster.x, y: monster.y, width: 256, height: 256, data: null });
                                     game.levels[game.currentLevel].map[Math.floor(monster.y)][Math.floor(monster.x)] = 42;
+                                    break;
+                                case 'stasischamber':
+                                    game.sprites.push({ id: 'brokenstasischamber-sprite', x: monster.x, y: monster.y, width: 512, height: 512, data: null });
+                                    playSound('glass-sound');
                                     break;
                                 case 'tank':
                                 case 'apache':
@@ -2078,6 +2102,8 @@ function updateGameObjects() {
                             endGameDeath();
                         }
                     }
+                    break;
+                case 'stasischamber':
                     break;
                 default:
                     if (distSq > 0.25 && distSq < 100) {
@@ -2874,7 +2900,7 @@ function drawSpriteInWorld(sprite) {
         const barWidth = Math.max(24, Math.floor(spriteWidth * 0.7));
         const barHeight = 6;
         // Center above head
-        const barX = Math.floor(spriteX + spriteWidth / 2 - barWidth / 2);
+        const barX = Math.floor(spriteX + spriteWidth - barWidth * 2);
         const barY = Math.floor(game.projection.halfHeight - spriteHeight / 2) - 12;
         // Find maxHealth (initial health at spawn)
         let maxHealth = sprite.maxHealth || sprite._maxHealth || sprite.health;
@@ -2918,6 +2944,9 @@ function drawBulletSprite(xProjection, spriteWidth, spriteHeight, bullet) {
 // Draw Sprite
 
 function drawSprite(xProjection, spriteWidth, spriteHeight, sprite) {
+    // Center the sprite by offsetting by half width
+    xProjection = xProjection - spriteWidth / 2;
+
     // Early bounds check for the entire sprite
     if (xProjection + spriteWidth < 0 || xProjection >= game.projection.width) return;
 

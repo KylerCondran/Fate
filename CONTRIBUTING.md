@@ -37,7 +37,6 @@
 - warcraft level, human knights and orcs, ogre mage
 - melee axe / katana
 - energy shield / physical shield that absorbs 1000 dmg
-- breakable ufo stasis chambers
 - enemy ai, patroling, fleeing
 - upgrade assets, make matrix for missing artifacts
 - army vs terminators
