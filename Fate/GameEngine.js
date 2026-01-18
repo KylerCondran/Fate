@@ -1879,20 +1879,21 @@ function updateGameObjects() {
                     const invDist = 1 / distance;
                     const dirX = checkpointX * invDist * game.monsterMoveSpeed;
                     const dirY = checkpointY * invDist * game.monsterMoveSpeed;
-                    // Try to move in X direction
-                    const newX = monster.x + dirX;
-                    if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2) {
-                        monster.x = newX;
-                    }
-                    // Try to move in Y direction
-                    const newY = monster.y + dirY;
-                    if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2) {
-                        monster.y = newY;
-                    }
                     if (checkpointdistSq < 1) {
                         monster.activeCheckpoint++;
                         if (monster.activeCheckpoint >= game.checkpointTotal) {
                             monster.activeCheckpoint = 0;
+                        }
+                    } else {
+                        // Try to move in X direction
+                        const newX = monster.x + dirX;
+                        if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2) {
+                            monster.x = newX;
+                        }
+                        // Try to move in Y direction
+                        const newY = monster.y + dirY;
+                        if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2) {
+                            monster.y = newY;
                         }
                     }
                     if (distSq < 50) {
