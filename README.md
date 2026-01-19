@@ -100,6 +100,7 @@ git clone https://github.com/KylerCondran/Fate.git
   <li>Keys</li>
   <li>Chests</li>
   <li>Speed Boost</li>
+  <li>Health Kits</li>
 </ul>
 
 ## Inspiration

@@ -880,7 +880,7 @@ function loadLevel(levelIdx) {
                         lastShot: 0,
                         attackCooldown: 2000,
                         lastSpawn: 0,
-                        spawnCooldown: 15000,
+                        spawnCooldown: 22500,
                         activeCheckpoint: 0,
                     };
                     game.monsters.push(apache);
@@ -1875,16 +1875,16 @@ function updateGameObjects() {
                     const checkpointX = game.sprites.find(sprite => sprite.type == `checkpoint_${monster.activeCheckpoint}`)?.x - monster.x;
                     const checkpointY = game.sprites.find(sprite => sprite.type == `checkpoint_${monster.activeCheckpoint}`)?.y - monster.y;
                     const checkpointdistSq = checkpointX * checkpointX + checkpointY * checkpointY;
-                    const distance = Math.sqrt(checkpointdistSq);
-                    const invDist = 1 / distance;
-                    const dirX = checkpointX * invDist * game.monsterMoveSpeed;
-                    const dirY = checkpointY * invDist * game.monsterMoveSpeed;
                     if (checkpointdistSq < 1) {
                         monster.activeCheckpoint++;
                         if (monster.activeCheckpoint >= game.checkpointTotal) {
                             monster.activeCheckpoint = 0;
                         }
                     } else {
+                        const distance = Math.sqrt(checkpointdistSq);
+                        const invDist = 1 / distance;
+                        const dirX = checkpointX * invDist * game.monsterMoveSpeed;
+                        const dirY = checkpointY * invDist * game.monsterMoveSpeed;
                         // Try to move in X direction
                         const newX = monster.x + dirX;
                         if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2) {
@@ -1904,7 +1904,7 @@ function updateGameObjects() {
                             monster.lastShot = currentTime;
                         }
                     }
-                    if (!monster.lastSpawn || currentTime - monster.lastSpawn >= monster.spawnCooldown) {
+                    if ((!monster.lastSpawn || currentTime - monster.lastSpawn >= monster.spawnCooldown) && checkpointdistSq < 100 && checkpointdistSq > 50) {
                         monster.lastSpawn = currentTime;
                         game.monsterTotal++;
                         const soldier = {
@@ -2675,7 +2675,7 @@ function itemPickup(ycoords, xcoords) {
     playSound('pickup-sound');
     let spritenum = 0;
     for (let sprite of game.sprites) {
-        if (sprite.x == xcoords && sprite.y == ycoords) {
+        if (sprite.x == xcoords && sprite.y == ycoords && sprite.id != "checkpoint-sprite") {
             game.sprites.splice(spritenum, 1);
             break;
         }

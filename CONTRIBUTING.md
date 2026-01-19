@@ -28,24 +28,35 @@
 
 # General Ideas
 
+- cheat codes
+- enemies no longer stack
+- upgrade assets, make matrix for missing artifacts
+- dead bones decay system
+- killed by endgame notification
+
+# Level Ideas
+
+- army base has huge fight between factions, winning faction helps you in mothership level
+- warcraft level, human knights and orcs, ogre mage
+- army vs terminators
+
+# Weapon Ideas
+
 - enemy/pet spawning gun (trident?), fires 5 feet infront, portal sound, blue flash, spawns enemy or friend
-- allegiance flag on monsters (traitor gun? swaps allegiance)
 - zeus drops trident, has dangerous attack when gets to 100 hp
 - udder gun dropped by cow king
-- army base has huge fight between factions, winning faction helps you in mothership level
-- cheat codes
-- warcraft level, human knights and orcs, ogre mage
 - melee axe / katana
 - energy shield / physical shield that absorbs 1000 dmg
-- ufos hover side to side when attacking
-- enemies no longer stack
-- ufo tractor beams?
+- freeze gun
+- boomerang ammo if not caught and hits wall, spawns pickup on ground
+
+# Enemy Ideas
+
 - enemy ai, patroling, fleeing
-- upgrade assets, make matrix for missing artifacts
-- army vs terminators
+- allegiance flag on monsters (traitor gun? swaps allegiance)
+- ufos hover side to side when attacking
 - rhino charging
-- dead bones decay system
 - alien2 should have burst fire
 - witch doctors can teleport you to random places on the map
 - wolf still unused
-- killed by endgame notification
+- ufo tractor beams?
