@@ -3,6 +3,7 @@ let game = {
     currentLevel: 0,
     monsters: [], // Each monster will have position, health, sprite, etc.
     sprites: [], // Only trees and other non-monster sprites
+    checkpoints: [], // Checkpoints for pre scripted NPC pathing
     projectiles: [], // Bullets, rockets, etc.
     weaponSprite: document.getElementById('knife-sprite'),
     isShooting: false,
@@ -1193,19 +1194,19 @@ function loadLevel(levelIdx) {
                     game.monsterTotal++;
                     break;
                 case 53:
-                    game.sprites.push({ id: "checkpoint-sprite", type: 'checkpoint_0', x: j, y: i, width: 1, height: 1, data: null });
+                    game.checkpoints.push({ id: "checkpoint", type: 'checkpoint_0', x: j, y: i });
                     game.checkpointTotal++;
                     break;
                 case 54:
-                    game.sprites.push({ id: "checkpoint-sprite", type: 'checkpoint_1', x: j, y: i, width: 1, height: 1, data: null });
+                    game.checkpoints.push({ id: "checkpoint", type: 'checkpoint_1', x: j, y: i });
                     game.checkpointTotal++;
                     break;
                 case 55:
-                    game.sprites.push({ id: "checkpoint-sprite", type: 'checkpoint_2', x: j, y: i, width: 1, height: 1, data: null });
+                    game.checkpoints.push({ id: "checkpoint", type: 'checkpoint_2', x: j, y: i });
                     game.checkpointTotal++;
                     break;
                 case 56:
-                    game.sprites.push({ id: "checkpoint-sprite", type: 'checkpoint_3', x: j, y: i, width: 1, height: 1, data: null });
+                    game.checkpoints.push({ id: "checkpoint", type: 'checkpoint_3', x: j, y: i });
                     game.checkpointTotal++;
                     break;
                 default:
@@ -1872,8 +1873,8 @@ function updateGameObjects() {
                     break;
                 case 'apache':
                     // Checkpoint route movement code
-                    const checkpointX = game.sprites.find(sprite => sprite.type == `checkpoint_${monster.activeCheckpoint}`)?.x - monster.x;
-                    const checkpointY = game.sprites.find(sprite => sprite.type == `checkpoint_${monster.activeCheckpoint}`)?.y - monster.y;
+                    const checkpointX = game.checkpoints.find(checkpoint => checkpoint.type == `checkpoint_${monster.activeCheckpoint}`)?.x - monster.x;
+                    const checkpointY = game.checkpoints.find(checkpoint => checkpoint.type == `checkpoint_${monster.activeCheckpoint}`)?.y - monster.y;
                     const checkpointdistSq = checkpointX * checkpointX + checkpointY * checkpointY;
                     if (checkpointdistSq < 1) {
                         monster.activeCheckpoint++;
@@ -2675,7 +2676,7 @@ function itemPickup(ycoords, xcoords) {
     playSound('pickup-sound');
     let spritenum = 0;
     for (let sprite of game.sprites) {
-        if (sprite.x == xcoords && sprite.y == ycoords && sprite.id != "checkpoint-sprite") {
+        if (sprite.x == xcoords && sprite.y == ycoords) {
             game.sprites.splice(spritenum, 1);
             break;
         }
