@@ -465,6 +465,9 @@ function loadLevel(levelIdx) {
                         case "Army Base":
                             game.sprites.push({ id: "militarytent-sprite", x: j, y: i, width: 512, height: 512, data: null });
                             break;
+                        case "Secret Cow Level":
+                            game.sprites.push({ id: "haybale-sprite", x: j, y: i, width: 512, height: 512, data: null });
+                            break;
                         default:
                             game.sprites.push({ id: "tree-sprite", x: j, y: i, width: 8, height: 16, data: null });
                             break;
@@ -1018,7 +1021,7 @@ function loadLevel(levelIdx) {
                         audio: 'cow',
                         x: j,
                         y: i,
-                        health: 400,
+                        health: 1000,
                         isDead: false,
                         width: 512,
                         height: 512,
@@ -1027,7 +1030,7 @@ function loadLevel(levelIdx) {
                         lastAttack: 0,
                         attackCooldown: 1000,
                         lastSpawn: 0,
-                        spawnCooldown: 15000
+                        spawnCooldown: 10000
                     };
                     game.monsters.push(cowking);
                     game.monsterTotal++;
