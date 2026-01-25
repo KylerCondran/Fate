@@ -54,7 +54,6 @@
 
 - enemy ai, patroling, fleeing
 - allegiance flag on monsters (traitor gun? swaps allegiance)
-- ufos hover side to side when attacking
 - rhino charging
 - alien2 should have burst fire
 - witch doctors can teleport you to random places on the map

@@ -778,7 +778,8 @@ function loadLevel(levelIdx) {
                         lastShot: 0,
                         rocketlastShot: 0,
                         attackCooldown: 2000,
-                        rocketCooldown: 8000
+                        rocketCooldown: 8000,
+                        strafeDir: 1
                     };
                     game.monsters.push(ufo);
                     game.monsterTotal++;
@@ -906,7 +907,8 @@ function loadLevel(levelIdx) {
                         lastShot: 0,
                         rocketlastShot: 0,
                         attackCooldown: 1000,
-                        rocketCooldown: 2000
+                        rocketCooldown: 2000,
+                        strafeDir: 1
                     };
                     game.monsters.push(fighterjet);
                     game.monsterTotal++;
@@ -1649,20 +1651,46 @@ function updateGameObjects() {
                             monster.rocketlastShot = currentTime;
                         }
                     }
-                    if (distSq > 30 && distSq < 200) {
+                    if (distSq < 150) {
                         const distance = Math.sqrt(distSq);
                         const invDist = 1 / distance;
-                        const dirX = dx * invDist * game.monsterMoveSpeed;
-                        const dirY = dy * invDist * game.monsterMoveSpeed;
-                        // Try to move in X direction
-                        const newX = monster.x + dirX;
-                        if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2) {
-                            monster.x = newX;
-                        }
-                        // Try to move in Y direction
-                        const newY = monster.y + dirY;
-                        if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2) {
-                            monster.y = newY;
+                        const dirX = dx * invDist;
+                        const dirY = dy * invDist;
+                        if (distSq > 50) {
+                            // TOO FAR → move toward player
+                            moveX = dirX * game.monsterMoveSpeed;
+                            moveY = dirY * game.monsterMoveSpeed;
+                            // Try to move in X direction
+                            const newX = monster.x + moveX;
+                            if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2) {
+                                monster.x = newX;
+                            }
+                            // Try to move in Y direction
+                            const newY = monster.y + moveY;
+                            if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2) {
+                                monster.y = newY;
+                            }
+                        } else if (distSq > 20) {
+                            // IN RANGE → strafe sideways
+                            const perpX = -dirY;
+                            const perpY = dirX;
+                            // Optional: switch left/right occasionally
+                            monster.strafeDir = monster.strafeDir ?? (Math.random() < 0.5 ? -1 : 1);
+                            if (Math.random() < 0.01) {
+                                monster.strafeDir *= -1;
+                            }
+                            moveX = perpX * monster.strafeDir * game.monsterMoveSpeed;
+                            moveY = perpY * monster.strafeDir * game.monsterMoveSpeed;
+                            // Try to move in X direction
+                            const newX = monster.x + moveX;
+                            if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2) {
+                                monster.x = newX;
+                            }
+                            // Try to move in Y direction
+                            const newY = monster.y + moveY;
+                            if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2) {
+                                monster.y = newY;
+                            }
                         }
                     }
                     break;
@@ -1953,20 +1981,48 @@ function updateGameObjects() {
                             monster.rocketlastShot = currentTime;
                         }
                     }
-                    if (distSq > 30 && distSq < 200) {
+                    if (distSq < 200) {
                         const distance = Math.sqrt(distSq);
                         const invDist = 1 / distance;
-                        const dirX = dx * invDist * game.monsterMoveSpeed;
-                        const dirY = dy * invDist * game.monsterMoveSpeed;
-                        // Try to move in X direction
-                        const newX = monster.x + dirX;
-                        if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2) {
-                            monster.x = newX;
-                        }
-                        // Try to move in Y direction
-                        const newY = monster.y + dirY;
-                        if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2) {
-                            monster.y = newY;
+                        const dirX = dx * invDist;
+                        const dirY = dy * invDist;
+                        if (distSq > 50) {
+                            // TOO FAR → move toward player
+                            moveX = dirX * game.monsterMoveSpeed;
+                            moveY = dirY * game.monsterMoveSpeed;
+                            // Try to move in X direction
+                            const newX = monster.x + moveX;
+                            if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2) {
+                                monster.x = newX;
+                            }
+                            // Try to move in Y direction
+                            const newY = monster.y + moveY;
+                            if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2) {
+                                monster.y = newY;
+                            }
+                        } else if (distSq > 10) {
+                            // IN RANGE → strafe sideways
+                            const perpX = -dirY;
+                            const perpY = dirX;
+
+                            // Optional: switch left/right occasionally
+                            monster.strafeDir = monster.strafeDir ?? (Math.random() < 0.5 ? -1 : 1);
+                            if (Math.random() < 0.01) {
+                                monster.strafeDir *= -1;
+                            }
+
+                            moveX = perpX * monster.strafeDir * game.monsterMoveSpeed;
+                            moveY = perpY * monster.strafeDir * game.monsterMoveSpeed;
+                            // Try to move in X direction
+                            const newX = monster.x + moveX;
+                            if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2) {
+                                monster.x = newX;
+                            }
+                            // Try to move in Y direction
+                            const newY = monster.y + moveY;
+                            if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2) {
+                                monster.y = newY;
+                            }
                         }
                     }
                     break;
