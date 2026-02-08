@@ -465,6 +465,9 @@ function loadLevel(levelIdx) {
                         case "Army Base":
                             game.sprites.push({ id: "militarytent-sprite", x: j, y: i, width: 512, height: 512, data: null });
                             break;
+                        case "Ninja Dojo":
+                            game.sprites.push({ id: "cherryblossom-sprite", x: j, y: i, width: 512, height: 512, data: null });
+                            break;
                         case "Secret Cow Level":
                             game.sprites.push({ id: "haybale-sprite", x: j, y: i, width: 512, height: 512, data: null });
                             break;
@@ -3278,6 +3281,8 @@ function createWinScreen() {
     `;
     document.body.appendChild(overlay);
 }
+
+// Death Screen
 
 function createDeathScreen() {
     let overlay = document.createElement('div');
