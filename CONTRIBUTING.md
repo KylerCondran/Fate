@@ -31,7 +31,6 @@
 - cheat codes
 - upgrade assets, make matrix for missing artifacts
 - dead bones decay system
-- killed by endgame notification
 
 # Level Ideas
 
@@ -58,3 +57,4 @@
 - witch doctors can teleport you to random places on the map
 - wolf still unused
 - ufo tractor beams?
+- spyro egg thief?

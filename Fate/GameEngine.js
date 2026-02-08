@@ -24,6 +24,7 @@ let game = {
     pickupTotal: 0,
     pickupCollected: 0,
     checkpointTotal: 0,
+    lastMonsterToHitPlayer: 'Unknown',
     weaponsUnlocked: {
         knife: true,
         pistol: false,
@@ -1116,6 +1117,7 @@ function updateGameObjects() {
                 projectilesToRemove.add(i);
                 if (game.player.health <= 0) {
                     playSound('death-sound');
+                    game.lastMonsterToHitPlayer = projectile.type.charAt(0).toUpperCase() + projectile.type.slice(1);
                     endGameDeath();
                 }
             }
@@ -1271,6 +1273,7 @@ function updateGameObjects() {
                         if (distSq < 0.5 && (!monster.lastAttack || currentTime - monster.lastAttack >= monster.attackCooldown)) {
                             // Attack the player
                             game.player.health -= monster.damage;
+                            game.lastMonsterToHitPlayer = monster.type.charAt(0).toUpperCase() + monster.type.slice(1);
                             monster.lastAttack = currentTime;
                             // Play monster attack sound
                             playSound('injured-sound');
@@ -1527,6 +1530,7 @@ function updateGameObjects() {
                     if (distSq < 0.5 && (!monster.lastAttack || currentTime - monster.lastAttack >= monster.attackCooldown)) {
                         // Attack the player
                         game.player.health -= monster.damage;
+                        game.lastMonsterToHitPlayer = 'Tank Treads';
                         monster.lastAttack = currentTime;
                         // Play monster attack sound
                         playSound('squish-sound');
@@ -1574,6 +1578,7 @@ function updateGameObjects() {
                     if (distSq < 0.5 && (!monster.lastAttack || currentTime - monster.lastAttack >= monster.attackCooldown)) {
                         // Attack the player
                         game.player.health -= monster.damage;
+                        game.lastMonsterToHitPlayer = monster.type.charAt(0).toUpperCase() + monster.type.slice(1);
                         monster.lastAttack = currentTime;
                         // Play monster attack sound
                         playSound('injured-sound');
@@ -1678,6 +1683,7 @@ function updateGameObjects() {
                     if (distSq < 0.5 && (!monster.lastAttack || currentTime - monster.lastAttack >= monster.attackCooldown)) {
                         // Attack the player
                         game.player.health -= monster.damage;
+                        game.lastMonsterToHitPlayer = monster.type.charAt(0).toUpperCase() + monster.type.slice(1);
                         monster.lastAttack = currentTime;
                         // Play monster attack sound
                         playSound('injured-sound');
@@ -1710,6 +1716,7 @@ function updateGameObjects() {
                     if (distSq < 0.5 && (!monster.lastAttack || currentTime - monster.lastAttack >= monster.attackCooldown)) {
                         // Attack the player
                         game.player.health -= monster.damage;
+                        game.lastMonsterToHitPlayer = monster.type.charAt(0).toUpperCase() + monster.type.slice(1);
                         monster.lastAttack = currentTime;
                         // Play monster attack sound
                         playSound('injured-sound');
@@ -1921,6 +1928,7 @@ function movePlayer() {
                 playSound('injured-sound');    
                 if (game.player.health <= 0) {
                     playSound('death-sound');
+                    game.lastMonsterToHitPlayer = 'Acid';
                     endGameDeath();
                 }
                 break;
@@ -1937,6 +1945,7 @@ function movePlayer() {
                 playSound('injured-sound');
                 if (game.player.health <= 0) {
                     playSound('death-sound');
+                    game.lastMonsterToHitPlayer = 'Burning Debris';
                     endGameDeath();
                 }
                 break;
@@ -2743,6 +2752,7 @@ function createDeathScreen() {
     overlay.style.zIndex = '10000';
     overlay.innerHTML = `
         <h1 style="color: #fff; font-family: 'Lucida Console', monospace; font-size: 2.5em; margin-bottom: 1em;">You Died!</h1>
+        <p style="color: #ff6666; font-family: 'Lucida Console', monospace; font-size: 1.4em; margin-bottom: 1.5em;">Killed by: ${game.lastMonsterToHitPlayer}</p>
         <p style="color: #aaa; font-family: 'Lucida Console', monospace; font-size: 1.2em;">${game.monsterDefeated} / ${game.monsterTotal} monsters defeated!</p>
         <p style="color: #aaa; font-family: 'Lucida Console', monospace; font-size: 1.2em;">${game.pickupCollected} / ${game.pickupTotal} Pickups Collected.</p>
     `;
