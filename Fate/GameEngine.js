@@ -2481,16 +2481,19 @@ function drawSpriteInWorld(sprite) {
     }
 
     if (sprite.type && sprite.health !== undefined && sprite.isDead === false) {
-        // Health bar settings
-        const barWidth = Math.max(24, Math.floor(spriteWidth * 0.7));
-        const barHeight = 6;
-        // Center above head
-        const barX = Math.floor(spriteX + spriteWidth - barWidth * 2);
-        const barY = Math.floor(game.projection.halfHeight - spriteHeight / 2) - 12;
-        // Find maxHealth (initial health at spawn)
-        let maxHealth = sprite.maxHealth || sprite._maxHealth || sprite.health;
-        if (!sprite._maxHealth) sprite._maxHealth = sprite.health;
-        drawHealthBar(barX, barY, barWidth, barHeight, sprite.health, maxHealth);
+        // Only draw health bar if sprite is visible on screen
+        if (spriteX >= 0 && spriteX <= game.projection.width) {
+            // Health bar settings
+            const barWidth = Math.max(24, Math.floor(spriteWidth * 0.7));
+            const barHeight = 6;
+            // Center above head
+            const barX = Math.floor(spriteX + spriteWidth - barWidth * 2);
+            const barY = Math.floor(game.projection.halfHeight - spriteHeight / 2) - 12;
+            // Find maxHealth (initial health at spawn)
+            let maxHealth = sprite.maxHealth || sprite._maxHealth || sprite.health;
+            if (!sprite._maxHealth) sprite._maxHealth = sprite.health;
+            drawHealthBar(barX, barY, barWidth, barHeight, sprite.health, maxHealth);
+        }
     }
 }
 
