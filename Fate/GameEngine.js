@@ -477,102 +477,27 @@ function loadLevel(levelIdx) {
                     }
                     break;
                 case 3:
-                    const imp = {
-                        id: `monster_${game.monsterTotal}`,
-                        type: 'imp',
-                        skin: 'imp-sprite',
-                        audio: 'imp',
-                        x: j,
-                        y: i,
-                        health: 50,
-                        isDead: false,
-                        width: 484,
-                        height: 499,
-                        data: null,
-                        damage: 10,
-                        lastAttack: 0,
-                        attackCooldown: 1000
-                    };
+                    const imp = { ...window.MonsterData.imp, id: `monster_${game.monsterTotal}`, x: j, y: i };
                     game.monsters.push(imp);
                     game.monsterTotal++;
                     break;
                 case 4:
-                    const lion = {
-                        id: `monster_${game.monsterTotal}`,
-                        type: 'lion',
-                        skin: 'lion-sprite',
-                        audio: 'bigcat',
-                        x: j,
-                        y: i,
-                        health: 150,
-                        isDead: false,
-                        width: 665,
-                        height: 725,
-                        data: null,
-                        damage: 20,
-                        lastAttack: 0,
-                        attackCooldown: 1000
-                    };
+                    const lion = { ...window.MonsterData.lion, id: `monster_${game.monsterTotal}`, x: j, y: i };
                     game.monsters.push(lion);
                     game.monsterTotal++;
                     break;
                 case 5:
-                    const tiger = {
-                        id: `monster_${game.monsterTotal}`,
-                        type: 'tiger',
-                        skin: 'tiger-sprite',
-                        audio: 'bigcat',
-                        x: j,
-                        y: i,
-                        health: 100,
-                        isDead: false,
-                        width: 256,
-                        height: 201,
-                        data: null,
-                        damage: 15,
-                        lastAttack: 0,
-                        attackCooldown: 1000
-                    };
+                    const tiger = { ...window.MonsterData.tiger, id: `monster_${game.monsterTotal}`, x: j, y: i };
                     game.monsters.push(tiger);
                     game.monsterTotal++;
                     break;
                 case 6:
-                    const bear = {
-                        id: `monster_${game.monsterTotal}`,
-                        type: 'bear',
-                        skin: 'bear-sprite',
-                        audio: 'bear',
-                        x: j,
-                        y: i,
-                        health: 250,
-                        isDead: false,
-                        width: 220,
-                        height: 237,
-                        data: null,
-                        damage: 25,
-                        lastAttack: 0,
-                        attackCooldown: 1000
-                    };
+                    const bear = { ...window.MonsterData.bear, id: `monster_${game.monsterTotal}`, x: j, y: i };
                     game.monsters.push(bear);
                     game.monsterTotal++;
                     break;
                 case 7:
-                    const yeti = {
-                        id: `monster_${game.monsterTotal}`,
-                        type: 'yeti',
-                        skin: 'yeti-sprite',
-                        audio: 'bear',
-                        x: j,
-                        y: i,
-                        health: 550,
-                        isDead: false,
-                        width: 326,
-                        height: 384,
-                        data: null,
-                        damage: 10,
-                        lastAttack: 0,
-                        attackCooldown: 1000
-                    };
+                    const yeti = { ...window.MonsterData.yeti, id: `monster_${game.monsterTotal}`, x: j, y: i };
                     game.monsters.push(yeti);
                     game.monsterTotal++;
                     break;
@@ -605,102 +530,27 @@ function loadLevel(levelIdx) {
                     game.pickupTotal++;
                     break;
                 case 15:
-                    const crusader = {
-                        id: `monster_${game.monsterTotal}`,
-                        type: 'crusader',
-                        skin: 'crusader-sprite',
-                        audio: 'crusader',
-                        x: j,
-                        y: i,
-                        health: 550,
-                        isDead: false,
-                        width: 512,
-                        height: 512,
-                        data: null,
-                        damage: 25,
-                        lastAttack: 0,
-                        attackCooldown: 1000
-                    };
+                    const crusader = { ...window.MonsterData.crusader, id: `monster_${game.monsterTotal}`, x: j, y: i };
                     game.monsters.push(crusader);
                     game.monsterTotal++;
                     break;
                 case 16:
-                    const king = {
-                        id: `monster_${game.monsterTotal}`,
-                        type: 'king',
-                        skin: 'king-sprite',
-                        audio: 'crusader',
-                        x: j,
-                        y: i,
-                        health: 1000,
-                        isDead: false,
-                        width: 512,
-                        height: 512,
-                        data: null,
-                        damage: 100,
-                        lastAttack: 0,
-                        attackCooldown: 1000
-                    };
+                    const king = { ...window.MonsterData.king, id: `monster_${game.monsterTotal}`, x: j, y: i };
                     game.monsters.push(king);
                     game.monsterTotal++;
                     break;
                 case 17:
-                    const minotaur = {
-                        id: `monster_${game.monsterTotal}`,
-                        type: 'minotaur',
-                        skin: 'minotaur-sprite',
-                        audio: 'minotaur',
-                        x: j,
-                        y: i,
-                        health: 150,
-                        isDead: false,
-                        width: 512,
-                        height: 512,
-                        data: null,
-                        damage: 25,
-                        lastAttack: 0,
-                        attackCooldown: 1000
-                    };
+                    const minotaur = { ...window.MonsterData.minotaur, id: `monster_${game.monsterTotal}`, x: j, y: i };
                     game.monsters.push(minotaur);
                     game.monsterTotal++;
                     break;
                 case 18:
-                    const demon = {
-                        id: `monster_${game.monsterTotal}`,
-                        type: 'demon',
-                        skin: 'demon-sprite',
-                        audio: 'demon',
-                        x: j,
-                        y: i,
-                        health: 450,
-                        isDead: false,
-                        width: 512,
-                        height: 512,
-                        data: null,
-                        damage: 25,
-                        lastAttack: 0,
-                        attackCooldown: 1000
-                    };
+                    const demon = { ...window.MonsterData.demon, id: `monster_${game.monsterTotal}`, x: j, y: i };
                     game.monsters.push(demon);
                     game.monsterTotal++;
                     break;
                 case 19:
-                    const skeleton = {
-                        id: `monster_${game.monsterTotal}`,
-                        type: 'skeleton',
-                        skin: 'skeleton-sprite',
-                        audio: 'skeleton',
-                        x: j,
-                        y: i,
-                        health: 25,
-                        isDead: false,
-                        width: 512,
-                        height: 512,
-                        data: null,
-                        damage: 10,
-                        lastAttack: 0,
-                        attackCooldown: 1000
-                    };
+                    const skeleton = { ...window.MonsterData.skeleton, id: `monster_${game.monsterTotal}`, x: j, y: i };
                     game.monsters.push(skeleton);
                     game.monsterTotal++;
                     break;
@@ -708,102 +558,27 @@ function loadLevel(levelIdx) {
                     game.sprites.push({ id: "portal-sprite", x: j, y: i, width: 1024, height: 1024, data: null });
                     break
                 case 21:
-                    const jackalope = {
-                        id: `monster_${game.monsterTotal}`,
-                        type: 'jackalope',
-                        skin: 'jackalope-sprite',
-                        audio: 'jackalope',
-                        x: j,
-                        y: i,
-                        health: 25,
-                        isDead: false,
-                        width: 512,
-                        height: 512,
-                        data: null,
-                        damage: 5,
-                        lastAttack: 0,
-                        attackCooldown: 1000
-                    };
+                    const jackalope = { ...window.MonsterData.jackalope, id: `monster_${game.monsterTotal}`, x: j, y: i };
                     game.monsters.push(jackalope);
                     game.monsterTotal++;
                     break;
                 case 22:
-                    const alien1 = {
-                        id: `monster_${game.monsterTotal}`,
-                        type: 'alien',
-                        skin: 'alien1-sprite',
-                        audio: 'alien',
-                        x: j,
-                        y: i,
-                        health: 350,
-                        isDead: false,
-                        width: 512,
-                        height: 512,
-                        data: null,
-                        lastShot: 0,
-                        attackCooldown: 2000
-                    };
+                    const alien1 = { ...window.MonsterData.alien1, id: `monster_${game.monsterTotal}`, x: j, y: i };
                     game.monsters.push(alien1);
                     game.monsterTotal++;
                     break;
                 case 23:
-                    const alien2 = {
-                        id: `monster_${game.monsterTotal}`,
-                        type: 'alien',
-                        skin: 'alien2-sprite',
-                        audio: 'alien',
-                        x: j,
-                        y: i,
-                        health: 350,
-                        isDead: false,
-                        width: 512,
-                        height: 512,
-                        data: null,
-                        lastShot: 0,
-                        attackCooldown: 2000
-                    };
+                    const alien2 = { ...window.MonsterData.alien2, id: `monster_${game.monsterTotal}`, x: j, y: i };
                     game.monsters.push(alien2);
                     game.monsterTotal++;
                     break;
                 case 24:
-                    const ufo = {
-                        id: `monster_${game.monsterTotal}`,
-                        type: 'ufo',
-                        skin: 'ufo-sprite',
-                        audio: 'ufo',
-                        x: j,
-                        y: i,
-                        health: 1000,
-                        isDead: false,
-                        width: 512,
-                        height: 512,
-                        data: null,
-                        lastShot: 0,
-                        rocketlastShot: 0,
-                        attackCooldown: 2000,
-                        rocketCooldown: 8000,
-                        strafeDir: 1
-                    };
+                    const ufo = { ...window.MonsterData.ufo, id: `monster_${game.monsterTotal}`, x: j, y: i };
                     game.monsters.push(ufo);
                     game.monsterTotal++;
                     break;
                 case 25:
-                    const robot = {
-                        id: `monster_${game.monsterTotal}`,
-                        type: 'robot',
-                        skin: 'robot-sprite',
-                        audio: 'robot',
-                        x: j,
-                        y: i,
-                        health: 250,
-                        isDead: false,
-                        width: 512,
-                        height: 512,
-                        data: null,
-                        damage: 10,
-                        lastAttack: 0,
-                        attackCooldown: 1000
-                    };
+                    const robot = { ...window.MonsterData.robot, id: `monster_${game.monsterTotal}`, x: j, y: i };
                     game.monsters.push(robot);
                     game.monsterTotal++;
                     break;
@@ -812,231 +587,57 @@ function loadLevel(levelIdx) {
                     game.pickupTotal++;
                     break;
                 case 27:
-                    const ninja1 = {
-                        id: `monster_${game.monsterTotal}`,
-                        type: 'ninja',
-                        skin: 'ninja1-sprite',
-                        audio: 'ninja',
-                        x: j,
-                        y: i,
-                        health: 250,
-                        isDead: false,
-                        width: 512,
-                        height: 512,
-                        data: null,
-                        damage: 15,
-                        lastAttack: 0,
-                        lastShot: 0,
-                        attackCooldown: 1500
-                    };
+                    const ninja1 = { ...window.MonsterData.ninja1, id: `monster_${game.monsterTotal}`, x: j, y: i };
                     game.monsters.push(ninja1);
                     game.monsterTotal++;
                     break;
                 case 28:
-                    const ninja2 = {
-                        id: `monster_${game.monsterTotal}`,
-                        type: 'ninja',
-                        skin: 'ninja2-sprite',
-                        audio: 'ninja',
-                        x: j,
-                        y: i,
-                        health: 250,
-                        isDead: false,
-                        width: 512,
-                        height: 512,
-                        data: null,
-                        damage: 15,
-                        lastAttack: 0,
-                        lastShot: 0,
-                        attackCooldown: 1500
-                    };
+                    const ninja2 = { ...window.MonsterData.ninja2, id: `monster_${game.monsterTotal}`, x: j, y: i };
                     game.monsters.push(ninja2);
                     game.monsterTotal++;
                     break;
                 case 29:
-                    const soldier = {
-                        id: `monster_${game.monsterTotal}`,
-                        type: 'soldier',
-                        skin: 'soldier-sprite',
-                        audio: 'soldier',
-                        x: j,
-                        y: i,
-                        health: 100,
-                        isDead: false,
-                        width: 512,
-                        height: 512,
-                        data: null,
-                        lastShot: 0,
-                        attackCooldown: 2000
-                    };
+                    const soldier = { ...window.MonsterData.soldier, id: `monster_${game.monsterTotal}`, x: j, y: i };
                     game.monsters.push(soldier);
                     game.monsterTotal++;
                     break;
                 case 30:
-                    const apache = {
-                        id: `monster_${game.monsterTotal}`,
-                        type: 'apache',
-                        skin: 'apache-sprite',
-                        audio: 'apache',
-                        x: j,
-                        y: i,
-                        health: 1000,
-                        isDead: false,
-                        width: 512,
-                        height: 512,
-                        data: null,
-                        lastShot: 0,
-                        attackCooldown: 2000,
-                        lastSpawn: 0,
-                        spawnCooldown: 22500,
-                        activeCheckpoint: 0,
-                    };
+                    const apache = { ...window.MonsterData.apache, id: `monster_${game.monsterTotal}`, x: j, y: i };
                     game.monsters.push(apache);
                     game.monsterTotal++;
                     break;
                 case 31:
-                    const fighterjet = {
-                        id: `monster_${game.monsterTotal}`,
-                        type: 'fighterjet',
-                        skin: 'fighterjet-sprite',
-                        audio: 'fighterjet',
-                        x: j,
-                        y: i,
-                        health: 1000,
-                        isDead: false,
-                        width: 512,
-                        height: 512,
-                        data: null,
-                        lastShot: 0,
-                        rocketlastShot: 0,
-                        attackCooldown: 1000,
-                        rocketCooldown: 2000,
-                        strafeDir: 1
-                    };
+                    const fighterjet = { ...window.MonsterData.fighterjet, id: `monster_${game.monsterTotal}`, x: j, y: i };
                     game.monsters.push(fighterjet);
                     game.monsterTotal++;
                     break;
                 case 32:
-                    const tank = {
-                        id: `monster_${game.monsterTotal}`,
-                        type: 'tank',
-                        skin: 'tank-sprite',
-                        audio: 'tank',
-                        x: j,
-                        y: i,
-                        health: 500,
-                        isDead: false,
-                        width: 512,
-                        height: 512,
-                        data: null,
-                        damage: 100,
-                        lastAttack: 0,
-                        attackCooldown: 10000,
-                        rocketlastShot: 0,                        
-                        rocketCooldown: 5000
-                    };
+                    const tank = { ...window.MonsterData.tank, id: `monster_${game.monsterTotal}`, x: j, y: i };
                     game.monsters.push(tank);
                     game.monsterTotal++;
                     break;
                 case 33:
-                    const piranha = {
-                        id: `monster_${game.monsterTotal}`,
-                        type: 'piranha',
-                        skin: 'piranha-sprite',
-                        audio: 'piranha',
-                        x: j,
-                        y: i,
-                        health: 25,
-                        isDead: false,
-                        width: 512,
-                        height: 512,
-                        data: null,
-                        damage: 10,
-                        lastAttack: 0,
-                        attackCooldown: 1000
-                    };
+                    const piranha = { ...window.MonsterData.piranha, id: `monster_${game.monsterTotal}`, x: j, y: i };
                     game.monsters.push(piranha);
                     game.monsterTotal++;
                     break;
                 case 34:
-                    const shark = {
-                        id: `monster_${game.monsterTotal}`,
-                        type: 'shark',
-                        skin: 'shark-sprite',
-                        audio: 'shark',
-                        x: j,
-                        y: i,
-                        health: 250,
-                        isDead: false,
-                        width: 512,
-                        height: 512,
-                        data: null,
-                        damage: 25,
-                        lastAttack: 0,
-                        attackCooldown: 1000
-                    };
+                    const shark = { ...window.MonsterData.shark, id: `monster_${game.monsterTotal}`, x: j, y: i };
                     game.monsters.push(shark);
                     game.monsterTotal++;
                     break;
                 case 35:
-                    const squid = {
-                        id: `monster_${game.monsterTotal}`,
-                        type: 'squid',
-                        skin: 'squid-sprite',
-                        audio: 'squid',
-                        x: j,
-                        y: i,
-                        health: 250,
-                        isDead: false,
-                        width: 512,
-                        height: 512,
-                        data: null,
-                        damage: 15,
-                        lastAttack: 0,
-                        attackCooldown: 1000
-                    };
+                    const squid = { ...window.MonsterData.squid, id: `monster_${game.monsterTotal}`, x: j, y: i };
                     game.monsters.push(squid);
                     game.monsterTotal++;
                     break;
                 case 36:
-                    const cow = {
-                        id: `monster_${game.monsterTotal}`,
-                        type: 'cow',
-                        skin: 'cow-sprite',
-                        audio: 'cow',
-                        x: j,
-                        y: i,
-                        health: 100,
-                        isDead: false,
-                        width: 512,
-                        height: 512,
-                        data: null,
-                        damage: 10,
-                        lastAttack: 0,
-                        attackCooldown: 1000
-                    };
+                    const cow = { ...window.MonsterData.cow, id: `monster_${game.monsterTotal}`, x: j, y: i };
                     game.monsters.push(cow);
                     game.monsterTotal++;
                     break;
                 case 37:
-                    const cowking = {
-                        id: `monster_${game.monsterTotal}`,
-                        type: 'cowking',
-                        skin: 'cowking-sprite',
-                        audio: 'cow',
-                        x: j,
-                        y: i,
-                        health: 1000,
-                        isDead: false,
-                        width: 512,
-                        height: 512,
-                        data: null,
-                        damage: 40,
-                        lastAttack: 0,
-                        attackCooldown: 1000,
-                        lastSpawn: 0,
-                        spawnCooldown: 10000
-                    };
+                    const cowking = { ...window.MonsterData.cowking, id: `monster_${game.monsterTotal}`, x: j, y: i };
                     game.monsters.push(cowking);
                     game.monsterTotal++;
                     break;
@@ -1055,25 +656,7 @@ function loadLevel(levelIdx) {
                     game.pickupTotal++;
                     break;
                 case 41:
-                    const zeus = {
-                        id: `monster_${game.monsterTotal}`,
-                        type: 'zeus',
-                        skin: 'zeus-sprite',
-                        audio: 'zeus',
-                        x: j,
-                        y: i,
-                        health: 1000,
-                        isDead: false,
-                        width: 512,
-                        height: 512,
-                        data: null,
-                        lastShot: 0,
-                        attackCooldown: 5000,
-                        shotsInBurst: 0,
-                        spawnPirahna: false,
-                        spawnSquid: false,
-                        spawnShark: false
-                    };
+                    const zeus = { ...window.MonsterData.zeus, id: `monster_${game.monsterTotal}`, x: j, y: i };
                     game.monsters.push(zeus);
                     game.monsterTotal++;
                     break;
@@ -1088,62 +671,17 @@ function loadLevel(levelIdx) {
                     game.sprites.push({ id: 'burningdebris-sprite', x: j, y: i, width: 512, height: 512, data: null });
                     break;
                 case 45:
-                    const rhino = {
-                        id: `monster_${game.monsterTotal}`,
-                        type: 'rhino',
-                        skin: 'rhino-sprite',
-                        audio: 'rhino',
-                        x: j,
-                        y: i,
-                        health: 400,
-                        isDead: false,
-                        width: 512,
-                        height: 512,
-                        data: null,
-                        damage: 40,
-                        lastAttack: 0,
-                        attackCooldown: 1000
-                    };
+                    const rhino = { ...window.MonsterData.rhino, id: `monster_${game.monsterTotal}`, x: j, y: i };
                     game.monsters.push(rhino);
                     game.monsterTotal++;
                     break;
                 case 46:
-                    const cheetah = {
-                        id: `monster_${game.monsterTotal}`,
-                        type: 'cheetah',
-                        skin: 'cheetah-sprite',
-                        audio: 'cheetah',
-                        x: j,
-                        y: i,
-                        health: 400,
-                        isDead: false,
-                        width: 512,
-                        height: 512,
-                        data: null,
-                        damage: 40,
-                        lastAttack: 0,
-                        attackCooldown: 1000
-                    };
+                    const cheetah = { ...window.MonsterData.cheetah, id: `monster_${game.monsterTotal}`, x: j, y: i };
                     game.monsters.push(cheetah);
                     game.monsterTotal++;
                     break;
                 case 47:
-                    const witchdoctor = {
-                        id: `monster_${game.monsterTotal}`,
-                        type: 'witchdoctor',
-                        skin: 'witchdoctor-sprite',
-                        audio: 'witchdoctor',
-                        x: j,
-                        y: i,
-                        health: 400,
-                        isDead: false,
-                        width: 512,
-                        height: 512,
-                        data: null,
-                        lastShot: 0,
-                        attackCooldown: 3000,
-                        spawnEyeball: false
-                    };
+                    const witchdoctor = { ...window.MonsterData.witchdoctor, id: `monster_${game.monsterTotal}`, x: j, y: i };
                     game.monsters.push(witchdoctor);
                     game.monsterTotal++;
                     break;
@@ -1158,22 +696,7 @@ function loadLevel(levelIdx) {
                     game.pickupTotal++;
                     break;
                 case 50:
-                    const eyeball = {
-                        id: `monster_${game.monsterTotal}`,
-                        type: 'eyeball',
-                        skin: 'eyeball-sprite',
-                        audio: 'eyeball',
-                        x: j,
-                        y: i,
-                        health: 300,
-                        isDead: false,
-                        width: 1024,
-                        height: 1024,
-                        data: null,
-                        lastShot: 0,
-                        attackCooldown: 700,
-                        attackAngle: 0
-                    };
+                    const eyeball = { ...window.MonsterData.eyeball, id: `monster_${game.monsterTotal}`, x: j, y: i };
                     game.monsters.push(eyeball);
                     game.monsterTotal++;
                     break;
@@ -1182,22 +705,7 @@ function loadLevel(levelIdx) {
                     game.pickupTotal++;
                     break;
                 case 52:
-                    const stasischamber = {
-                        id: `monster_${game.monsterTotal}`,
-                        type: 'stasischamber',
-                        skin: 'stasischamber-sprite',
-                        audio: 'stasischamber',
-                        x: j,
-                        y: i,
-                        health: 10,
-                        isDead: false,
-                        width: 512,
-                        height: 512,
-                        data: null,
-                        damage: 0,
-                        lastAttack: 0,
-                        attackCooldown: 1000
-                    };
+                    const stasischamber = { ...window.MonsterData.stasischamber, id: `monster_${game.monsterTotal}`, x: j, y: i };
                     game.monsters.push(stasischamber);
                     game.monsterTotal++;
                     break;
@@ -1513,21 +1021,7 @@ function updateGameObjects() {
                                     game.sprites.push({ id: 'burningdebris-sprite', x: monster.x, y: monster.y, width: 512, height: 512, data: null });
                                     game.levels[game.currentLevel].map[Math.floor(monster.y)][Math.floor(monster.x)] = 44;
                                     game.monsterTotal++;
-                                    const alien1 = {
-                                        id: `monster_${game.monsterTotal}`,
-                                        type: 'alien',
-                                        skin: 'alien1-sprite',
-                                        audio: 'alien',
-                                        x: monster.x,
-                                        y: monster.y,
-                                        health: 350,
-                                        isDead: false,
-                                        width: 512,
-                                        height: 512,
-                                        data: null,
-                                        lastShot: 0,
-                                        attackCooldown: 2000
-                                    };
+                                    const alien1 = { ...window.MonsterData.alien1, id: `monster_${game.monsterTotal}`, x: monster.x, y: monster.y };
                                     const monsterTexture = {
                                         id: alien1.skin,
                                         width: alien1.width,
@@ -1816,22 +1310,7 @@ function updateGameObjects() {
                             game.monsterTotal++;
                             var rndX = Math.floor(Math.random() * 5) - 2;
                             var rndY = Math.floor(Math.random() * 5) - 2;
-                            const piranha = {
-                                id: `monster_${game.monsterTotal}`,
-                                type: 'piranha',
-                                skin: 'piranha-sprite',
-                                audio: 'piranha',
-                                x: monster.x + rndX,
-                                y: monster.y + rndY,
-                                health: 25,
-                                isDead: false,
-                                width: 512,
-                                height: 512,
-                                data: null,
-                                damage: 10,
-                                lastAttack: 0,
-                                attackCooldown: 1000
-                            };
+                            const piranha = { ...window.MonsterData.piranha, id: `monster_${game.monsterTotal}`, x: monster.x + rndX, y: monster.y + rndY };
                             const monsterTexture = {
                                 id: piranha.skin,
                                 width: piranha.width,
@@ -1848,22 +1327,7 @@ function updateGameObjects() {
                             game.monsterTotal++;
                             var rndX = Math.floor(Math.random() * 5) - 2;
                             var rndY = Math.floor(Math.random() * 5) - 2;
-                            const squid = {
-                                id: `monster_${game.monsterTotal}`,
-                                type: 'squid',
-                                skin: 'squid-sprite',
-                                audio: 'squid',
-                                x: monster.x + rndX,
-                                y: monster.y + rndY,
-                                health: 100,
-                                isDead: false,
-                                width: 512,
-                                height: 512,
-                                data: null,
-                                damage: 15,
-                                lastAttack: 0,
-                                attackCooldown: 1000
-                            };
+                            const squid = { ...window.MonsterData.squid, id: `monster_${game.monsterTotal}`, x: monster.x + rndX, y: monster.y + rndY };
                             const monsterTexture = {
                                 id: squid.skin,
                                 width: squid.width,
@@ -1879,22 +1343,7 @@ function updateGameObjects() {
                         game.monsterTotal++;
                         var rndX = Math.floor(Math.random() * 5) - 2;
                         var rndY = Math.floor(Math.random() * 5) - 2;
-                        const shark = {
-                            id: `monster_${game.monsterTotal}`,
-                            type: 'shark',
-                            skin: 'shark-sprite',
-                            audio: 'shark',
-                            x: monster.x + rndX,
-                            y: monster.y + rndY,
-                            health: 250,
-                            isDead: false,
-                            width: 512,
-                            height: 512,
-                            data: null,
-                            damage: 25,
-                            lastAttack: 0,
-                            attackCooldown: 1000
-                        };
+                        const shark = { ...window.MonsterData.shark, id: `monster_${game.monsterTotal}`, x: monster.x + rndX, y: monster.y + rndY };
                         const monsterTexture = {
                             id: shark.skin,
                             width: shark.width,
@@ -1942,21 +1391,7 @@ function updateGameObjects() {
                     if ((!monster.lastSpawn || currentTime - monster.lastSpawn >= monster.spawnCooldown) && checkpointdistSq < 100 && checkpointdistSq > 50) {
                         monster.lastSpawn = currentTime;
                         game.monsterTotal++;
-                        const soldier = {
-                            id: `monster_${game.monsterTotal}`,
-                            type: 'soldier',
-                            skin: 'soldier-sprite',
-                            audio: 'soldier',
-                            x: monster.x,
-                            y: monster.y,
-                            health: 100,
-                            isDead: false,
-                            width: 512,
-                            height: 512,
-                            data: null,
-                            lastShot: 0,
-                            attackCooldown: 2000
-                        };
+                        const soldier = { ...window.MonsterData.soldier, id: `monster_${game.monsterTotal}`, x: monster.x, y: monster.y };
                         const monsterTexture = {
                             id: soldier.skin,
                             width: soldier.width,
@@ -2089,22 +1524,7 @@ function updateGameObjects() {
                                 game.monsterTotal++;
                                 var rndX = Math.floor(Math.random() * 5) - 2;
                                 var rndY = Math.floor(Math.random() * 5) - 2;
-                                const cow = {
-                                    id: `monster_${game.monsterTotal}`,
-                                    type: 'cow',
-                                    skin: 'cow-sprite',
-                                    audio: 'cow',
-                                    x: monster.x + rndX,
-                                    y: monster.y + rndY,
-                                    health: 100,
-                                    isDead: false,
-                                    width: 512,
-                                    height: 512,
-                                    data: null,
-                                    damage: 10,
-                                    lastAttack: 0,
-                                    attackCooldown: 1000
-                                };
+                                const cow = { ...window.MonsterData.cow, id: `monster_${game.monsterTotal}`, x: monster.x + rndX, y: monster.y + rndY };
                                 const monsterTexture = {
                                     id: cow.skin,
                                     width: cow.width,
@@ -2169,22 +1589,7 @@ function updateGameObjects() {
                                     game.monsterTotal++;
                                     var rndX = Math.floor(Math.random() * 3) - 1;
                                     var rndY = Math.floor(Math.random() * 3) - 1;
-                                    const eyeball = {
-                                        id: `monster_${game.monsterTotal}`,
-                                        type: 'eyeball',
-                                        skin: 'eyeball-sprite',
-                                        audio: 'eyeball',
-                                        x: monster.x + rndX,
-                                        y: monster.y + rndY,
-                                        health: 300,
-                                        isDead: false,
-                                        width: 1024,
-                                        height: 1024,
-                                        data: null,
-                                        lastShot: 0,
-                                        attackCooldown: 700,
-                                        attackAngle: 0
-                                    };
+                                    const eyeball = { ...window.MonsterData.eyeball, id: `monster_${game.monsterTotal}`, x: monster.x + rndX, y: monster.y + rndY };
                                     const monsterTexture = {
                                         id: eyeball.skin,
                                         width: eyeball.width,
