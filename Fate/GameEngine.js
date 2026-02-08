@@ -936,7 +936,40 @@ function handleShooting(e) {
 
 // Update Game Objects
 
+// Build spatial grid of monsters for collision detection
+function updateMonsterGrid() {
+    game.monsterGrid = {};
+    for (let monster of game.monsters) {
+        if (!monster.isDead) {
+            const gridKey = `${Math.floor(monster.x)}_${Math.floor(monster.y)}`;
+            if (!game.monsterGrid[gridKey]) {
+                game.monsterGrid[gridKey] = [];
+            }
+            game.monsterGrid[gridKey].push(monster);
+        }
+    }
+}
+
+// Check if a position is occupied by another monster
+function isMonsterAtPosition(x, y, excludeMonster = null) {
+    const gridKey = `${Math.floor(x)}_${Math.floor(y)}`;
+    const nearby = game.monsterGrid[gridKey] || [];
+    
+    const checkRadius = 0.5;
+    for (let monster of nearby) {
+        if (monster === excludeMonster) continue;
+        const distSq = (monster.x - x) ** 2 + (monster.y - y) ** 2;
+        if (distSq < checkRadius * checkRadius) {
+            return true;
+        }
+    }
+    return false;
+}
+
 function updateGameObjects() {
+    // Update monster spatial grid for collision detection
+    updateMonsterGrid();
+    
     // Update projectiles
     const projectilesToRemove = new Set();
     let map = game.levels[game.currentLevel].map;
@@ -1121,12 +1154,12 @@ function updateGameObjects() {
                         const dirY = dy * invDist * game.monsterMoveSpeed;
                         // Try to move in X direction
                         const newX = monster.x + dirX;
-                        if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2) {
+                        if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
                             monster.x = newX;
                         }
                         // Try to move in Y direction
                         const newY = monster.y + dirY;
-                        if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2) {
+                        if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
                             monster.y = newY;
                         }
                     }
@@ -1159,12 +1192,12 @@ function updateGameObjects() {
                             moveY = dirY * game.monsterMoveSpeed;
                             // Try to move in X direction
                             const newX = monster.x + moveX;
-                            if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2) {
+                            if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
                                 monster.x = newX;
                             }
                             // Try to move in Y direction
                             const newY = monster.y + moveY;
-                            if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2) {
+                            if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
                                 monster.y = newY;
                             }
                         } else if (distSq > 20) {
@@ -1180,12 +1213,12 @@ function updateGameObjects() {
                             moveY = perpY * monster.strafeDir * game.monsterMoveSpeed;
                             // Try to move in X direction
                             const newX = monster.x + moveX;
-                            if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2) {
+                            if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
                                 monster.x = newX;
                             }
                             // Try to move in Y direction
                             const newY = monster.y + moveY;
-                            if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2) {
+                            if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
                                 monster.y = newY;
                             }
                         }
@@ -1207,12 +1240,12 @@ function updateGameObjects() {
                         const dirY = dy * invDist * game.monsterMoveSpeed;
                         // Try to move in X direction
                         const newX = monster.x + dirX;
-                        if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2) {
+                        if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
                             monster.x = newX;
                         }
                         // Try to move in Y direction
                         const newY = monster.y + dirY;
-                        if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2) {
+                        if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
                             monster.y = newY;
                         }
                     }
@@ -1226,12 +1259,12 @@ function updateGameObjects() {
                             const dirY = dy * invDist * game.monsterMoveSpeed;
                             // Try to move in X direction
                             const newX = monster.x + dirX;
-                            if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2) {
+                            if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
                                 monster.x = newX;
                             }
                             // Try to move in Y direction
                             const newY = monster.y + dirY;
-                            if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2) {
+                            if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
                                 monster.y = newY;
                             }
                         }
@@ -1263,12 +1296,12 @@ function updateGameObjects() {
                             const dirY = dy * invDist * game.monsterMoveSpeed;
                             // Try to move in X direction
                             const newX = monster.x + dirX;
-                            if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2) {
+                            if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
                                 monster.x = newX;
                             }
                             // Try to move in Y direction
                             const newY = monster.y + dirY;
-                            if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2) {
+                            if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
                                 monster.y = newY;
                             }
                         }
@@ -1295,12 +1328,12 @@ function updateGameObjects() {
                         const dirY = dy * invDist * game.monsterMoveSpeed;
                         // Try to move in X direction
                         const newX = monster.x + dirX;
-                        if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2) {
+                        if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
                             monster.x = newX;
                         }
                         // Try to move in Y direction
                         const newY = monster.y + dirY;
-                        if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2) {
+                        if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
                             monster.y = newY;
                         }
                     }
@@ -1391,6 +1424,8 @@ function updateGameObjects() {
                     if ((!monster.lastSpawn || currentTime - monster.lastSpawn >= monster.spawnCooldown) && checkpointdistSq < 100 && checkpointdistSq > 50) {
                         monster.lastSpawn = currentTime;
                         game.monsterTotal++;
+                        var rndX = Math.floor(Math.random() * 5) - 1;
+                        var rndY = Math.floor(Math.random() * 5) - 1;
                         const soldier = { ...window.MonsterData.soldier, id: `monster_${game.monsterTotal}`, x: monster.x, y: monster.y };
                         const monsterTexture = {
                             id: soldier.skin,
@@ -1430,12 +1465,12 @@ function updateGameObjects() {
                             moveY = dirY * game.monsterMoveSpeed;
                             // Try to move in X direction
                             const newX = monster.x + moveX;
-                            if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2) {
+                            if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
                                 monster.x = newX;
                             }
                             // Try to move in Y direction
                             const newY = monster.y + moveY;
-                            if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2) {
+                            if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
                                 monster.y = newY;
                             }
                         } else if (distSq > 10) {
@@ -1453,12 +1488,12 @@ function updateGameObjects() {
                             moveY = perpY * monster.strafeDir * game.monsterMoveSpeed;
                             // Try to move in X direction
                             const newX = monster.x + moveX;
-                            if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2) {
+                            if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
                                 monster.x = newX;
                             }
                             // Try to move in Y direction
                             const newY = monster.y + moveY;
-                            if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2) {
+                            if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
                                 monster.y = newY;
                             }
                         }
@@ -1480,12 +1515,12 @@ function updateGameObjects() {
                         const dirY = dy * invDist * game.monsterMoveSpeed;
                         // Try to move in X direction
                         const newX = monster.x + dirX;
-                        if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2) {
+                        if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
                             monster.x = newX;
                         }
                         // Try to move in Y direction
                         const newY = monster.y + dirY;
-                        if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2) {
+                        if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
                             monster.y = newY;
                         }
                     }
@@ -1510,12 +1545,12 @@ function updateGameObjects() {
                         const dirY = dy * invDist * game.monsterMoveSpeed;
                         // Try to move in X direction
                         const newX = monster.x + dirX;
-                        if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2) {
+                        if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
                             monster.x = newX;
                         }
                         // Try to move in Y direction
                         const newY = monster.y + dirY;
-                        if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2) {
+                        if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
                             monster.y = newY;
                         }
                         if (!monster.lastSpawn || currentTime - monster.lastSpawn >= monster.spawnCooldown) {
@@ -1569,12 +1604,12 @@ function updateGameObjects() {
                         const dirY = dy * invDist * 0.04;
                         // Try to move in X direction
                         const newX = monster.x + dirX;
-                        if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2) {
+                        if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
                             monster.x = newX;
                         }
                         // Try to move in Y direction
                         const newY = monster.y + dirY;
-                        if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2) {
+                        if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
                             monster.y = newY;
                         }
                     }
@@ -1613,12 +1648,12 @@ function updateGameObjects() {
                         const dirY = dy * invDist * game.monsterMoveSpeed;
                         // Try to move in X direction
                         const newX = monster.x + dirX;
-                        if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2) {
+                        if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
                             monster.x = newX;
                         }
                         // Try to move in Y direction
                         const newY = monster.y + dirY;
-                        if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2) {
+                        if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
                             monster.y = newY;
                         }
                     }
@@ -1631,12 +1666,12 @@ function updateGameObjects() {
                         const dirY = dy * invDist * 0.08;
                         // Try to move in X direction
                         const newX = monster.x + dirX;
-                        if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2) {
+                        if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
                             monster.x = newX;
                         }
                         // Try to move in Y direction
                         const newY = monster.y + dirY;
-                        if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2) {
+                        if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
                             monster.y = newY;
                         }
                     }
@@ -1663,12 +1698,12 @@ function updateGameObjects() {
                         const dirY = dy * invDist * game.monsterMoveSpeed;
                         // Try to move in X direction
                         const newX = monster.x + dirX;
-                        if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2) {
+                        if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
                             monster.x = newX;
                         }
                         // Try to move in Y direction
                         const newY = monster.y + dirY;
-                        if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2) {
+                        if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
                             monster.y = newY;
                         }
                     }

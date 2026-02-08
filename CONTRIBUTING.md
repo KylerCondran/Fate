@@ -29,7 +29,6 @@
 # General Ideas
 
 - cheat codes
-- enemies no longer stack
 - upgrade assets, make matrix for missing artifacts
 - dead bones decay system
 - killed by endgame notification
