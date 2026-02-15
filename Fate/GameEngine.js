@@ -402,17 +402,11 @@ function main() {
 
 screen.onclick = function () {
     if (!mainLoop) {
+        screenContext.textAlign = 'start';
+        screenContext.textBaseline = 'alphabetic';
         main();
     }
 }
-
-// Window Lost Focus Event
-
-window.addEventListener('blur', function (event) {
-    clearInterval(mainLoop);
-    mainLoop = null;
-    renderFocusLost();
-});
 
 // ====================================================================
 // LEVEL LOADING
@@ -423,6 +417,7 @@ window.addEventListener('blur', function (event) {
 function startLevel(levelIdx) {
     removeStartScreen();
     loadLevel(levelIdx);
+    window.addEventListener('blur', pauseGame);
     // Start the game loop if not running
     if (!mainLoop) main();
 }
@@ -2801,14 +2796,18 @@ function createStartScreen() {
     });
 }
 
-// Render Lost Focus 
+// Pause Game (when window loses focus)
 
-function renderFocusLost() {
+function pauseGame(event) {
+    clearInterval(mainLoop);
+    mainLoop = null;
     screenContext.fillStyle = 'rgba(0,0,0,0.5)';
     screenContext.fillRect(0, 0, game.projection.width, game.projection.height);
     screenContext.fillStyle = 'white';
-    screenContext.font = '10px Lucida Console';
-    screenContext.fillText('CLICK TO FOCUS', game.projection.halfWidth / 2, game.projection.halfHeight);
+    screenContext.font = '20px Lucida Console';
+    screenContext.textAlign = 'center';
+    screenContext.textBaseline = 'middle';
+    screenContext.fillText('GAME PAUSED', game.projection.halfWidth, game.projection.halfHeight);
 }
 
 // End game and show win screen, then return to start screen
@@ -2818,6 +2817,7 @@ function endGame() {
         clearInterval(mainLoop);
         mainLoop = null;
     }
+    window.removeEventListener('blur', pauseGame);
     createWinScreen();
     if (game.currentLevel != game.levels.length - 3 && game.currentLevel != game.levels.length - 2 && game.currentLevel != game.levels.length - 1) {
         game.levels[game.currentLevel + 1].unlocked = true;
@@ -2833,6 +2833,7 @@ function endGameDeath() {
         clearInterval(mainLoop);
         mainLoop = null;
     }
+    window.removeEventListener('blur', pauseGame);
     createDeathScreen();
     setTimeout(() => {
         removeDeathScreen();
