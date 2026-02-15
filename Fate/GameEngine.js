@@ -230,66 +230,68 @@ let game = {
             data: null
         }
     ],
-    bulletTexture: {
-        id: 'bullet-sprite',
-        width: 27,
-        height: 27,
-        data: null
-    },
-    laserTexture: {
-        id: 'laser-sprite',
-        width: 27,
-        height: 27,
-        data: null
-    },
-    rocketTexture: {
-        id: 'rocket-sprite',
-        width: 16,
-        height: 23,
-        data: null
-    },
-    inboundrocketTexture: {
-        id: 'inboundrocket-sprite',
-        width: 16,
-        height: 23,
-        data: null
-    },
-    orbTexture: {
-        id: 'orb-sprite',
-        width: 27,
-        height: 27,
-        data: null
-    },
-    boomerangTexture: {
-        id: 'boomerang-sprite',
-        width: 27,
-        height: 27,
-        data: null
-    },
-    shurikenTexture: {
-        id: 'shuriken-sprite',
-        width: 27,
-        height: 27,
-        data: null
-    },
-    waterorbTexture: {
-        id: 'waterorb-sprite',
-        width: 27,
-        height: 27,
-        data: null
-    },
-    eyeballTexture: {
-        id: 'eyeballprojectile-sprite',
-        width: 27,
-        height: 27,
-        data: null
-    },
-    fireballTexture: {
-        id: 'fireball-sprite',
-        width: 27,
-        height: 27,
-        data: null
-    },
+    projectileTextures: [
+        {
+            id: 'bullet-sprite',
+            width: 27,
+            height: 27,
+            data: null
+        },
+        {
+            id: 'laser-sprite',
+            width: 27,
+            height: 27,
+            data: null
+        },
+        {
+            id: 'rocket-sprite',
+            width: 16,
+            height: 23,
+            data: null
+        },
+        {
+            id: 'inboundrocket-sprite',
+            width: 16,
+            height: 23,
+            data: null
+        },
+        {
+            id: 'orb-sprite',
+            width: 27,
+            height: 27,
+            data: null
+        },
+        {
+            id: 'boomerang-sprite',
+            width: 27,
+            height: 27,
+            data: null
+        },
+        {
+            id: 'shuriken-sprite',
+            width: 27,
+            height: 27,
+            data: null
+        },
+        {
+            id: 'waterorb-sprite',
+            width: 27,
+            height: 27,
+            data: null
+        },
+        {
+            id: 'eyeballprojectile-sprite',
+            width: 27,
+            height: 27,
+            data: null
+        },
+        {
+            id: 'fireball-sprite',
+            width: 27,
+            height: 27,
+            data: null
+        }
+    ],
     backgrounds: [
         {
             width: 360,
@@ -358,6 +360,20 @@ screenContext.imageSmoothingEnabled = false;
 // Buffer
 game.projection.imageData = screenContext.createImageData(game.projection.width, game.projection.height);
 game.projection.buffer = game.projection.imageData.data;
+
+// Projectile Map
+game.projectileMap = {
+    bullet: game.projectileTextures[0],
+    laser: game.projectileTextures[1],
+    rocket: game.projectileTextures[2],
+    inboundrocket: game.projectileTextures[3],
+    orb: game.projectileTextures[4],
+    boomerang: game.projectileTextures[5],
+    shuriken: game.projectileTextures[6],
+    waterorb: game.projectileTextures[7],
+    eyeball: game.projectileTextures[8],
+    fireball: game.projectileTextures[9]
+};
 
 // Main loop
 let mainLoop = null;
@@ -882,23 +898,23 @@ function handleShooting(e) {
                 type = 'knife';
                 break;
             case 4:
-                texture = game.laserTexture;
+                texture = game.projectileMap['laser'];
                 type = 'laser';
                 playSound('laser-sound');
                 break;
             case 5:
-                texture = game.rocketTexture;
+                texture = game.projectileMap['rocket'];
                 type = 'rocket';
                 playSound('rocketlaunch-sound');
                 game.rocketammo--;
                 break;
             case 6:
-                texture = game.orbTexture;
+                texture = game.projectileMap['orb'];
                 type = 'orb';
                 playSound('orb-sound');
                 break;
             case 7:
-                texture = game.boomerangTexture;
+                texture = game.projectileMap['boomerang'];
                 type = 'boomerang';
                 playSound('boomerang-sound');
                 game.boomerangammo--;
@@ -908,12 +924,12 @@ function handleShooting(e) {
                 }
                 break;
             case 8:
-                texture = game.laserTexture;
+                texture = game.projectileMap['laser'];
                 type = 'laser';
                 playSound('laserblast-sound');
                 break;
             default:
-                texture = game.bulletTexture;
+                texture = game.projectileMap['bullet'];
                 type = 'bullet';
                 playSound('shoot-sound');
                 game.ammo--;
@@ -1022,7 +1038,7 @@ function updateGameObjects() {
                             const dx = game.player.x - monster.x;
                             const dy = game.player.y - monster.y;
                             const angle = radiansToDegrees(Math.atan2(dy, dx));
-                            game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'boomerang', game.boomerangTexture, 'monster'));
+                            game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'boomerang', game.projectileMap['boomerang'], 'monster'));
                             playSound('boomerang-sound');
                         } else {
                             monster.health -= 25;
@@ -1144,7 +1160,7 @@ function updateGameObjects() {
                     if (distSq < 64) {
                         if (!monster.lastShot || currentTime - monster.lastShot >= monster.attackCooldown) {
                             const angle = radiansToDegrees(Math.atan2(dy, dx));
-                            game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'laser', game.laserTexture, 'monster'));
+                            game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'laser', game.projectileMap['laser'], 'monster'));
                             playSound('laser-sound');
                             monster.lastShot = currentTime;
                         }
@@ -1170,7 +1186,7 @@ function updateGameObjects() {
                     if (distSq < 64) {
                         if (!monster.lastShot || currentTime - monster.lastShot >= monster.attackCooldown) {
                             const angle = radiansToDegrees(Math.atan2(dy, dx));
-                            game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'laser', game.laserTexture, 'monster'));
+                            game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'laser', game.projectileMap['laser'], 'monster'));
                             playSound('laser-sound');
                             monster.lastShot = currentTime;
                         }
@@ -1178,7 +1194,7 @@ function updateGameObjects() {
                     if (distSq < 100) {
                         if (!monster.rocketlastShot || currentTime - monster.rocketlastShot >= monster.rocketCooldown) {
                             const angle = radiansToDegrees(Math.atan2(dy, dx));
-                            game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'rocket', game.inboundrocketTexture, 'monster'));
+                            game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'rocket', game.projectileMap['inboundrocket'], 'monster'));
                             playSound('rocketlaunch-sound');
                             monster.rocketlastShot = currentTime;
                         }
@@ -1230,7 +1246,7 @@ function updateGameObjects() {
                     if (distSq < 64) {
                         if (!monster.lastShot || currentTime - monster.lastShot >= monster.attackCooldown) {
                             const angle = radiansToDegrees(Math.atan2(dy, dx));
-                            game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'bullet', game.bulletTexture, 'monster'));
+                            game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'bullet', game.projectileMap['bullet'], 'monster'));
                             playSound('shoot-sound');
                             monster.lastShot = currentTime;
                         }
@@ -1287,7 +1303,7 @@ function updateGameObjects() {
                         if (distSq < 64) {
                             if (!monster.lastShot || currentTime - monster.lastShot >= monster.attackCooldown) {
                                 const angle = radiansToDegrees(Math.atan2(dy, dx));
-                                game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'shuriken', game.shurikenTexture, 'monster'));
+                                game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'shuriken', game.projectileMap['shuriken'], 'monster'));
                                 playSound('shuriken-sound');
                                 monster.lastShot = currentTime;
                             }
@@ -1315,7 +1331,7 @@ function updateGameObjects() {
                         const delay = monster.shotsInBurst < 3 ? 1000 : monster.attackCooldown;
                         if (!monster.lastShot || currentTime - monster.lastShot >= delay) {
                             const angle = radiansToDegrees(Math.atan2(dy, dx));
-                            game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'waterorb', game.waterorbTexture, 'monster'));
+                            game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'waterorb', game.projectileMap['waterorb'], 'monster'));
                             playSound('waterorb-sound');
                             monster.lastShot = currentTime;
                             monster.shotsInBurst++;
@@ -1419,7 +1435,7 @@ function updateGameObjects() {
                     if (distSq < 50) {
                         if (!monster.lastShot || currentTime - monster.lastShot >= monster.attackCooldown) {
                             const angle = radiansToDegrees(Math.atan2(dy, dx));
-                            game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'bullet', game.bulletTexture, 'monster'));
+                            game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'bullet', game.projectileMap['bullet'], 'monster'));
                             playSound('shoot-sound');
                             monster.lastShot = currentTime;
                         }
@@ -1444,7 +1460,7 @@ function updateGameObjects() {
                     if (distSq < 64) {
                         if (!monster.lastShot || currentTime - monster.lastShot >= monster.attackCooldown) {
                             const angle = radiansToDegrees(Math.atan2(dy, dx));
-                            game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'bullet', game.bulletTexture, 'monster'));
+                            game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'bullet', game.projectileMap['bullet'], 'monster'));
                             playSound('shoot-sound');
                             monster.lastShot = currentTime;
                         }
@@ -1452,7 +1468,7 @@ function updateGameObjects() {
                     if (distSq < 100) {
                         if (!monster.rocketlastShot || currentTime - monster.rocketlastShot >= monster.rocketCooldown) {
                             const angle = radiansToDegrees(Math.atan2(dy, dx));
-                            game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'rocket', game.inboundrocketTexture, 'monster'));
+                            game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'rocket', game.projectileMap['inboundrocket'], 'monster'));
                             playSound('rocketlaunch-sound');
                             monster.rocketlastShot = currentTime;
                         }
@@ -1506,7 +1522,7 @@ function updateGameObjects() {
                     if (distSq < 100) {
                         if (!monster.rocketlastShot || currentTime - monster.rocketlastShot >= monster.rocketCooldown) {
                             const angle = radiansToDegrees(Math.atan2(dy, dx));
-                            game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'rocket', game.inboundrocketTexture, 'monster'));
+                            game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'rocket', game.projectileMap['inboundrocket'], 'monster'));
                             playSound('rocketlaunch-sound');
                             monster.rocketlastShot = currentTime;
                         }
@@ -1593,7 +1609,7 @@ function updateGameObjects() {
                     if (distSq < 84) {
                         if (!monster.lastShot || currentTime - monster.lastShot >= monster.attackCooldown) {
                             const angle = radiansToDegrees(Math.atan2(dy, dx));
-                            game.projectiles.push(new Projectile(monster.x, monster.y, angle + monster.attackAngle, 'eyeball', game.eyeballTexture, 'monster'));
+                            game.projectiles.push(new Projectile(monster.x, monster.y, angle + monster.attackAngle, 'eyeball', game.projectileMap['eyeball'], 'monster'));
                             playSound('squish-sound');
                             monster.attackAngle += 3;
                             if (monster.attackAngle > 6) {
@@ -1641,7 +1657,7 @@ function updateGameObjects() {
                                 }
                             }
                             const angle = radiansToDegrees(Math.atan2(dy, dx));
-                            game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'fireball', game.fireballTexture, 'monster'));
+                            game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'fireball', game.projectileMap['fireball'], 'monster'));
                             playSound('fireball-sound');
                             monster.lastShot = currentTime;
                         }
@@ -2213,7 +2229,7 @@ function loadTextures() {
 
 function loadBackgrounds() {
     for (let i = 0; i < game.backgrounds.length; i++) {
-        if (game.backgrounds[i].id) {
+        if (!game.backgrounds[i].data) {
             game.backgrounds[i].data = getTextureData(game.backgrounds[i]);
         }
     }
@@ -2222,15 +2238,15 @@ function loadBackgrounds() {
 // Load Sprites
 
 function loadSprites() {
+    // Load sprite data for all sprites
     for (let i = 0; i < game.sprites.length; i++) {
-        if (game.sprites[i].id) {
+        if (!game.sprites[i].data) {
             game.sprites[i].data = getTextureData(game.sprites[i]);
         }
     }
-    // Load monster sprite data for all monsters
+    // Load monster data for all monsters
     for (let i = 0; i < game.monsters.length; i++) {
         if (!game.monsters[i].data) {
-            // Use the monster sprite element for all monsters
             const monsterTexture = {
                 id: game.monsters[i].skin,
                 width: game.monsters[i].width,
@@ -2239,39 +2255,11 @@ function loadSprites() {
             game.monsters[i].data = getTextureData(monsterTexture);
         }
     }
-    // Load bullet sprite texture
-    if (!game.bulletTexture.data) {
-        game.bulletTexture.data = getTextureData(game.bulletTexture);
-    }
-    // Load laser sprite texture
-    if (!game.laserTexture.data) {
-        game.laserTexture.data = getTextureData(game.laserTexture);
-    }
-    // Load rocket sprite texture
-    if (!game.rocketTexture.data) {
-        game.rocketTexture.data = getTextureData(game.rocketTexture);
-    }
-    // Load inboundrocket sprite texture
-    if (!game.inboundrocketTexture.data) {
-        game.inboundrocketTexture.data = getTextureData(game.inboundrocketTexture);
-    }
-    if (!game.orbTexture.data) {
-        game.orbTexture.data = getTextureData(game.orbTexture);
-    }
-    if (!game.boomerangTexture.data) {
-        game.boomerangTexture.data = getTextureData(game.boomerangTexture);
-    }
-    if (!game.shurikenTexture.data) {
-        game.shurikenTexture.data = getTextureData(game.shurikenTexture);
-    }
-    if (!game.waterorbTexture.data) {
-        game.waterorbTexture.data = getTextureData(game.waterorbTexture);
-    }
-    if (!game.eyeballTexture.data) {
-        game.eyeballTexture.data = getTextureData(game.eyeballTexture);
-    }
-    if (!game.fireballTexture.data) {
-        game.fireballTexture.data = getTextureData(game.fireballTexture);
+    // Load projectile data for all projectiles
+    for (let i = 0; i < game.projectileTextures.length; i++) {
+        if (!game.projectileTextures[i].data) {
+            game.projectileTextures[i].data = getTextureData(game.projectileTextures[i]);
+        }
     }
 }
 
