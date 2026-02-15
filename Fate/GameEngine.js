@@ -1829,49 +1829,49 @@ function movePlayer() {
             // Ammo pickup
             case 8:
                 game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
-                itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
+                itemPickup(Math.floor(game.player.y), Math.floor(game.player.x), 'pickup-sound');
                 game.ammo += 12;
                 game.pickupCollected++;
                 break;
             // Pistol pickup
             case 9:
                 game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
-                itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
+                itemPickup(Math.floor(game.player.y), Math.floor(game.player.x), 'pickup-sound');
                 game.weaponsUnlocked.pistol = true;
                 game.pickupCollected++;
                 break;
             // Machinegun pickup
             case 10:
                 game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
-                itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
+                itemPickup(Math.floor(game.player.y), Math.floor(game.player.x), 'pickup-sound');
                 game.weaponsUnlocked.machinegun = true;
                 game.pickupCollected++;
                 break;
             // Yeti pistol pickup
             case 11:
                 game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
-                itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
+                itemPickup(Math.floor(game.player.y), Math.floor(game.player.x), 'pickup-sound');
                 game.weaponsUnlocked.yetipistol = true;
                 game.pickupCollected++;
                 break;
             // Rocket launcher pickup
             case 12:
                 game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
-                itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
+                itemPickup(Math.floor(game.player.y), Math.floor(game.player.x), 'pickup-sound');
                 game.weaponsUnlocked.rocketlauncher = true;
                 game.pickupCollected++;
                 break;
             // Rocket ammo pickup
             case 13:
                 game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
-                itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
+                itemPickup(Math.floor(game.player.y), Math.floor(game.player.x), 'pickup-sound');
                 game.rocketammo += 4;
                 game.pickupCollected++;
                 break;
             // Scepter pickup
             case 14:
                 game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
-                itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
+                itemPickup(Math.floor(game.player.y), Math.floor(game.player.x), 'pickup-sound');
                 game.weaponsUnlocked.scepter = true;
                 game.pickupCollected++;
                 break;
@@ -1890,7 +1890,7 @@ function movePlayer() {
             // Boomerang pickup
             case 26:
                 game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
-                itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
+                itemPickup(Math.floor(game.player.y), Math.floor(game.player.x), 'pickup-sound');
                 game.weaponsUnlocked.boomerang = true;
                 game.boomerangammo++;
                 game.pickupCollected++;
@@ -1900,7 +1900,7 @@ function movePlayer() {
                 if (game.keysUnlocked.cowkey) {
                     game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
                     //drop secret totem
-                    secretUnlock(Math.floor(game.player.y), Math.floor(game.player.x));
+                    itemPickup(Math.floor(game.player.y), Math.floor(game.player.x), 'secretunlock-sound');
                     game.pickupCollected++;
                     game.levels[10].unlocked = true;
                     game.keysUnlocked.cowkey = false;
@@ -1911,14 +1911,14 @@ function movePlayer() {
             // Cow Key pickup
             case 39:
                 game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
-                itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
+                itemPickup(Math.floor(game.player.y), Math.floor(game.player.x), 'pickup-sound');
                 game.pickupCollected++;
                 game.keysUnlocked.cowkey = true;
                 break;
             // Speed Boost pickup
             case 40:
                 game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
-                itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
+                itemPickup(Math.floor(game.player.y), Math.floor(game.player.x), 'pickup-sound');
                 game.pickupCollected++;
                 game.player.speed.movement = 0.12;
                 break;
@@ -1935,7 +1935,7 @@ function movePlayer() {
             // Laser Shotgun pickup
             case 43:
                 game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
-                itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
+                itemPickup(Math.floor(game.player.y), Math.floor(game.player.x), 'pickup-sound');
                 game.weaponsUnlocked.lasershotgun = true;
                 game.pickupCollected++;
                 break;
@@ -1954,7 +1954,7 @@ function movePlayer() {
                 if (game.keysUnlocked.monkeykey) {
                     game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
                     //drop secret totem
-                    secretUnlock(Math.floor(game.player.y), Math.floor(game.player.x));
+                    itemPickup(Math.floor(game.player.y), Math.floor(game.player.x), 'secretunlock-sound');
                     game.pickupCollected++;
                     game.levels[11].unlocked = true;
                     game.keysUnlocked.monkeykey = false;
@@ -1965,7 +1965,7 @@ function movePlayer() {
             // Monkey Key pickup
             case 49:
                 game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
-                itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
+                itemPickup(Math.floor(game.player.y), Math.floor(game.player.x), 'pickup-sound');
                 game.pickupCollected++;
                 game.keysUnlocked.monkeykey = true;
                 break;
@@ -1973,7 +1973,7 @@ function movePlayer() {
             case 51:
                 if (game.player.health <= 50) {
                     game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
-                    itemPickup(Math.floor(game.player.y), Math.floor(game.player.x));
+                    itemPickup(Math.floor(game.player.y), Math.floor(game.player.x), 'pickup-sound');
                     game.pickupCollected++;
                     game.player.health += 50;
                 } else {
@@ -2183,20 +2183,8 @@ document.addEventListener('keyup', (event) => {
 
 // Item Pickup
 
-function itemPickup(ycoords, xcoords) {
-    playSound('pickup-sound');
-    let spritenum = 0;
-    for (let sprite of game.sprites) {
-        if (sprite.x == xcoords && sprite.y == ycoords) {
-            game.sprites.splice(spritenum, 1);
-            break;
-        }
-        spritenum++;
-    }
-}
-
-function secretUnlock(ycoords, xcoords) {
-    playSound('secretunlock-sound');
+function itemPickup(ycoords, xcoords, sound) {
+    playSound(sound);
     let spritenum = 0;
     for (let sprite of game.sprites) {
         if (sprite.x == xcoords && sprite.y == ycoords) {
