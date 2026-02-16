@@ -2766,6 +2766,28 @@ function createStartScreen() {
     });
 }
 
+// End Credits Screen
+
+function createEndCreditsScreen() {
+    let overlay = document.createElement('div');
+    overlay.id = 'endcredits-screen-overlay';
+    overlay.style.position = 'fixed';
+    overlay.style.left = '0';
+    overlay.style.top = '0';
+    overlay.style.width = '100vw';
+    overlay.style.height = '100vh';
+    overlay.style.background = 'rgba(0,0,0,0.92)';
+    overlay.style.display = 'flex';
+    overlay.style.flexDirection = 'column';
+    overlay.style.justifyContent = 'center';
+    overlay.style.alignItems = 'center';
+    overlay.style.zIndex = '10000';
+    overlay.innerHTML = `
+        <h1 style="color: #fff; font-family: 'Lucida Console', monospace; font-size: 2.5em; margin-bottom: 1em;">You Beat The Game!</h1>
+    `;
+    document.body.appendChild(overlay);
+}
+
 // Pause Game (when window loses focus)
 
 function pauseGame(event) {
@@ -2792,10 +2814,26 @@ function endGame() {
     if (game.currentLevel != game.levels.length - 3 && game.currentLevel != game.levels.length - 2 && game.currentLevel != game.levels.length - 1) {
         game.levels[game.currentLevel + 1].unlocked = true;
     }
-    setTimeout(() => {
-        removeWinScreen();
-        createStartScreen();
-    }, 5000);
+    game.levels[game.currentLevel].completed = true;
+    let levelsCompleted = 0;   
+    for (let i = 0; i < game.levels.length; i++) {
+        if (game.levels[i].completed) {
+            levelsCompleted++;
+        } else {
+            break;
+        }
+    }
+    if (game.levels.length == levelsCompleted) {
+        setTimeout(() => {
+            removeWinScreen();
+            createEndCreditsScreen();
+        }, 5000);
+    } else {
+        setTimeout(() => {
+            removeWinScreen();
+            createStartScreen();
+        }, 5000);
+    }
 }
 
 function endGameDeath() {
