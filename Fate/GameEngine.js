@@ -327,8 +327,6 @@ let game = {
 // Show start screen on page load
 window.onload = function () {
     createStartScreen();
-    loadTextures();
-    loadBackgrounds();
     loadSprites();
 }
 
@@ -743,8 +741,6 @@ function loadLevel(levelIdx) {
         }
     }
     // Reload textures and sprites
-    loadTextures();
-    loadBackgrounds();
     loadSprites();
 }
 
@@ -2210,29 +2206,21 @@ function itemPickup(ycoords, xcoords, sound) {
 // LOAD ASSETS
 // ====================================================================
 
-// Load Textures
+// Load Sprites
 
-function loadTextures() {
+function loadSprites() {
+    // Load texture data for all textures
     for (let i = 0; i < game.textures.length; i++) {
-        if (game.textures[i].id) {
+        if (!game.textures[i].data) {
             game.textures[i].data = getTextureData(game.textures[i]);
         }
     }
-}
-
-// Load Backgrounds
-
-function loadBackgrounds() {
+    // Load background data for all backgrounds
     for (let i = 0; i < game.backgrounds.length; i++) {
         if (!game.backgrounds[i].data) {
             game.backgrounds[i].data = getTextureData(game.backgrounds[i]);
         }
     }
-}
-
-// Load Sprites
-
-function loadSprites() {
     // Load sprite data for all sprites
     for (let i = 0; i < game.sprites.length; i++) {
         if (!game.sprites[i].data) {
