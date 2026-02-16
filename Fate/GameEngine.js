@@ -155,7 +155,9 @@ let game = {
             colors: [
                 "rgb(255, 241, 232)",
                 "rgb(194, 195, 199)",
-            ]
+            ],
+            id: "testtexture",
+            data: null
         },
         {
             width: 16,
