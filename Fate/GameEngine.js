@@ -11,6 +11,7 @@ let game = {
     ammo: 0,
     rocketammo: 0,
     boomerangammo: 0,
+    tridentammo: true,
     lastShot: 0,
     shootCooldown: 600,
     bulletHitboxRadius: 0.25,
@@ -35,7 +36,8 @@ let game = {
         rocketlauncher: false,
         scepter: false,
         boomerang: false,
-        lasershotgun: false
+        lasershotgun: false,
+        trident: false
     },
     keysUnlocked: {
         cowkey: false,
@@ -129,6 +131,10 @@ let game = {
         },
         eight: {
             code: "Digit8",
+            active: false
+        },
+        nine: {
+            code: "Digit9",
             active: false
         },
         strafeleft: {
@@ -440,6 +446,10 @@ function loadLevel(levelIdx) {
     game.pickupCollected = 0;
     // Reset player health
     game.player.health = 100;
+    // Reset trident ammo per level
+    if (game.weaponsUnlocked.trident) {
+        game.tridentammo = true;
+    }
     let map = game.levels[levelIdx].map;
     let mapy = map.length;
     let mapx = map[0].length;
@@ -731,6 +741,10 @@ function loadLevel(levelIdx) {
                     game.monsters.push(spider);
                     game.monsterTotal++;
                     break;
+                case 58:
+                    game.sprites.push({ id: "tridentpickup-sprite", x: j, y: i, width: 30, height: 80, data: null });
+                    game.pickupTotal++;
+                    break;
                 default:
                     break;
             }
@@ -870,8 +884,9 @@ function handleShooting(e) {
         if ((game.equippedWeapon == 2 || game.equippedWeapon == 3) && game.ammo <= 0 || ((game.equippedWeapon == 5) && game.rocketammo <= 0)) {
             playSound('gunclick-sound');
             return;
-        } else if (game.equippedWeapon == 7 && game.boomerangammo <= 0) {
-            //boomerang fail throw
+        } else if ((game.equippedWeapon == 7 && game.boomerangammo <= 0) || (game.equippedWeapon == 9 && !game.tridentammo)) {
+            //boomerang fail throw / trident fail sound
+            playSound('invalid-sound');
             return;
         }
         // Start the bullet slightly in front of the player in the direction they're facing
@@ -915,6 +930,19 @@ function handleShooting(e) {
                 type = 'laser';
                 playSound('laserblast-sound');
                 break;
+            case 9:
+                playSound('portal-sound');
+                game.tridentammo = false;
+                const moby = { ...window.MonsterData.moby, id: `monster_moby`, x: game.player.x, y: game.player.y, spawnTime: Date.now() };
+                const monsterTexture = {
+                    id: moby.skin,
+                    width: moby.width,
+                    height: moby.height
+                };
+                moby.data = getTextureData(monsterTexture);
+                game.monsters.push(moby);
+                return; // trident doesn't shoot a projectile, so we return early after playing sound
+                break;
             default:
                 texture = game.projectileMap['bullet'];
                 type = 'bullet';
@@ -944,7 +972,7 @@ function handleShooting(e) {
 function updateMonsterGrid() {
     game.monsterGrid = {};
     for (let monster of game.monsters) {
-        if (!monster.isDead) {
+        if (!monster.isDead && monster.type != 'moby') {
             const gridKey = `${Math.floor(monster.x)}_${Math.floor(monster.y)}`;
             if (!game.monsterGrid[gridKey]) {
                 game.monsterGrid[gridKey] = [];
@@ -1043,6 +1071,11 @@ function updateGameObjects() {
                                     game.sprites.push({ id: 'acid-sprite', x: monster.x, y: monster.y, width: 256, height: 256, data: null });
                                     game.levels[game.currentLevel].map[Math.floor(monster.y)][Math.floor(monster.x)] = 42;
                                     break;
+                                case 'zeus':
+                                    game.sprites.push({ id: "tridentpickup-sprite", x: monster.x, y: monster.y, width: 30, height: 80, data: null });
+                                    game.pickupTotal++;
+                                    game.levels[game.currentLevel].map[Math.floor(monster.y)][Math.floor(monster.x)] = 58;
+                                    break;
                                 case 'stasischamber':
                                     game.sprites.push({ id: 'brokenstasischamber-sprite', x: monster.x, y: monster.y, width: 512, height: 512, data: null });
                                     playSound('glass-sound');
@@ -1117,10 +1150,10 @@ function updateGameObjects() {
                 if (projectile.type === 'web') {
                     game.playerFrozen = true;
                     game.playerFrozenTime = Date.now();
-                }   
+                }
                 if (!(projectile.type === 'boomerang')) {
                     playSound('injured-sound');
-                }           
+                }
                 projectilesToRemove.add(i);
                 if (game.player.health <= 0) {
                     playSound('death-sound');
@@ -1133,7 +1166,7 @@ function updateGameObjects() {
                 if (projectile.type === 'rocket') playSound('explosion-sound');
                 projectilesToRemove.add(i);
             }
-        }
+        } 
     }
     // Remove marked projectiles
     game.projectiles = game.projectiles.filter((_, idx) => !projectilesToRemove.has(idx));
@@ -1729,6 +1762,61 @@ function updateGameObjects() {
                     break;
                 case 'stasischamber':
                     break;
+                case 'moby':
+                    if (currentTime - monster.spawnTime >= 60000) {
+                        monster.isDead = true;
+                        game.sprites.push({ id: 'bones-sprite', x: monster.x, y: monster.y, width: 256, height: 256, data: null });
+                        playSound('moby-death');
+                        for (let i = 0; i < game.sprites.length; i++) {
+                            if (!game.sprites[i].data) {
+                                game.sprites[i].data = getTextureData(game.sprites[i]);
+                            }
+                        }
+                        return;
+                    }
+                    const enemyX = game.monsters.find(enemy => enemy.type != 'moby' && !enemy.isDead && isVisibleToPlayer(enemy))?.x - monster.x;
+                    const enemyY = game.monsters.find(enemy => enemy.type != 'moby' && !enemy.isDead && isVisibleToPlayer(enemy))?.y - monster.y;
+                    const enemydistSq = enemyX * enemyX + enemyY * enemyY;
+                    if (enemydistSq > 0.25 && enemydistSq < 100) {
+                        const distance = Math.sqrt(enemydistSq);
+                        const invDist = 1 / distance;
+                        const dirX = enemyX * invDist * 0.04;
+                        const dirY = enemyY * invDist * 0.04;
+                        // Try to move in X direction
+                        const newX = monster.x + dirX;
+                        if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2) {
+                            monster.x = newX;
+                        }
+                        // Try to move in Y direction
+                        const newY = monster.y + dirY;
+                        if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2) {
+                            monster.y = newY;
+                        }
+                    } else if (distSq > 5) {
+                        const distance = Math.sqrt(distSq);
+                        const invDist = 1 / distance;
+                        const dirX = dx * invDist * 0.04;
+                        const dirY = dy * invDist * 0.04;
+                        // Try to move in X direction
+                        const newX = monster.x + dirX;
+                        if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2) {
+                            monster.x = newX;
+                        }
+                        // Try to move in Y direction
+                        const newY = monster.y + dirY;
+                        if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2) {
+                            monster.y = newY;
+                        }
+                    }
+                    if (enemydistSq < 0.5 && (!monster.lastAttack || currentTime - monster.lastAttack >= monster.attackCooldown)) {
+                        // Attack the monster
+                        const angle = radiansToDegrees(Math.atan2(enemyY, enemyX));
+                        let blankTexture;
+                        game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'knife', blankTexture, 'player'));
+                        playSound('splash-sound');
+                        monster.lastAttack = currentTime;
+                    }
+                    break;
                 default:
                     if (distSq > 0.25 && distSq < 100) {
                         const distance = Math.sqrt(distSq);
@@ -1772,7 +1860,7 @@ function movePlayer() {
     let mapHeight = map.length;
     let mapWidth = map[0]?.length ?? 0; 
     const currentTime = Date.now();
-    if (currentTime - game.playerFrozenTime >= 1500) {
+    if (game.playerFrozen && currentTime - game.playerFrozenTime >= 1500) {
         game.playerFrozen = false;
     }
     if (game.key.up.active && !game.playerFrozen) {
@@ -2017,47 +2105,60 @@ function movePlayer() {
                     playSound('invalid-sound');
                 }
                 break;
+            // Trident pickup
+            case 58:
+                game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
+                itemPickup(Math.floor(game.player.y), Math.floor(game.player.x), 'pickup-sound');
+                game.weaponsUnlocked.trident = true;
+                game.tridentammo = true;
+                game.pickupCollected++;
+                break;
         }
     }
-    if (game.key.one.active && game.weaponsUnlocked.knife == true) {
+    if (game.key.one.active && game.weaponsUnlocked.knife) {
         game.weaponSprite = document.getElementById('knife-sprite');
         game.shootCooldown = 600;
         game.equippedWeapon = 1;
     }
-    if (game.key.two.active && game.weaponsUnlocked.pistol == true) {
+    if (game.key.two.active && game.weaponsUnlocked.pistol) {
         game.weaponSprite = document.getElementById('gun-sprite');
         game.shootCooldown = 850;
         game.equippedWeapon = 2;
     }
-    if (game.key.three.active && game.weaponsUnlocked.machinegun == true) {
+    if (game.key.three.active && game.weaponsUnlocked.machinegun) {
         game.weaponSprite = document.getElementById('machinegun-sprite');
         game.shootCooldown = 400;
         game.equippedWeapon = 3;
     }
-    if (game.key.four.active && game.weaponsUnlocked.yetipistol == true) {
+    if (game.key.four.active && game.weaponsUnlocked.yetipistol) {
         game.weaponSprite = document.getElementById('yetipistol-sprite');
         game.shootCooldown = 600;
         game.equippedWeapon = 4;
     }
-    if (game.key.five.active && game.weaponsUnlocked.rocketlauncher == true) {
+    if (game.key.five.active && game.weaponsUnlocked.rocketlauncher) {
         game.weaponSprite = document.getElementById('rocketlauncher-sprite');
         game.shootCooldown = 1200;
         game.equippedWeapon = 5;
     }
-    if (game.key.six.active && game.weaponsUnlocked.scepter == true) {
+    if (game.key.six.active && game.weaponsUnlocked.scepter) {
         game.weaponSprite = document.getElementById('scepter-sprite');
         game.shootCooldown = 300;
         game.equippedWeapon = 6;
     }
-    if (game.key.seven.active && game.weaponsUnlocked.boomerang == true) {
+    if (game.key.seven.active && game.weaponsUnlocked.boomerang) {
         game.weaponSprite = document.getElementById('boomerangwep-sprite');
         game.shootCooldown = 1000;
         game.equippedWeapon = 7;
     }
-    if (game.key.eight.active && game.weaponsUnlocked.lasershotgun == true) {
+    if (game.key.eight.active && game.weaponsUnlocked.lasershotgun) {
         game.weaponSprite = document.getElementById('lasershotgun-sprite');
         game.shootCooldown = 600;
         game.equippedWeapon = 8;
+    }
+    if (game.key.nine.active && game.weaponsUnlocked.trident) {
+        game.weaponSprite = document.getElementById('trident-sprite');
+        game.shootCooldown = 600;
+        game.equippedWeapon = 9;
     }
 }
 
@@ -2109,6 +2210,10 @@ function setWeapon(id) {
             break;
         case 8:
             game.weaponSprite = document.getElementById('lasershotgun-sprite');
+            game.shootCooldown = 600;
+            break;
+        case 9:
+            game.weaponSprite = document.getElementById('trident-sprite');
             game.shootCooldown = 600;
             break;
     }
@@ -2163,6 +2268,9 @@ document.addEventListener('keydown', (event) => {
         case game.key.eight.code:
             game.key.eight.active = true;
             break;
+        case game.key.nine.code:
+            game.key.nine.active = true;
+            break;
     }
 });
 
@@ -2214,6 +2322,9 @@ document.addEventListener('keyup', (event) => {
             break;
         case game.key.eight.code:
             game.key.eight.active = false;
+            break;
+        case game.key.nine.code:
+            game.key.nine.active = false;
             break;
     }
 });
@@ -2467,7 +2578,7 @@ function drawSpriteInWorld(sprite) {
         const effectiveDistance = Math.max(distance, minDistance);
         spriteHeight = Math.max(4, Math.floor(game.projection.halfHeight * baseBulletSize / effectiveDistance));
         spriteWidth = Math.max(4, Math.floor(game.projection.halfWidth * baseBulletSize / effectiveDistance));
-        if (sprite.owner == 'player' && game.equippedWeapon == 1) {
+        if (sprite.owner == 'player' && sprite.texture == null) {
             // Knife: don't draw bullet
             return;
         }
@@ -2610,6 +2721,7 @@ function drawHUD(ctx) {
             case 6: return 'Scepter';
             case 7: return 'Boomerang';
             case 8: return 'Laser Shotgun';
+            case 9: return 'Trident';
             default: return 'Unknown';
         }
     })();
@@ -2617,12 +2729,18 @@ function drawHUD(ctx) {
 
     // Draw ammo count
     const ammoText = (() => {
-        if (game.equippedWeapon === 1 || game.equippedWeapon === 4 || game.equippedWeapon == 6 || game.equippedWeapon == 8) {
+        if (game.equippedWeapon == 1 || game.equippedWeapon == 4 || game.equippedWeapon == 6 || game.equippedWeapon == 8) {
             return '∞'; 
-        } else if (game.equippedWeapon === 5) {
+        } else if (game.equippedWeapon == 5) {
             return `${game.rocketammo}`; // Special ammo type for rocket launcher
-        } else if (game.equippedWeapon === 7) {
+        } else if (game.equippedWeapon == 7) {
             return `${game.boomerangammo}`; // Special ammo type for boomerang
+        } else if (game.equippedWeapon == 9) {
+            if (game.tridentammo) {
+                return `1`; // Trident unused
+            } else {
+                return `0`; // Trident used
+            }      
         } else {
             return `${game.ammo}`; // Regular ammo for guns
         }
@@ -2653,6 +2771,9 @@ function drawHUD(ctx) {
         }
         if (game.weaponsUnlocked.lasershotgun) {
             unlockText += '8 ';
+        }
+        if (game.weaponsUnlocked.trident) {
+            unlockText += '9 ';
         }
         return unlockText;
     })();

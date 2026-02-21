@@ -438,5 +438,18 @@ window.MonsterData = {
         data: null,
         lastShot: 0,
         attackCooldown: 3000
+    },
+    moby: {
+        type: 'moby',
+        skin: 'moby-sprite',
+        audio: 'moby',
+        health: 200,
+        isDead: false,
+        width: 512,
+        height: 512,
+        data: null,
+        damage: 50,
+        lastAttack: 0,
+        attackCooldown: 1000
     }
 };

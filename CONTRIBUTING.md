@@ -21,7 +21,7 @@
 # More Existing Features
 
 - [ ] More Sprites - Velociraptors, Dinosaurs
-- [ ] More Weapons - Trident
+- [ ] More Weapons - Udder Gun, Shield
 - [ ] More Pickups - Battery For Laser Weapons
 - [ ] More Sounds
 - [ ] More Textures
@@ -40,8 +40,7 @@
 
 # Weapon Ideas
 
-- enemy/pet spawning gun (trident?), fires 5 feet infront, portal sound, blue flash, spawns enemy or friend
-- zeus drops trident, has dangerous attack when gets to 100 hp
+- zeus has dangerous attack when gets to 100 hp, more abilities and hp when beat the game
 - udder gun dropped by cow king
 - melee axe / katana
 - energy shield / physical shield that absorbs 1000 dmg

@@ -11,7 +11,7 @@ Level Legend:
 41 = zeus, 42 = acid, 43 = lasershotgunpickup, 44 = burningdebris, 45 = rhino
 46 = cheetah, 47 = witchdoctor, 48 = monkeychest, 49 = monkeykey, 50 = eyeball
 51 = medkit, 52 = stasischamber, 53 = checkpoint_0, 54 = checkpoint_1, 55 = checkpoint_2
-56 = checkpoint_3, 57 = spider
+56 = checkpoint_3, 57 = spider, 58 = tridentpickup
 */
 window.LevelData = [
     {
