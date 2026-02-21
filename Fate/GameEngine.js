@@ -1060,7 +1060,9 @@ function updateGameObjects() {
                         }
                         if (monster.health <= 0) {
                             monster.isDead = true;
-                            game.monsterDefeated++;
+                            if (monster.type != 'moby') {
+                                game.monsterDefeated++;
+                            }
                             playSound(`${monster.audio}-death`);
                             switch (monster.type) {
                                 case 'crusader':
@@ -1458,8 +1460,12 @@ function updateGameObjects() {
                     break;
                 case 'apache':
                     // Checkpoint route movement code
-                    const checkpointX = game.checkpoints.find(checkpoint => checkpoint.type == `checkpoint_${monster.activeCheckpoint}`)?.x - monster.x;
-                    const checkpointY = game.checkpoints.find(checkpoint => checkpoint.type == `checkpoint_${monster.activeCheckpoint}`)?.y - monster.y;
+                    const checkpointOBJ = game.checkpoints.find(checkpoint => checkpoint.type == `checkpoint_${monster.activeCheckpoint}`);
+                    if (!checkpointOBJ || !Number.isFinite(checkpointOBJ.x) || !Number.isFinite(checkpointOBJ.y)) {
+                        break; // NaN safeguard
+                    }
+                    const checkpointX = checkpointOBJ.x - monster.x;
+                    const checkpointY = checkpointOBJ.y - monster.y;
                     const checkpointdistSq = checkpointX * checkpointX + checkpointY * checkpointY;
                     if (checkpointdistSq < 1) {
                         monster.activeCheckpoint++;
@@ -1774,47 +1780,68 @@ function updateGameObjects() {
                         }
                         break;
                     }
-                    const enemyX = game.monsters.find(enemy => enemy.type != 'moby' && !enemy.isDead && isVisibleToPlayer(enemy))?.x - monster.x;
-                    const enemyY = game.monsters.find(enemy => enemy.type != 'moby' && !enemy.isDead && isVisibleToPlayer(enemy))?.y - monster.y;
-                    const enemydistSq = enemyX * enemyX + enemyY * enemyY;
-                    if (enemydistSq > 0.25 && enemydistSq < 100) {
-                        const distance = Math.sqrt(enemydistSq);
-                        const invDist = 1 / distance;
-                        const dirX = enemyX * invDist * 0.04;
-                        const dirY = enemyY * invDist * 0.04;
-                        // Try to move in X direction
-                        const newX = monster.x + dirX;
-                        if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2) {
-                            monster.x = newX;
+                    const enemyOBJ = game.monsters.find(enemy => enemy.type != 'moby' && !enemy.isDead && isVisibleToPlayer(enemy))
+                    if (!enemyOBJ || !Number.isFinite(enemyOBJ.x) || !Number.isFinite(enemyOBJ.y)) {
+                        if (distSq > 5) {
+                            const distance = Math.sqrt(distSq);
+                            const invDist = 1 / distance;
+                            const dirX = dx * invDist * 0.04;
+                            const dirY = dy * invDist * 0.04;
+                            // Try to move in X direction
+                            const newX = monster.x + dirX;
+                            if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2) {
+                                monster.x = newX;
+                            }
+                            // Try to move in Y direction
+                            const newY = monster.y + dirY;
+                            if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2) {
+                                monster.y = newY;
+                            }
                         }
-                        // Try to move in Y direction
-                        const newY = monster.y + dirY;
-                        if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2) {
-                            monster.y = newY;
+                        break; // NaN safeguard
+                    } else {
+                        const enemyX = enemyOBJ.x - monster.x;
+                        const enemyY = enemyOBJ.y - monster.y;
+                        const enemydistSq = enemyX * enemyX + enemyY * enemyY;
+                        if (enemydistSq > 0.25 && enemydistSq < 100) {
+                            const distance = Math.sqrt(enemydistSq);
+                            const invDist = 1 / distance;
+                            const dirX = enemyX * invDist * 0.04;
+                            const dirY = enemyY * invDist * 0.04;
+                            // Try to move in X direction
+                            const newX = monster.x + dirX;
+                            if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2) {
+                                monster.x = newX;
+                            }
+                            // Try to move in Y direction
+                            const newY = monster.y + dirY;
+                            if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2) {
+                                monster.y = newY;
+                            }
+                            if (enemydistSq < 0.5 && (!monster.lastAttack || currentTime - monster.lastAttack >= monster.attackCooldown)) {
+                                // Attack the monster
+                                const angle = radiansToDegrees(Math.atan2(enemyY, enemyX));
+                                let blankTexture;
+                                game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'knife', blankTexture, 'player'));
+                                playSound('splash-sound');
+                                monster.lastAttack = currentTime;
+                            }
+                        } else if (distSq > 5) {
+                            const distance = Math.sqrt(distSq);
+                            const invDist = 1 / distance;
+                            const dirX = dx * invDist * 0.04;
+                            const dirY = dy * invDist * 0.04;
+                            // Try to move in X direction
+                            const newX = monster.x + dirX;
+                            if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2) {
+                                monster.x = newX;
+                            }
+                            // Try to move in Y direction
+                            const newY = monster.y + dirY;
+                            if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2) {
+                                monster.y = newY;
+                            }
                         }
-                    } else if (distSq > 5) {
-                        const distance = Math.sqrt(distSq);
-                        const invDist = 1 / distance;
-                        const dirX = dx * invDist * 0.04;
-                        const dirY = dy * invDist * 0.04;
-                        // Try to move in X direction
-                        const newX = monster.x + dirX;
-                        if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2) {
-                            monster.x = newX;
-                        }
-                        // Try to move in Y direction
-                        const newY = monster.y + dirY;
-                        if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2) {
-                            monster.y = newY;
-                        }
-                    }
-                    if (enemydistSq < 0.5 && (!monster.lastAttack || currentTime - monster.lastAttack >= monster.attackCooldown)) {
-                        // Attack the monster
-                        const angle = radiansToDegrees(Math.atan2(enemyY, enemyX));
-                        let blankTexture;
-                        game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'knife', blankTexture, 'player'));
-                        playSound('splash-sound');
-                        monster.lastAttack = currentTime;
                     }
                     break;
                 default:
