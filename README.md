@@ -41,6 +41,7 @@ git clone https://github.com/KylerCondran/Fate.git
   <li>Scepter</li>
   <li>Boomerang</li>
   <li>Laser Shotgun</li>
+  <li>Trident</li>
 </ol>
 
 ## Levels

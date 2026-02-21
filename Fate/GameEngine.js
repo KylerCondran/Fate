@@ -881,7 +881,7 @@ function handleShooting(e) {
         game.isShooting = true;
         game.lastShot = currentTime;
 
-        if ((game.equippedWeapon == 2 || game.equippedWeapon == 3) && game.ammo <= 0 || ((game.equippedWeapon == 5) && game.rocketammo <= 0)) {
+        if (((game.equippedWeapon == 2 || game.equippedWeapon == 3) && game.ammo <= 0) || (game.equippedWeapon == 5 && game.rocketammo <= 0)) {
             playSound('gunclick-sound');
             return;
         } else if ((game.equippedWeapon == 7 && game.boomerangammo <= 0) || (game.equippedWeapon == 9 && !game.tridentammo)) {
@@ -1772,7 +1772,7 @@ function updateGameObjects() {
                                 game.sprites[i].data = getTextureData(game.sprites[i]);
                             }
                         }
-                        return;
+                        break;
                     }
                     const enemyX = game.monsters.find(enemy => enemy.type != 'moby' && !enemy.isDead && isVisibleToPlayer(enemy))?.x - monster.x;
                     const enemyY = game.monsters.find(enemy => enemy.type != 'moby' && !enemy.isDead && isVisibleToPlayer(enemy))?.y - monster.y;
@@ -2737,9 +2737,9 @@ function drawHUD(ctx) {
             return `${game.boomerangammo}`; // Special ammo type for boomerang
         } else if (game.equippedWeapon == 9) {
             if (game.tridentammo) {
-                return `1`; // Trident unused
+                return '1'; // Trident unused
             } else {
-                return `0`; // Trident used
+                return '0'; // Trident used
             }      
         } else {
             return `${game.ammo}`; // Regular ammo for guns
