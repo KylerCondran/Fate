@@ -426,5 +426,17 @@ window.MonsterData = {
         damage: 0,
         lastAttack: 0,
         attackCooldown: 1000
+    },
+    spider: {
+        type: 'spider',
+        skin: 'spider-sprite',
+        audio: 'spider',
+        health: 300,
+        isDead: false,
+        width: 512,
+        height: 512,
+        data: null,
+        lastShot: 0,
+        attackCooldown: 3000
     }
 };

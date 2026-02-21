@@ -25,6 +25,8 @@ let game = {
     pickupCollected: 0,
     checkpointTotal: 0,
     lastMonsterToHitPlayer: 'Unknown',
+    playerFrozen: false,
+    playerFrozenTime: 0,
     weaponsUnlocked: {
         knife: true,
         pistol: false,
@@ -272,6 +274,12 @@ let game = {
             width: 27,
             height: 27,
             data: null
+        },
+        {
+            id: 'web-sprite',
+            width: 27,
+            height: 27,
+            data: null
         }
     ],
     backgrounds: [
@@ -352,7 +360,8 @@ game.projectileMap = {
     shuriken: game.projectileTextures[6],
     waterorb: game.projectileTextures[7],
     eyeball: game.projectileTextures[8],
-    fireball: game.projectileTextures[9]
+    fireball: game.projectileTextures[9],
+    web: game.projectileTextures[10]
 };
 
 // Main loop
@@ -716,6 +725,11 @@ function loadLevel(levelIdx) {
                 case 56:
                     game.checkpoints.push({ id: "checkpoint", type: 'checkpoint_3', x: j, y: i });
                     game.checkpointTotal++;
+                    break;
+                case 57:
+                    const spider = { ...window.MonsterData.spider, id: `monster_${game.monsterTotal}`, x: j, y: i };
+                    game.monsters.push(spider);
+                    game.monsterTotal++;
                     break;
                 default:
                     break;
@@ -1098,8 +1112,12 @@ function updateGameObjects() {
                         game.weaponsUnlocked.boomerang = true;
                     }
                 } else {
-                    game.player.health -= 5; // Laser damage & Bullet damage
+                    game.player.health -= 5; // All other projectile damage
                 }
+                if (projectile.type === 'web') {
+                    game.playerFrozen = true;
+                    game.playerFrozenTime = Date.now();
+                }   
                 if (!(projectile.type === 'boomerang')) {
                     playSound('injured-sound');
                 }           
@@ -1129,6 +1147,32 @@ function updateGameObjects() {
             const currentTime = Date.now();
 
             switch (monster.type) {
+                case 'spider':
+                    if (distSq < 64) {
+                        if (!monster.lastShot || currentTime - monster.lastShot >= monster.attackCooldown) {
+                            const angle = radiansToDegrees(Math.atan2(dy, dx));
+                            game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'web', game.projectileMap['web'], 'monster'));
+                            playSound('web-sound');
+                            monster.lastShot = currentTime;
+                        }
+                    }
+                    if (distSq > 30 && distSq < 200) {
+                        const distance = Math.sqrt(distSq);
+                        const invDist = 1 / distance;
+                        const dirX = dx * invDist * game.monsterMoveSpeed;
+                        const dirY = dy * invDist * game.monsterMoveSpeed;
+                        // Try to move in X direction
+                        const newX = monster.x + dirX;
+                        if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
+                            monster.x = newX;
+                        }
+                        // Try to move in Y direction
+                        const newY = monster.y + dirY;
+                        if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
+                            monster.y = newY;
+                        }
+                    }
+                    break;
                 case 'alien':
                     if (distSq < 64) {
                         if (!monster.lastShot || currentTime - monster.lastShot >= monster.attackCooldown) {
@@ -1618,7 +1662,7 @@ function updateGameObjects() {
                                     game.monsterTotal++;
                                     var rndX = Math.floor(Math.random() * 3) - 1;
                                     var rndY = Math.floor(Math.random() * 3) - 1;
-                                    const eyeball = { ...window.MonsterData.eyeball, id: `monster_${game.monsterTotal}`, x: monster.x + rndX, y: monster.y + rndY };
+                                    const eyeball = { ...window.MonsterData.eyeball, id: `monster_${game.monsterTotal}`, x: game.player.x + rndX, y: game.player.y + rndY };
                                     const monsterTexture = {
                                         id: eyeball.skin,
                                         width: eyeball.width,
@@ -1727,7 +1771,11 @@ function movePlayer() {
     let map = game.levels[game.currentLevel].map;
     let mapHeight = map.length;
     let mapWidth = map[0]?.length ?? 0; 
-    if (game.key.up.active) {
+    const currentTime = Date.now();
+    if (currentTime - game.playerFrozenTime >= 1500) {
+        game.playerFrozen = false;
+    }
+    if (game.key.up.active && !game.playerFrozen) {
         let playerCos = Math.cos(degreeToRadians(game.player.angle)) * game.player.speed.movement;
         let playerSin = Math.sin(degreeToRadians(game.player.angle)) * game.player.speed.movement;
         let newX = game.player.x + playerCos;
@@ -1744,7 +1792,7 @@ function movePlayer() {
             game.player.x = newX;
         }
     }
-    if (game.key.down.active) {
+    if (game.key.down.active && !game.playerFrozen) {
         let playerCos = Math.cos(degreeToRadians(game.player.angle)) * game.player.speed.movement;
         let playerSin = Math.sin(degreeToRadians(game.player.angle)) * game.player.speed.movement;
         let newX = game.player.x - playerCos;
@@ -1774,7 +1822,7 @@ function movePlayer() {
     if (game.key.space.active) {
         handleShooting();
     }
-    if (game.key.strafeleft.active) {
+    if (game.key.strafeleft.active && !game.playerFrozen) {
         // Calculate strafe angle (90 degrees to the left of player's angle)
         let strafeAngle = game.player.angle - 90;
         let playerCos = Math.cos(degreeToRadians(strafeAngle)) * game.player.speed.movement;
@@ -1793,7 +1841,7 @@ function movePlayer() {
             game.player.x = newX;
         }
     }
-    if (game.key.straferight.active) {
+    if (game.key.straferight.active && !game.playerFrozen) {
         // Calculate strafe angle (90 degrees to the right of player's angle)
         let strafeAngle = game.player.angle + 90;
         let playerCos = Math.cos(degreeToRadians(strafeAngle)) * game.player.speed.movement;
