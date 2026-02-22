@@ -933,7 +933,7 @@ function handleShooting(e) {
             case 9:
                 playSound('portal-sound');
                 game.tridentammo = false;
-                const moby = { ...window.MonsterData.moby, id: `monster_moby`, x: game.player.x, y: game.player.y, spawnTime: Date.now() };
+                const moby = { ...window.MonsterData.moby, id: `monster_moby`, x: startX, y: startY, spawnTime: Date.now() };
                 const monsterTexture = {
                     id: moby.skin,
                     width: moby.width,
