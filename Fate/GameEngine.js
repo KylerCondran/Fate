@@ -3053,7 +3053,7 @@ function clearScreen() {
 
 // Remove Screen
 
-function removeScreen(overlay) {
-    const overlay = document.getElementById(overlay);
+function removeScreen(screenoverlay) {
+    const overlay = document.getElementById(screenoverlay);
     if (overlay) overlay.remove();
 }
