@@ -858,14 +858,15 @@ function radiansToDegrees(radians) {
 // Bullet Object
 
 class Projectile {
-    constructor(x, y, angle, type, texture, owner) {
+    constructor(x, y, angle, type, texture, owner, speed, damage) {
         this.x = x;
         this.y = y;
         this.angle = angle;
-        this.speed = 0.2;
+        this.speed = speed;
         this.owner = owner;
         this.type = type;
         this.texture = texture;
+        this.damage = damage;
     }
     update() {
         this.x += Math.cos(degreeToRadians(this.angle)) * this.speed;
@@ -893,33 +894,28 @@ function handleShooting(e) {
         const startX = game.player.x + Math.cos(degreeToRadians(game.player.angle)) * game.bulletStartDistance;
         const startY = game.player.y + Math.sin(degreeToRadians(game.player.angle)) * game.bulletStartDistance;
         let texture;
-        let type;
         switch (game.equippedWeapon) {
             case 1:
                 playSound('knife-sound');
-                type = 'knife';
+                game.projectiles.push(new Projectile(startX, startY, game.player.angle, 'knife', texture, 'player', 0.2, 25));
                 break;
             case 4:
-                texture = game.projectileMap['laser'];
-                type = 'laser';
                 playSound('laser-sound');
+                game.projectiles.push(new Projectile(startX, startY, game.player.angle, 'laser', game.projectileMap['laser'], 'player', 0.2, 50));
                 break;
             case 5:
-                texture = game.projectileMap['rocket'];
-                type = 'rocket';
                 playSound('rocketlaunch-sound');
                 game.rocketammo--;
+                game.projectiles.push(new Projectile(startX, startY, game.player.angle, 'rocket', game.projectileMap['rocket'], 'player', 0.2, 150));
                 break;
             case 6:
-                texture = game.projectileMap['orb'];
-                type = 'orb';
                 playSound('orb-sound');
+                game.projectiles.push(new Projectile(startX, startY, game.player.angle, 'orb', game.projectileMap['orb'], 'player', 0.2, 25));
                 break;
             case 7:
-                texture = game.projectileMap['boomerang'];
-                type = 'boomerang';
                 playSound('boomerang-sound');
                 game.boomerangammo--;
+                game.projectiles.push(new Projectile(startX, startY, game.player.angle, 'boomerang', game.projectileMap['boomerang'], 'player', 0.2, 250));
                 if (game.boomerangammo <= 0) {
                     game.weaponSprite = document.getElementById('blank-sprite');
                     game.weaponsUnlocked.boomerang = false;
@@ -927,8 +923,12 @@ function handleShooting(e) {
                 break;
             case 8:
                 texture = game.projectileMap['laser'];
-                type = 'laser';
                 playSound('laserblast-sound');
+                game.projectiles.push(new Projectile(startX, startY, game.player.angle, 'laser', texture, 'player', 0.2, 50));
+                game.projectiles.push(new Projectile(startX, startY, game.player.angle + 2, 'laser', texture, 'player', 0.2, 50));
+                game.projectiles.push(new Projectile(startX, startY, game.player.angle + 4, 'laser', texture, 'player', 0.2, 50));
+                game.projectiles.push(new Projectile(startX, startY, game.player.angle - 2, 'laser', texture, 'player', 0.2, 50));
+                game.projectiles.push(new Projectile(startX, startY, game.player.angle - 4, 'laser', texture, 'player', 0.2, 50));
                 break;
             case 9:
                 playSound('portal-sound');
@@ -941,32 +941,15 @@ function handleShooting(e) {
                 };
                 moby.data = getTextureData(monsterTexture);
                 game.monsters.push(moby);
-                return; // trident doesn't shoot a projectile, so we return early after playing sound
                 break;
             default:
-                texture = game.projectileMap['bullet'];
-                type = 'bullet';
                 playSound('shoot-sound');
                 game.ammo--;
+                game.projectiles.push(new Projectile(startX, startY, game.player.angle, 'bullet', game.projectileMap['bullet'], 'player', 0.2, 25));
                 break;
         }
-        switch (game.equippedWeapon) {
-            case 8:
-                game.projectiles.push(new Projectile(startX, startY, game.player.angle, type, texture, 'player'));
-                game.projectiles.push(new Projectile(startX, startY, game.player.angle + 2, type, texture, 'player'));
-                game.projectiles.push(new Projectile(startX, startY, game.player.angle + 4, type, texture, 'player'));
-                game.projectiles.push(new Projectile(startX, startY, game.player.angle - 2, type, texture, 'player'));
-                game.projectiles.push(new Projectile(startX, startY, game.player.angle - 4, type, texture, 'player'));
-                break;
-            default:
-                game.projectiles.push(new Projectile(startX, startY, game.player.angle, type, texture, 'player'));
-                break;
-        }
-        
     }
 }
-
-// Update Game Objects
 
 // Build spatial grid of monsters for collision detection
 function updateMonsterGrid() {
@@ -998,6 +981,7 @@ function isMonsterAtPosition(x, y, excludeMonster = null) {
     return false;
 }
 
+// Update Game Objects
 function updateGameObjects() {
     // Update monster spatial grid for collision detection
     updateMonsterGrid();
@@ -1030,33 +1014,33 @@ function updateGameObjects() {
                     const distanceSq = dx * dx + dy * dy;
                     if (distanceSq < game.bulletHitboxRadius) {
                         if (monster.type == 'yeti') {
-                            if (game.equippedWeapon != 4) {
+                            if (projectile.type != 'laser') {
                                 playSound('yeti-laugh');
                                 projectilesToRemove.add(i);
                                 break;
                             } else {
                                 monster.health -= 75;
                             }
-                        } else if (game.equippedWeapon == 4) {
-                            monster.health -= 50;
-                        } else if (game.equippedWeapon == 5) {
+                        } else if (projectile.type == 'laser') {
+                            monster.health -= projectile.damage;
+                        } else if (projectile.type == 'rocket') {
                             playSound('explosion-sound');
-                            monster.health -= 150;
-                        } else if (game.equippedWeapon == 6) {
+                            monster.health -= projectile.damage;
+                        } else if (projectile.type == 'orb') {
                             if (monster.type == 'imp' || monster.type == 'demon' || monster.type == 'skeleton') {
                                 monster.health -= 75;
                             } else {
-                                monster.health -= 25;
+                                monster.health -= projectile.damage;
                             }
-                        } else if (game.equippedWeapon == 7) {
-                            monster.health -= 250;
+                        } else if (projectile.type == 'boomerang') {
+                            monster.health -= projectile.damage;
                             const dx = game.player.x - monster.x;
                             const dy = game.player.y - monster.y;
                             const angle = radiansToDegrees(Math.atan2(dy, dx));
-                            game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'boomerang', game.projectileMap['boomerang'], 'monster'));
+                            game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'boomerang', game.projectileMap['boomerang'], 'monster', 0.2, 0));
                             playSound('boomerang-sound');
                         } else {
-                            monster.health -= 25;
+                            monster.health -= projectile.damage;
                         }
                         if (monster.health <= 0) {
                             monster.isDead = true;
@@ -1122,24 +1106,24 @@ function updateGameObjects() {
             }
             // Remove if out of range
             const distSq = (projectile.x - game.player.x) ** 2 + (projectile.y - game.player.y) ** 2;
-            if (projectile.type === 'knife') {
+            if (projectile.type == 'knife') {
                 if (distSq > game.knifeRange) projectilesToRemove.add(i);
             } else {
                 if (distSq > game.bulletRange) {
-                    if (projectile.type === 'rocket') playSound('explosion-sound');
+                    if (projectile.type == 'rocket') playSound('explosion-sound');
                     projectilesToRemove.add(i);
                 }
             }
-        } else if (projectile.owner === 'monster') {
+        } else if (projectile.owner == 'monster') {
             // Check collision with player
             const dx = game.player.x - projectile.x;
             const dy = game.player.y - projectile.y;
             const distSq = dx * dx + dy * dy;
             if (distSq < 0.10) {
-                if (projectile.type === 'rocket') {
-                    game.player.health -= 25; // rocket damage
+                if (projectile.type == 'rocket') {
+                    game.player.health -= projectile.damage; // rocket damage
                     playSound('explosion-sound');
-                } else if (projectile.type === 'boomerang') {
+                } else if (projectile.type == 'boomerang') {
                     game.boomerangammo += 1; // Boomerang pickup
                     playSound('pickup-sound');
                     if (game.boomerangammo >= 1) {
@@ -1147,7 +1131,7 @@ function updateGameObjects() {
                         game.weaponsUnlocked.boomerang = true;
                     }
                 } else {
-                    game.player.health -= 5; // All other projectile damage
+                    game.player.health -= projectile.damage; // All other projectile damage
                 }
                 if (projectile.type === 'web') {
                     game.playerFrozen = true;
@@ -1186,7 +1170,7 @@ function updateGameObjects() {
                     if (distSq < 64) {
                         if (!monster.lastShot || currentTime - monster.lastShot >= monster.attackCooldown) {
                             const angle = radiansToDegrees(Math.atan2(dy, dx));
-                            game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'web', game.projectileMap['web'], 'monster'));
+                            game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'web', game.projectileMap['web'], 'monster', 0.2, 5));
                             playSound('web-sound');
                             monster.lastShot = currentTime;
                         }
@@ -1212,7 +1196,7 @@ function updateGameObjects() {
                     if (distSq < 64) {
                         if (!monster.lastShot || currentTime - monster.lastShot >= monster.attackCooldown) {
                             const angle = radiansToDegrees(Math.atan2(dy, dx));
-                            game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'laser', game.projectileMap['laser'], 'monster'));
+                            game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'laser', game.projectileMap['laser'], 'monster', 0.2, 5));
                             playSound('laser-sound');
                             monster.lastShot = currentTime;
                         }
@@ -1238,7 +1222,7 @@ function updateGameObjects() {
                     if (distSq < 64) {
                         if (!monster.lastShot || currentTime - monster.lastShot >= monster.attackCooldown) {
                             const angle = radiansToDegrees(Math.atan2(dy, dx));
-                            game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'laser', game.projectileMap['laser'], 'monster'));
+                            game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'laser', game.projectileMap['laser'], 'monster', 0.2, 5));
                             playSound('laser-sound');
                             monster.lastShot = currentTime;
                         }
@@ -1246,7 +1230,7 @@ function updateGameObjects() {
                     if (distSq < 100) {
                         if (!monster.rocketlastShot || currentTime - monster.rocketlastShot >= monster.rocketCooldown) {
                             const angle = radiansToDegrees(Math.atan2(dy, dx));
-                            game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'rocket', game.projectileMap['inboundrocket'], 'monster'));
+                            game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'rocket', game.projectileMap['inboundrocket'], 'monster', 0.2, 25));
                             playSound('rocketlaunch-sound');
                             monster.rocketlastShot = currentTime;
                         }
@@ -1298,7 +1282,7 @@ function updateGameObjects() {
                     if (distSq < 64) {
                         if (!monster.lastShot || currentTime - monster.lastShot >= monster.attackCooldown) {
                             const angle = radiansToDegrees(Math.atan2(dy, dx));
-                            game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'bullet', game.projectileMap['bullet'], 'monster'));
+                            game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'bullet', game.projectileMap['bullet'], 'monster', 0.2, 5));
                             playSound('shoot-sound');
                             monster.lastShot = currentTime;
                         }
@@ -1355,7 +1339,7 @@ function updateGameObjects() {
                         if (distSq < 64) {
                             if (!monster.lastShot || currentTime - monster.lastShot >= monster.attackCooldown) {
                                 const angle = radiansToDegrees(Math.atan2(dy, dx));
-                                game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'shuriken', game.projectileMap['shuriken'], 'monster'));
+                                game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'shuriken', game.projectileMap['shuriken'], 'monster', 0.2, 5));
                                 playSound('shuriken-sound');
                                 monster.lastShot = currentTime;
                             }
@@ -1383,7 +1367,7 @@ function updateGameObjects() {
                         const delay = monster.shotsInBurst < 3 ? 1000 : monster.attackCooldown;
                         if (!monster.lastShot || currentTime - monster.lastShot >= delay) {
                             const angle = radiansToDegrees(Math.atan2(dy, dx));
-                            game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'waterorb', game.projectileMap['waterorb'], 'monster'));
+                            game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'waterorb', game.projectileMap['waterorb'], 'monster', 0.2, 5));
                             playSound('waterorb-sound');
                             monster.lastShot = currentTime;
                             monster.shotsInBurst++;
@@ -1491,7 +1475,7 @@ function updateGameObjects() {
                     if (distSq < 50) {
                         if (!monster.lastShot || currentTime - monster.lastShot >= monster.attackCooldown) {
                             const angle = radiansToDegrees(Math.atan2(dy, dx));
-                            game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'bullet', game.projectileMap['bullet'], 'monster'));
+                            game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'bullet', game.projectileMap['bullet'], 'monster', 0.2, 5));
                             playSound('shoot-sound');
                             monster.lastShot = currentTime;
                         }
@@ -1516,7 +1500,7 @@ function updateGameObjects() {
                     if (distSq < 64) {
                         if (!monster.lastShot || currentTime - monster.lastShot >= monster.attackCooldown) {
                             const angle = radiansToDegrees(Math.atan2(dy, dx));
-                            game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'bullet', game.projectileMap['bullet'], 'monster'));
+                            game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'bullet', game.projectileMap['bullet'], 'monster', 0.2, 5));
                             playSound('shoot-sound');
                             monster.lastShot = currentTime;
                         }
@@ -1524,7 +1508,7 @@ function updateGameObjects() {
                     if (distSq < 100) {
                         if (!monster.rocketlastShot || currentTime - monster.rocketlastShot >= monster.rocketCooldown) {
                             const angle = radiansToDegrees(Math.atan2(dy, dx));
-                            game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'rocket', game.projectileMap['inboundrocket'], 'monster'));
+                            game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'rocket', game.projectileMap['inboundrocket'], 'monster', 0.2, 25));
                             playSound('rocketlaunch-sound');
                             monster.rocketlastShot = currentTime;
                         }
@@ -1578,7 +1562,7 @@ function updateGameObjects() {
                     if (distSq < 100) {
                         if (!monster.rocketlastShot || currentTime - monster.rocketlastShot >= monster.rocketCooldown) {
                             const angle = radiansToDegrees(Math.atan2(dy, dx));
-                            game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'rocket', game.projectileMap['inboundrocket'], 'monster'));
+                            game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'rocket', game.projectileMap['inboundrocket'], 'monster', 0.2, 25));
                             playSound('rocketlaunch-sound');
                             monster.rocketlastShot = currentTime;
                         }
@@ -1665,7 +1649,7 @@ function updateGameObjects() {
                     if (distSq < 84) {
                         if (!monster.lastShot || currentTime - monster.lastShot >= monster.attackCooldown) {
                             const angle = radiansToDegrees(Math.atan2(dy, dx));
-                            game.projectiles.push(new Projectile(monster.x, monster.y, angle + monster.attackAngle, 'eyeball', game.projectileMap['eyeball'], 'monster'));
+                            game.projectiles.push(new Projectile(monster.x, monster.y, angle + monster.attackAngle, 'eyeball', game.projectileMap['eyeball'], 'monster', 0.2, 5));
                             playSound('squish-sound');
                             monster.attackAngle += 3;
                             if (monster.attackAngle > 6) {
@@ -1713,7 +1697,7 @@ function updateGameObjects() {
                                 }
                             }
                             const angle = radiansToDegrees(Math.atan2(dy, dx));
-                            game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'fireball', game.projectileMap['fireball'], 'monster'));
+                            game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'fireball', game.projectileMap['fireball'], 'monster', 0.2, 5));
                             playSound('fireball-sound');
                             monster.lastShot = currentTime;
                         }
@@ -1822,7 +1806,7 @@ function updateGameObjects() {
                                 // Attack the monster
                                 const angle = radiansToDegrees(Math.atan2(enemyY, enemyX));
                                 let blankTexture;
-                                game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'knife', blankTexture, 'player'));
+                                game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'knife', blankTexture, 'player', 0.2, 50));
                                 playSound('splash-sound');
                                 monster.lastAttack = currentTime;
                             }
