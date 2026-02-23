@@ -410,7 +410,7 @@ screen.onclick = function () {
 // Load a level by index
 
 function startLevel(levelIdx) {
-    removeStartScreen();
+    removeScreen('start-screen-overlay');
     loadLevel(levelIdx);
     window.addEventListener('blur', pauseGame);
     // Start the game loop if not running
@@ -952,6 +952,7 @@ function handleShooting(e) {
 }
 
 // Build spatial grid of monsters for collision detection
+
 function updateMonsterGrid() {
     game.monsterGrid = {};
     for (let monster of game.monsters) {
@@ -966,6 +967,7 @@ function updateMonsterGrid() {
 }
 
 // Check if a position is occupied by another monster
+
 function isMonsterAtPosition(x, y, excludeMonster = null) {
     const gridKey = `${Math.floor(x)}_${Math.floor(y)}`;
     const nearby = game.monsterGrid[gridKey] || [];
@@ -982,6 +984,7 @@ function isMonsterAtPosition(x, y, excludeMonster = null) {
 }
 
 // Update Game Objects
+
 function updateGameObjects() {
     // Update monster spatial grid for collision detection
     updateMonsterGrid();
@@ -1864,7 +1867,7 @@ function updateGameObjects() {
     }
 }
 
-// Movement
+// Player Movement
 
 function movePlayer() {
     let map = game.levels[game.currentLevel].map;
@@ -2173,7 +2176,7 @@ function movePlayer() {
     }
 }
 
-// Audio Cache
+// Play Audio
 
 const audioCache = {};
 function playSound(id) {
@@ -2470,6 +2473,7 @@ function Color(r, g, b, a) {
 }
 
 // Draw Pixel
+
 function drawPixel(x, y, color) {
     if (color.r == 255 && color.g == 0 && color.b == 255) return;
     let offset = 4 * (Math.floor(x) + Math.floor(y) * game.projection.width);
@@ -2618,6 +2622,7 @@ function drawSpriteInWorld(sprite) {
 }
 
 // Draw bullet sprites
+
 function drawBulletSprite(xProjection, spriteWidth, spriteHeight, bullet) {
     // Use bullet sprite texture
     const texture = bullet.texture;
@@ -2710,6 +2715,8 @@ function drawGun(ctx) {
     }
 }
 
+// Draw HUD
+
 function drawHUD(ctx) {
     // Draw semi-transparent black background for HUD
     ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
@@ -2801,6 +2808,8 @@ function drawHUD(ctx) {
     })();
     ctx.fillText(`Keys: ${keys}`, 0, 25);
 }
+
+// Draw Health Bar
 
 function drawHealthBar(x, y, width, height, health, maxHealth) {
     // Draw red background (depleted health)
@@ -2982,7 +2991,7 @@ function pauseGame(event) {
     screenContext.fillText('GAME PAUSED', game.projection.halfWidth, game.projection.halfHeight);
 }
 
-// End game and show win screen, then return to start screen
+// End game screens for win and loss, then return to start screen
 
 function endGame() {
     if (mainLoop) {
@@ -3005,12 +3014,12 @@ function endGame() {
     }
     if (game.levels.length == levelsCompleted) {
         setTimeout(() => {
-            removeWinScreen();
+            removeScreen('win-screen-overlay');
             createEndCreditsScreen();
         }, 5000);
     } else {
         setTimeout(() => {
-            removeWinScreen();
+            removeScreen('win-screen-overlay');
             createStartScreen();
         }, 5000);
     }
@@ -3024,7 +3033,7 @@ function endGameDeath() {
     window.removeEventListener('blur', pauseGame);
     createDeathScreen();
     setTimeout(() => {
-        removeDeathScreen();
+        removeScreen('death-screen-overlay');
         createStartScreen();
     }, 5000);
 }
@@ -3042,23 +3051,9 @@ function clearScreen() {
     screenContext.clearRect(0, 0, game.projection.width, game.projection.height);
 }
 
-// Remove start screen overlay
+// Remove Screen
 
-function removeStartScreen() {
-    const overlay = document.getElementById('start-screen-overlay');
-    if (overlay) overlay.remove();
-}
-
-// Remove win screen overlay
-
-function removeWinScreen() {
-    const overlay = document.getElementById('win-screen-overlay');
-    if (overlay) overlay.remove();
-}
-
-// Remove death screen overlay
-
-function removeDeathScreen() {
-    const overlay = document.getElementById('death-screen-overlay');
+function removeScreen(overlay) {
+    const overlay = document.getElementById(overlay);
     if (overlay) overlay.remove();
 }
