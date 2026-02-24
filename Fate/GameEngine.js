@@ -439,6 +439,8 @@ function loadLevel(levelIdx) {
     // Clear monsters and sprites
     game.monsters = [];
     game.sprites = [];
+    game.checkpoints = [];
+    game.projectiles = [];
     // Rebuild monsters and sprites from map
     game.monsterTotal = 0;
     game.monsterDefeated = 0;
