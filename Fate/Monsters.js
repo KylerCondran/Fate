@@ -151,6 +151,7 @@ window.MonsterData = {
         width: 512,
         height: 512,
         data: null,
+        damage: 5,
         lastShot: 0,
         attackCooldown: 2000
     },
@@ -163,6 +164,7 @@ window.MonsterData = {
         width: 512,
         height: 512,
         data: null,
+        damage: 5,
         lastShot: 0,
         attackCooldown: 2000
     },
@@ -231,6 +233,7 @@ window.MonsterData = {
         width: 512,
         height: 512,
         data: null,
+        damage: 5,
         lastShot: 0,
         attackCooldown: 2000
     },
@@ -243,6 +246,7 @@ window.MonsterData = {
         width: 512,
         height: 512,
         data: null,
+        damage: 5,
         lastShot: 0,
         attackCooldown: 2000,
         lastSpawn: 0,
@@ -355,6 +359,7 @@ window.MonsterData = {
         width: 512,
         height: 512,
         data: null,
+        damage: 5,
         lastShot: 0,
         attackCooldown: 5000,
         shotsInBurst: 0,
@@ -397,6 +402,7 @@ window.MonsterData = {
         width: 512,
         height: 512,
         data: null,
+        damage: 5,
         lastShot: 0,
         attackCooldown: 3000,
         spawnEyeball: false
@@ -410,6 +416,7 @@ window.MonsterData = {
         width: 1024,
         height: 1024,
         data: null,
+        damage: 5,
         lastShot: 0,
         attackCooldown: 700,
         attackAngle: 0
@@ -436,6 +443,7 @@ window.MonsterData = {
         width: 512,
         height: 512,
         data: null,
+        damage: 5,
         lastShot: 0,
         attackCooldown: 3000
     },
@@ -449,6 +457,31 @@ window.MonsterData = {
         height: 512,
         data: null,
         damage: 50,
+        lastAttack: 0,
+        attackCooldown: 1000
+    },
+    seahorse: {
+        type: 'seahorse',
+        skin: 'seahorse-sprite',
+        audio: 'seahorse',
+        health: 200,
+        isDead: false,
+        width: 512,
+        height: 512,
+        data: null,
+        lastShot: 0,
+        attackCooldown: 1000
+    },
+    seahorsebaby: {
+        type: 'seahorsebaby',
+        skin: 'seahorsebaby-sprite',
+        audio: 'seahorse',
+        health: 25,
+        isDead: false,
+        width: 512,
+        height: 512,
+        data: null,
+        damage: 25,
         lastAttack: 0,
         attackCooldown: 1000
     }

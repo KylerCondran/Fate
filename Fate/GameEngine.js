@@ -933,14 +933,26 @@ function handleShooting(e) {
             case 9:
                 playSound('portal-sound');
                 game.tridentammo = false;
-                const moby = { ...window.MonsterData.moby, id: `monster_moby`, x: startX, y: startY, spawnTime: Date.now() };
-                const monsterTexture = {
-                    id: moby.skin,
-                    width: moby.width,
-                    height: moby.height
-                };
-                moby.data = getTextureData(monsterTexture);
-                game.monsters.push(moby);
+                var rndVal = Math.floor(Math.random() * 100) + 1;
+                if (rndVal > 50) {
+                    const moby = { ...window.MonsterData.moby, id: `monster_moby`, x: startX, y: startY, spawnTime: Date.now() };
+                    const monsterTexture = {
+                        id: moby.skin,
+                        width: moby.width,
+                        height: moby.height
+                    };
+                    moby.data = getTextureData(monsterTexture);
+                    game.monsters.push(moby);
+                } else {
+                    const seahorse = { ...window.MonsterData.seahorse, id: `monster_seahorse`, x: startX, y: startY, spawnTime: Date.now() };
+                    const monsterTexture = {
+                        id: seahorse.skin,
+                        width: seahorse.width,
+                        height: seahorse.height
+                    };
+                    seahorse.data = getTextureData(monsterTexture);
+                    game.monsters.push(seahorse);
+                }
                 break;
             default:
                 playSound('shoot-sound');
@@ -956,7 +968,7 @@ function handleShooting(e) {
 function updateMonsterGrid() {
     game.monsterGrid = {};
     for (let monster of game.monsters) {
-        if (!monster.isDead && monster.type != 'moby') {
+        if (!monster.isDead && monster.type != 'moby' && monster.type != 'seahorse' && monster.type != 'seahorsebaby') {
             const gridKey = `${Math.floor(monster.x)}_${Math.floor(monster.y)}`;
             if (!game.monsterGrid[gridKey]) {
                 game.monsterGrid[gridKey] = [];
@@ -1047,7 +1059,7 @@ function updateGameObjects() {
                         }
                         if (monster.health <= 0) {
                             monster.isDead = true;
-                            if (monster.type != 'moby') {
+                            if (monster.type != 'moby' && monster.type != 'seahorse' && monster.type != 'seahorsebaby') {
                                 game.monsterDefeated++;
                             }
                             playSound(`${monster.audio}-death`);
@@ -1173,7 +1185,7 @@ function updateGameObjects() {
                     if (distSq < 64) {
                         if (!monster.lastShot || currentTime - monster.lastShot >= monster.attackCooldown) {
                             const angle = radiansToDegrees(Math.atan2(dy, dx));
-                            game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'web', game.projectileMap['web'], 'monster', 0.2, 5));
+                            game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'web', game.projectileMap['web'], 'monster', 0.2, monster.damage));
                             playSound('web-sound');
                             monster.lastShot = currentTime;
                         }
@@ -1199,7 +1211,7 @@ function updateGameObjects() {
                     if (distSq < 64) {
                         if (!monster.lastShot || currentTime - monster.lastShot >= monster.attackCooldown) {
                             const angle = radiansToDegrees(Math.atan2(dy, dx));
-                            game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'laser', game.projectileMap['laser'], 'monster', 0.2, 5));
+                            game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'laser', game.projectileMap['laser'], 'monster', 0.2, monster.damage));
                             playSound('laser-sound');
                             monster.lastShot = currentTime;
                         }
@@ -1285,7 +1297,7 @@ function updateGameObjects() {
                     if (distSq < 64) {
                         if (!monster.lastShot || currentTime - monster.lastShot >= monster.attackCooldown) {
                             const angle = radiansToDegrees(Math.atan2(dy, dx));
-                            game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'bullet', game.projectileMap['bullet'], 'monster', 0.2, 5));
+                            game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'bullet', game.projectileMap['bullet'], 'monster', 0.2, monster.damage));
                             playSound('shoot-sound');
                             monster.lastShot = currentTime;
                         }
@@ -1370,7 +1382,7 @@ function updateGameObjects() {
                         const delay = monster.shotsInBurst < 3 ? 1000 : monster.attackCooldown;
                         if (!monster.lastShot || currentTime - monster.lastShot >= delay) {
                             const angle = radiansToDegrees(Math.atan2(dy, dx));
-                            game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'waterorb', game.projectileMap['waterorb'], 'monster', 0.2, 5));
+                            game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'waterorb', game.projectileMap['waterorb'], 'monster', 0.2, monster.damage));
                             playSound('waterorb-sound');
                             monster.lastShot = currentTime;
                             monster.shotsInBurst++;
@@ -1478,7 +1490,7 @@ function updateGameObjects() {
                     if (distSq < 50) {
                         if (!monster.lastShot || currentTime - monster.lastShot >= monster.attackCooldown) {
                             const angle = radiansToDegrees(Math.atan2(dy, dx));
-                            game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'bullet', game.projectileMap['bullet'], 'monster', 0.2, 5));
+                            game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'bullet', game.projectileMap['bullet'], 'monster', 0.2, monster.damage));
                             playSound('shoot-sound');
                             monster.lastShot = currentTime;
                         }
@@ -1652,7 +1664,7 @@ function updateGameObjects() {
                     if (distSq < 84) {
                         if (!monster.lastShot || currentTime - monster.lastShot >= monster.attackCooldown) {
                             const angle = radiansToDegrees(Math.atan2(dy, dx));
-                            game.projectiles.push(new Projectile(monster.x, monster.y, angle + monster.attackAngle, 'eyeball', game.projectileMap['eyeball'], 'monster', 0.2, 5));
+                            game.projectiles.push(new Projectile(monster.x, monster.y, angle + monster.attackAngle, 'eyeball', game.projectileMap['eyeball'], 'monster', 0.2, monster.damage));
                             playSound('squish-sound');
                             monster.attackAngle += 3;
                             if (monster.attackAngle > 6) {
@@ -1700,7 +1712,7 @@ function updateGameObjects() {
                                 }
                             }
                             const angle = radiansToDegrees(Math.atan2(dy, dx));
-                            game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'fireball', game.projectileMap['fireball'], 'monster', 0.2, 5));
+                            game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'fireball', game.projectileMap['fireball'], 'monster', 0.2, monster.damage));
                             playSound('fireball-sound');
                             monster.lastShot = currentTime;
                         }
@@ -1809,7 +1821,7 @@ function updateGameObjects() {
                                 // Attack the monster
                                 const angle = radiansToDegrees(Math.atan2(enemyY, enemyX));
                                 let blankTexture;
-                                game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'knife', blankTexture, 'player', 0.2, 50));
+                                game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'knife', blankTexture, 'player', 0.2, monster.damage));
                                 playSound('splash-sound');
                                 monster.lastAttack = currentTime;
                             }
@@ -1818,6 +1830,159 @@ function updateGameObjects() {
                             const invDist = 1 / distance;
                             const dirX = dx * invDist * 0.04;
                             const dirY = dy * invDist * 0.04;
+                            // Try to move in X direction
+                            const newX = monster.x + dirX;
+                            if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2) {
+                                monster.x = newX;
+                            }
+                            // Try to move in Y direction
+                            const newY = monster.y + dirY;
+                            if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2) {
+                                monster.y = newY;
+                            }
+                        }
+                    }
+                    break;
+                case 'seahorse':
+                    if (currentTime - monster.spawnTime >= 60000) {
+                        monster.isDead = true;
+                        game.sprites.push({ id: 'bones-sprite', x: monster.x, y: monster.y, width: 256, height: 256, data: null });
+                        playSound('moby-death');
+                        for (let i = 0; i < game.sprites.length; i++) {
+                            if (!game.sprites[i].data) {
+                                game.sprites[i].data = getTextureData(game.sprites[i]);
+                            }
+                        }
+                        break;
+                    }
+                    const SenemyOBJ = game.monsters.find(enemy => enemy.type != 'seahorse' && enemy.type != 'seahorsebaby' && !enemy.isDead && isVisibleToPlayer(enemy))
+                    if (!SenemyOBJ || !Number.isFinite(SenemyOBJ.x) || !Number.isFinite(SenemyOBJ.y)) {
+                        if (distSq > 5) {
+                            const distance = Math.sqrt(distSq);
+                            const invDist = 1 / distance;
+                            const dirX = dx * invDist * 0.04;
+                            const dirY = dy * invDist * 0.04;
+                            // Try to move in X direction
+                            const newX = monster.x + dirX;
+                            if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2) {
+                                monster.x = newX;
+                            }
+                            // Try to move in Y direction
+                            const newY = monster.y + dirY;
+                            if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2) {
+                                monster.y = newY;
+                            }
+                        }
+                        break; // NaN safeguard
+                    } else {
+                        const enemyX = SenemyOBJ.x - monster.x;
+                        const enemyY = SenemyOBJ.y - monster.y;
+                        const enemydistSq = enemyX * enemyX + enemyY * enemyY;
+                        if (enemydistSq < 64 && (!monster.lastShot || currentTime - monster.lastShot >= monster.attackCooldown)) {
+                            // Attack the monster
+                            const angle = radiansToDegrees(Math.atan2(enemyY, enemyX));
+                            const startX = monster.x + Math.cos(degreeToRadians(angle)) * game.bulletStartDistance;
+                            const startY = monster.y + Math.sin(degreeToRadians(angle)) * game.bulletStartDistance;
+                            const seahorsebaby = { ...window.MonsterData.seahorsebaby, id: `monster_seahorsebaby`, x: startX, y: startY, spawnTime: Date.now() };
+                            const monsterTexture = {
+                                id: seahorsebaby.skin,
+                                width: seahorsebaby.width,
+                                height: seahorsebaby.height
+                            };
+                            seahorsebaby.data = getTextureData(monsterTexture);
+                            game.monsters.push(seahorsebaby);
+                            monster.lastShot = currentTime;
+                        }
+                        if (enemydistSq > 50 && enemydistSq < 100) {
+                            const distance = Math.sqrt(enemydistSq);
+                            const invDist = 1 / distance;
+                            const dirX = enemyX * invDist * 0.04;
+                            const dirY = enemyY * invDist * 0.04;
+                            // Try to move in X direction
+                            const newX = monster.x + dirX;
+                            if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2) {
+                                monster.x = newX;
+                            }
+                            // Try to move in Y direction
+                            const newY = monster.y + dirY;
+                            if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2) {
+                                monster.y = newY;
+                            }
+                        } else if (distSq > 5) {
+                            const distance = Math.sqrt(distSq);
+                            const invDist = 1 / distance;
+                            const dirX = dx * invDist * 0.04;
+                            const dirY = dy * invDist * 0.04;
+                            // Try to move in X direction
+                            const newX = monster.x + dirX;
+                            if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2) {
+                                monster.x = newX;
+                            }
+                            // Try to move in Y direction
+                            const newY = monster.y + dirY;
+                            if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2) {
+                                monster.y = newY;
+                            }
+                        }
+                    }
+                    break;
+                case 'seahorsebaby':
+                    if (currentTime - monster.spawnTime >= 10000) {
+                        monster.isDead = true;
+                        break;
+                    }
+                    const SBenemyOBJ = game.monsters.find(enemy => enemy.type != 'seahorse' && enemy.type != 'seahorsebaby' && !enemy.isDead && isVisibleToPlayer(enemy))
+                    if (!SBenemyOBJ || !Number.isFinite(SBenemyOBJ.x) || !Number.isFinite(SBenemyOBJ.y)) {
+                        if (distSq > 5) {
+                            const distance = Math.sqrt(distSq);
+                            const invDist = 1 / distance;
+                            const dirX = dx * invDist * 0.04;
+                            const dirY = dy * invDist * 0.04;
+                            // Try to move in X direction
+                            const newX = monster.x + dirX;
+                            if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2) {
+                                monster.x = newX;
+                            }
+                            // Try to move in Y direction
+                            const newY = monster.y + dirY;
+                            if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2) {
+                                monster.y = newY;
+                            }
+                        }
+                        break; // NaN safeguard
+                    } else {
+                        const enemyX = SBenemyOBJ.x - monster.x;
+                        const enemyY = SBenemyOBJ.y - monster.y;
+                        const enemydistSq = enemyX * enemyX + enemyY * enemyY;
+                        if (enemydistSq > 0.25 && enemydistSq < 100) {
+                            const distance = Math.sqrt(enemydistSq);
+                            const invDist = 1 / distance;
+                            const dirX = enemyX * invDist * 0.02;
+                            const dirY = enemyY * invDist * 0.02;
+                            // Try to move in X direction
+                            const newX = monster.x + dirX;
+                            if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2) {
+                                monster.x = newX;
+                            }
+                            // Try to move in Y direction
+                            const newY = monster.y + dirY;
+                            if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2) {
+                                monster.y = newY;
+                            }
+                            if (enemydistSq < 0.5 && (!monster.lastAttack || currentTime - monster.lastAttack >= monster.attackCooldown)) {
+                                // Attack the monster
+                                const angle = radiansToDegrees(Math.atan2(enemyY, enemyX));
+                                let blankTexture;
+                                game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'knife', blankTexture, 'player', 0.2, monster.damage));
+                                playSound('splash-sound');
+                                monster.lastAttack = currentTime;
+                                monster.isDead = true;
+                            }
+                        } else if (distSq > 5) {
+                            const distance = Math.sqrt(distSq);
+                            const invDist = 1 / distance;
+                            const dirX = dx * invDist * 0.02;
+                            const dirY = dy * invDist * 0.02;
                             // Try to move in X direction
                             const newX = monster.x + dirX;
                             if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2) {
