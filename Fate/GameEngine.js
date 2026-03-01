@@ -6,7 +6,6 @@ let game = {
     checkpoints: [], // Checkpoints for pre scripted NPC pathing
     projectiles: [], // Bullets, rockets, etc.
     weaponSprite: document.getElementById('knife-sprite'),
-    isShooting: false,
     equippedWeapon: 1,
     ammo: 0,
     rocketammo: 0,
@@ -881,7 +880,6 @@ class Projectile {
 function handleShooting(e) {
     const currentTime = Date.now();
     if (currentTime - game.lastShot >= game.shootCooldown) {
-        game.isShooting = true;
         game.lastShot = currentTime;
 
         if (((game.equippedWeapon == 2 || game.equippedWeapon == 3) && game.ammo <= 0) || (game.equippedWeapon == 5 && game.rocketammo <= 0)) {
@@ -2866,20 +2864,23 @@ function drawSprite(xProjection, spriteWidth, spriteHeight, sprite) {
 // Draw Gun
 
 function drawGun(ctx) {
-    if (game.isShooting) {
-        ctx.drawImage(game.weaponSprite,
-            game.projection.width / 2 - 80,
-            game.projection.height - 170,
-            160, 160
-        );
-        game.isShooting = false;
-    } else {
-        ctx.drawImage(game.weaponSprite,
-            game.projection.width / 2 - 80,
-            game.projection.height - 155,
-            160, 160
-        );
+    const timeSinceShooting = Date.now() - game.lastShot;
+    const recoilDuration = 100; // milliseconds
+    const recoilDistance = 15; // pixels
+    
+    let yOffset = 0;
+    if (timeSinceShooting < recoilDuration) {
+        // Ease out: start at max recoil, return to normal
+        const recoilProgress = timeSinceShooting / recoilDuration;
+        const easeOut = 1 - Math.pow(1 - recoilProgress, 3); // cubic ease-out
+        yOffset = -recoilDistance * (1 - easeOut);
     }
+    
+    ctx.drawImage(game.weaponSprite,
+        game.projection.width / 2 - 80,
+        game.projection.height - 155 + yOffset,
+        160, 160
+    );
 }
 
 // Draw HUD
