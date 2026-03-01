@@ -1075,7 +1075,7 @@ function updateGameObjects() {
                                     game.levels[game.currentLevel].map[Math.floor(monster.y)][Math.floor(monster.x)] = 42;
                                     break;
                                 case 'zeus':
-                                    game.sprites.push({ id: "tridentpickup-sprite", x: monster.x, y: monster.y, width: 30, height: 80, data: null });
+                                    game.sprites.push({ id: "tridentpickup-sprite", x: Math.floor(monster.x), y: Math.floor(monster.y), width: 30, height: 80, data: null });
                                     game.pickupTotal++;
                                     game.levels[game.currentLevel].map[Math.floor(monster.y)][Math.floor(monster.x)] = 58;
                                     break;
