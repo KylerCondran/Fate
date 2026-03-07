@@ -85,7 +85,10 @@ let game = {
         allWeapons: false,
         unlockAllLevels: false,
         megaSpawns: false,
-        speedBoost: false
+        speedBoost: false,
+        randomStart: false,
+        rapidFire: false,
+        randomizeEnemies: false
     },
     key: {
         up: {
@@ -434,13 +437,7 @@ function loadLevel(levelIdx) {
         mainLoop = null;
     }
     game.currentLevel = levelIdx;
-    // Reset game state
-    // Reset player position (center of map)
-    game.player.x = game.levels[levelIdx].startlocation.x;
-    game.player.y = game.levels[levelIdx].startlocation.y;
-    //game.player.x = 2;
-    //game.player.y = 2;
-    game.player.angle = 0;
+    // Reset level state
     // Reset inventory
     game.equippedWeapon = game.levels[levelIdx].equippedweapon;
     setWeapon(game.equippedWeapon);
@@ -468,15 +465,38 @@ function loadLevel(levelIdx) {
     let map = game.levels[levelIdx].map;
     let mapy = map.length;
     let mapx = map[0].length;
+    // Reset player position
+    if (game.cheats.randomStart) {
+        var checkY = Math.floor(Math.random() * mapy);
+        var checkX = Math.floor(Math.random() * mapx);
+        while (map[checkY][checkX] != 0) {
+            checkY = Math.floor(Math.random() * mapy);
+            checkX = Math.floor(Math.random() * mapx);         
+        }
+        game.player.x = checkX;
+        game.player.y = checkY;
+        const startAngles = [0, 90, 180, 270];
+        const startingAngle = startAngles[Math.floor(Math.random() * startAngles.length)];
+        game.player.angle = startingAngle;
+    } else {
+        game.player.x = game.levels[levelIdx].startlocation.x;
+        game.player.y = game.levels[levelIdx].startlocation.y;
+        game.player.angle = 0;
+    }
     game.monsterMoveSpeed = game.levels[levelIdx].monstermovespeed;
     if (game.cheats.speedBoost) {
         game.player.speed.movement = 0.16;
     } else {
         game.player.speed.movement = 0.08;
     }
+    const monsterValues = [3, 4, 5, 6, 7, 15, 16, 17, 18, 19, 21, 22, 23, 24, 25, 27, 28, 29, 31, 32, 33, 34, 35, 36, 37, 41, 45, 46, 47, 50, 52, 57];
     for (let i = 0; i < mapy; i++) {
         for (let j = 0; j < mapx; j++) {
-            switch (map[i][j]) {
+            var objectValue = map[i][j];
+            if (game.cheats.randomizeEnemies && monsterValues.includes(objectValue)) {
+                objectValue = monsterValues[Math.floor(Math.random() * monsterValues.length)];
+            }
+            switch (objectValue) {
                 case 1:
                     switch (game.levels[levelIdx].name) {
                         case "Hell":
@@ -824,6 +844,9 @@ function applyCheats() {
         for (let i = 0; i < game.levels.length; i++) {
             game.levels[i].unlocked = true;
         }
+    }
+    if (game.cheats.rapidFire) {
+        game.shootCooldown = 100;
     }
 }
 
@@ -2374,47 +2397,47 @@ function movePlayer() {
     }
     if (game.key.one.active && game.weaponsUnlocked.knife) {
         game.weaponSprite = document.getElementById('knife-sprite');
-        game.shootCooldown = 600;
+        if (!game.cheats.rapidFire) game.shootCooldown = 600;
         game.equippedWeapon = 1;
     }
     if (game.key.two.active && game.weaponsUnlocked.pistol) {
         game.weaponSprite = document.getElementById('gun-sprite');
-        game.shootCooldown = 850;
+        if (!game.cheats.rapidFire) game.shootCooldown = 850;
         game.equippedWeapon = 2;
     }
     if (game.key.three.active && game.weaponsUnlocked.machinegun) {
         game.weaponSprite = document.getElementById('machinegun-sprite');
-        game.shootCooldown = 400;
+        if (!game.cheats.rapidFire) game.shootCooldown = 400;
         game.equippedWeapon = 3;
     }
     if (game.key.four.active && game.weaponsUnlocked.yetipistol) {
         game.weaponSprite = document.getElementById('yetipistol-sprite');
-        game.shootCooldown = 600;
+        if (!game.cheats.rapidFire) game.shootCooldown = 600;
         game.equippedWeapon = 4;
     }
     if (game.key.five.active && game.weaponsUnlocked.rocketlauncher) {
         game.weaponSprite = document.getElementById('rocketlauncher-sprite');
-        game.shootCooldown = 1200;
+        if (!game.cheats.rapidFire) game.shootCooldown = 1200;
         game.equippedWeapon = 5;
     }
     if (game.key.six.active && game.weaponsUnlocked.scepter) {
         game.weaponSprite = document.getElementById('scepter-sprite');
-        game.shootCooldown = 300;
+        if (!game.cheats.rapidFire) game.shootCooldown = 300;
         game.equippedWeapon = 6;
     }
     if (game.key.seven.active && game.weaponsUnlocked.boomerang) {
         game.weaponSprite = document.getElementById('boomerangwep-sprite');
-        game.shootCooldown = 1000;
+        if (!game.cheats.rapidFire) game.shootCooldown = 1000;
         game.equippedWeapon = 7;
     }
     if (game.key.eight.active && game.weaponsUnlocked.lasershotgun) {
         game.weaponSprite = document.getElementById('lasershotgun-sprite');
-        game.shootCooldown = 600;
+        if (!game.cheats.rapidFire) game.shootCooldown = 600;
         game.equippedWeapon = 8;
     }
     if (game.key.nine.active && game.weaponsUnlocked.trident) {
         game.weaponSprite = document.getElementById('trident-sprite');
-        game.shootCooldown = 600;
+        if (!game.cheats.rapidFire) game.shootCooldown = 600;
         game.equippedWeapon = 9;
     }
 }
@@ -2439,39 +2462,39 @@ function setWeapon(id) {
     switch (id) {
         case 1:
             game.weaponSprite = document.getElementById('knife-sprite');
-            game.shootCooldown = 600;
+            if (!game.cheats.rapidFire) game.shootCooldown = 600;
             break;
         case 2:
             game.weaponSprite = document.getElementById('gun-sprite');
-            game.shootCooldown = 850;
+            if (!game.cheats.rapidFire) game.shootCooldown = 850;
             break;
         case 3:
             game.weaponSprite = document.getElementById('machinegun-sprite');
-            game.shootCooldown = 400;
+            if (!game.cheats.rapidFire) game.shootCooldown = 400;
             break;
         case 4:
             game.weaponSprite = document.getElementById('yetipistol-sprite');
-            game.shootCooldown = 600;
+            if (!game.cheats.rapidFire) game.shootCooldown = 600;
             break;
         case 5:
             game.weaponSprite = document.getElementById('rocketlauncher-sprite');
-            game.shootCooldown = 1200;
+            if (!game.cheats.rapidFire) game.shootCooldown = 1200;
             break;
         case 6:
             game.weaponSprite = document.getElementById('scepter-sprite');
-            game.shootCooldown = 300;
+            if (!game.cheats.rapidFire) game.shootCooldown = 300;
             break;
         case 7:
             game.weaponSprite = document.getElementById('boomerangwep-sprite');
-            game.shootCooldown = 1000;
+            if (!game.cheats.rapidFire) game.shootCooldown = 1000;
             break;
         case 8:
             game.weaponSprite = document.getElementById('lasershotgun-sprite');
-            game.shootCooldown = 600;
+            if (!game.cheats.rapidFire) game.shootCooldown = 600;
             break;
         case 9:
             game.weaponSprite = document.getElementById('trident-sprite');
-            game.shootCooldown = 600;
+            if (!game.cheats.rapidFire) game.shootCooldown = 600;
             break;
     }
 }
@@ -3234,7 +3257,10 @@ function createEndCreditsScreen() {
         { id: 'allWeapons', label: 'All Weapons' },
         { id: 'unlockAllLevels', label: 'Level Unlock' },
         { id: 'megaSpawns', label: '3x Spawns' },
-        { id: 'speedBoost', label: '2x Speed' }
+        { id: 'speedBoost', label: '2x Speed' },
+        { id: 'randomStart', label: 'Random Start' },
+        { id: 'rapidFire', label: 'Rapid Fire' },
+        { id: 'randomizeEnemies', label: 'Random Enemies' }
     ];
 
     let currentRow = null;

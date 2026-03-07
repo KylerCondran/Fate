@@ -28,7 +28,6 @@
 
 # General Ideas
 
-- cheat codes
 - upgrade assets, make matrix for missing artifacts
 - dead bones decay system
 
