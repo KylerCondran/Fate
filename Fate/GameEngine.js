@@ -78,7 +78,13 @@ let game = {
             rotation: 1.5
         }
     },
-    levels: LevelData,
+    levels: JSON.parse(JSON.stringify(window.LevelData)),
+    cheats: {
+        infiniteAmmo: false,
+        godMode: false,
+        allWeapons: false,
+        unlockAllLevels: false
+    },
     key: {
         up: {
             code: "ArrowUp",
@@ -321,6 +327,7 @@ let game = {
 
 // Show start screen on page load
 window.onload = function () {
+    applyCheats();
     createStartScreen();
     loadSprites();
 }
@@ -445,8 +452,13 @@ function loadLevel(levelIdx) {
     game.monsterDefeated = 0;
     game.pickupTotal = 0;
     game.pickupCollected = 0;
+    game.checkpointTotal = 0;
     // Reset player health
-    game.player.health = 100;
+    if (game.cheats.godMode) {
+        game.player.health = 9999;
+    } else {
+        game.player.health = 100;
+    }
     // Reset trident ammo per level
     if (game.weaponsUnlocked.trident) {
         game.tridentammo = true;
@@ -753,6 +765,59 @@ function loadLevel(levelIdx) {
     }
     // Reload textures and sprites
     loadSprites();
+}
+
+// Reset Game State After Game Completion
+
+function resetGameState() {
+    game.levels = JSON.parse(JSON.stringify(window.LevelData));
+    game.currentLevel = 0;
+    game.weaponSprite = document.getElementById('knife-sprite');
+    game.equippedWeapon = 1;
+    game.ammo = 0;
+    game.rocketammo = 0;
+    game.boomerangammo = 0;
+    game.tridentammo = true;
+    game.lastShot = 0;
+    game.shootCooldown = 600;
+    game.lastMonsterToHitPlayer = 'Unknown';
+    game.weaponsUnlocked.pistol = false;
+    game.weaponsUnlocked.machinegun = false;
+    game.weaponsUnlocked.yetipistol = false;
+    game.weaponsUnlocked.rocketlauncher = false;
+    game.weaponsUnlocked.scepter = false;
+    game.weaponsUnlocked.boomerang = false;
+    game.weaponsUnlocked.lasershotgun = false;
+    game.weaponsUnlocked.trident = false;
+    game.keysUnlocked.cowkey = false;
+    game.keysUnlocked.monkeykey = false;
+    game.playerFrozen = false;
+    game.playerFrozenTime = 0;
+}
+
+// Apply Cheats From Cheat Menu After Game Completion
+
+function applyCheats() {
+    if (game.cheats.infiniteAmmo) {
+        game.ammo = 9999;
+        game.rocketammo = 9999;
+        game.boomerangammo = 9999;
+    }
+    if (game.cheats.allWeapons) {
+        game.weaponsUnlocked.pistol = true;
+        game.weaponsUnlocked.machinegun = true;
+        game.weaponsUnlocked.yetipistol = true;
+        game.weaponsUnlocked.rocketlauncher = true;
+        game.weaponsUnlocked.scepter = true;
+        game.weaponsUnlocked.boomerang = true;
+        game.weaponsUnlocked.lasershotgun = true;
+        game.weaponsUnlocked.trident = true;
+    }
+    if (game.cheats.unlockAllLevels) {
+        for (let i = 0; i < game.levels.length; i++) {
+            game.levels[i].unlocked = true;
+        }
+    }
 }
 
 // ====================================================================
@@ -3140,9 +3205,85 @@ function createEndCreditsScreen() {
     overlay.style.alignItems = 'center';
     overlay.style.zIndex = '10000';
     overlay.innerHTML = `
-        <h1 style="color: #fff; font-family: 'Lucida Console', monospace; font-size: 2.5em; margin-bottom: 1em;">You Beat The Game!</h1>
+        <h1 style="color: #fff; font-family: 'Lucida Console', monospace; font-size: 2.5em; margin-bottom: 1.5em;">You Beat The Game!</h1>
+        <div style="margin-bottom: 2em;">
+            <p style="color: #fff; font-family: 'Lucida Console', monospace; font-size: 1.2em; margin-bottom: 1em; text-align: center;">Cheat Menu:</p>
+            <table id="cheat-buttons" style="border-spacing: 1em; margin: 0 auto;"></table>
+        </div>
     `;
     document.body.appendChild(overlay);
+
+    // Add cheat buttons in a 2x2 table
+    const btnContainer = overlay.querySelector('#cheat-buttons');
+    const cheatData = [
+        { id: 'infiniteAmmo', label: 'Infinite Ammo' },
+        { id: 'godMode', label: 'God Mode' },
+        { id: 'allWeapons', label: 'All Weapons' },
+        { id: 'unlockAllLevels', label: 'Unlock All Levels' }
+    ];
+
+    let currentRow = null;
+    cheatData.forEach((cheat, idx) => {
+        if (idx % 2 === 0) {
+            currentRow = document.createElement('tr');
+            btnContainer.appendChild(currentRow);
+        }
+
+        let td = document.createElement('td');
+        let btn = document.createElement('button');
+        btn.textContent = `${cheat.label}: ${game.cheats[cheat.id] ? 'ON' : 'OFF'}`;
+        btn.id = `cheat-${cheat.id}`;
+        btn.style.width = '180px';
+        btn.style.height = '50px';
+        btn.style.fontSize = '1em';
+        btn.style.fontFamily = "'Lucida Console', monospace";
+        btn.style.cursor = 'pointer';
+        btn.style.border = '2px solid #666';
+        btn.style.color = '#fff';
+        btn.style.backgroundColor = game.cheats[cheat.id] ? '#2d5016' : '#663333';
+        btn.style.transition = 'background-color 0.2s';
+
+        btn.onclick = () => {
+            game.cheats[cheat.id] = !game.cheats[cheat.id];
+            btn.textContent = `${cheat.label}: ${game.cheats[cheat.id] ? 'ON' : 'OFF'}`;
+            btn.style.backgroundColor = game.cheats[cheat.id] ? '#2d5016' : '#663333';
+        };
+
+        td.appendChild(btn);
+        currentRow.appendChild(td);
+    });
+
+    // Return button
+    let returnDiv = document.createElement('div');
+    returnDiv.style.marginTop = '2em';
+    let returnBtn = document.createElement('button');
+    returnBtn.textContent = 'Restart Game';
+    returnBtn.style.width = '200px';
+    returnBtn.style.height = '50px';
+    returnBtn.style.fontSize = '1.2em';
+    returnBtn.style.fontFamily = "'Lucida Console', monospace";
+    returnBtn.style.cursor = 'pointer';
+    returnBtn.style.border = '2px solid #666';
+    returnBtn.style.color = '#fff';
+    returnBtn.style.backgroundColor = '#3b3b3b';
+    returnBtn.style.transition = 'background-color 0.2s';
+
+    returnBtn.onmouseover = () => {
+        returnBtn.style.backgroundColor = '#555';
+    };
+    returnBtn.onmouseout = () => {
+        returnBtn.style.backgroundColor = '#3b3b3b';
+    };
+
+    returnBtn.onclick = () => {
+        resetGameState();
+        applyCheats();
+        removeScreen('endcredits-screen-overlay');
+        createStartScreen();
+    };
+
+    returnDiv.appendChild(returnBtn);
+    overlay.appendChild(returnDiv);
 }
 
 // Pause Game (when window loses focus)
