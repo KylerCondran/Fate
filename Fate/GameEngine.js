@@ -83,7 +83,9 @@ let game = {
         infiniteAmmo: false,
         godMode: false,
         allWeapons: false,
-        unlockAllLevels: false
+        unlockAllLevels: false,
+        megaSpawns: false,
+        speedBoost: false
     },
     key: {
         up: {
@@ -467,7 +469,11 @@ function loadLevel(levelIdx) {
     let mapy = map.length;
     let mapx = map[0].length;
     game.monsterMoveSpeed = game.levels[levelIdx].monstermovespeed;
-    game.player.speed.movement = 0.08;
+    if (game.cheats.speedBoost) {
+        game.player.speed.movement = 0.16;
+    } else {
+        game.player.speed.movement = 0.08;
+    }
     for (let i = 0; i < mapy; i++) {
         for (let j = 0; j < mapx; j++) {
             switch (map[i][j]) {
@@ -793,6 +799,7 @@ function resetGameState() {
     game.keysUnlocked.monkeykey = false;
     game.playerFrozen = false;
     game.playerFrozenTime = 0;
+    game.player.speed.movement = 0.08;
 }
 
 // Apply Cheats From Cheat Menu After Game Completion
@@ -997,7 +1004,7 @@ function handleShooting(e) {
                 break;
             case 9:
                 playSound('portal-sound');
-                game.tridentammo = false;
+                if (!game.cheats.infiniteAmmo) game.tridentammo = false;
                 var rndVal = Math.floor(Math.random() * 100) + 1;
                 if (rndVal > 50) {
                     const moby = { ...window.MonsterData.moby, id: `monster_moby`, x: startX, y: startY, spawnTime: Date.now() };
@@ -1244,6 +1251,8 @@ function updateGameObjects() {
             const dy = game.player.y - monster.y;
             const distSq = dx * dx + dy * dy;
             const currentTime = Date.now();
+            var spawnModifier = 1;
+            if (game.cheats.megaSpawns) spawnModifier = 3;
 
             switch (monster.type) {
                 case 'spider':
@@ -1474,11 +1483,12 @@ function updateGameObjects() {
                     }
                     if (monster.health < 800 && !monster.spawnPirahna) {
                         monster.spawnPirahna = true;
-                        for (i = 0; i < 3; i++) {
+                        var angle = radiansToDegrees(Math.atan2(dy, dx));
+                        for (i = 0; i < (3 * spawnModifier); i++) {
                             game.monsterTotal++;
-                            var rndX = Math.floor(Math.random() * 5) - 2;
-                            var rndY = Math.floor(Math.random() * 5) - 2;
-                            const piranha = { ...window.MonsterData.piranha, id: `monster_${game.monsterTotal}`, x: monster.x + rndX, y: monster.y + rndY };
+                            const startX = monster.x + Math.cos(degreeToRadians(angle)) * 1.5;
+                            const startY = monster.y + Math.sin(degreeToRadians(angle)) * 1.5;
+                            const piranha = { ...window.MonsterData.piranha, id: `monster_${game.monsterTotal}`, x: startX, y: startY };
                             const monsterTexture = {
                                 id: piranha.skin,
                                 width: piranha.width,
@@ -1486,16 +1496,18 @@ function updateGameObjects() {
                             };
                             piranha.data = getTextureData(monsterTexture);
                             game.monsters.push(piranha);
+                            angle += 30;
                         }
                         playSound('portal-sound');
                     }
                     if (monster.health < 600 && !monster.spawnSquid) {
                         monster.spawnSquid = true;
-                        for (i = 0; i < 2; i++) {
+                        var angle = radiansToDegrees(Math.atan2(dy, dx));
+                        for (i = 0; i < (2 * spawnModifier); i++) {
                             game.monsterTotal++;
-                            var rndX = Math.floor(Math.random() * 5) - 2;
-                            var rndY = Math.floor(Math.random() * 5) - 2;
-                            const squid = { ...window.MonsterData.squid, id: `monster_${game.monsterTotal}`, x: monster.x + rndX, y: monster.y + rndY };
+                            const startX = monster.x + Math.cos(degreeToRadians(angle)) * 1.5;
+                            const startY = monster.y + Math.sin(degreeToRadians(angle)) * 1.5;
+                            const squid = { ...window.MonsterData.squid, id: `monster_${game.monsterTotal}`, x: startX, y: startY };
                             const monsterTexture = {
                                 id: squid.skin,
                                 width: squid.width,
@@ -1503,22 +1515,27 @@ function updateGameObjects() {
                             };
                             squid.data = getTextureData(monsterTexture);
                             game.monsters.push(squid);
+                            angle += 30;
                         }
                         playSound('portal-sound');
                     }
                     if (monster.health < 400 && !monster.spawnShark) {
                         monster.spawnShark = true;
-                        game.monsterTotal++;
-                        var rndX = Math.floor(Math.random() * 5) - 2;
-                        var rndY = Math.floor(Math.random() * 5) - 2;
-                        const shark = { ...window.MonsterData.shark, id: `monster_${game.monsterTotal}`, x: monster.x + rndX, y: monster.y + rndY };
-                        const monsterTexture = {
-                            id: shark.skin,
-                            width: shark.width,
-                            height: shark.height
-                        };
-                        shark.data = getTextureData(monsterTexture);
-                        game.monsters.push(shark);
+                        var angle = radiansToDegrees(Math.atan2(dy, dx));
+                        for (i = 0; i < (1 * spawnModifier); i++) {
+                            game.monsterTotal++;
+                            const startX = monster.x + Math.cos(degreeToRadians(angle)) * 1.5;
+                            const startY = monster.y + Math.sin(degreeToRadians(angle)) * 1.5;
+                            const shark = { ...window.MonsterData.shark, id: `monster_${game.monsterTotal}`, x: startX, y: startY };
+                            const monsterTexture = {
+                                id: shark.skin,
+                                width: shark.width,
+                                height: shark.height
+                            };
+                            shark.data = getTextureData(monsterTexture);
+                            game.monsters.push(shark);
+                            angle += 30;
+                        }
                         playSound('portal-sound');
                     }
                     break;
@@ -1562,17 +1579,21 @@ function updateGameObjects() {
                     }
                     if ((!monster.lastSpawn || currentTime - monster.lastSpawn >= monster.spawnCooldown) && checkpointdistSq < 100 && checkpointdistSq > 50) {
                         monster.lastSpawn = currentTime;
-                        game.monsterTotal++;
-                        var rndX = Math.floor(Math.random() * 5) - 1;
-                        var rndY = Math.floor(Math.random() * 5) - 1;
-                        const soldier = { ...window.MonsterData.soldier, id: `monster_${game.monsterTotal}`, x: monster.x, y: monster.y };
-                        const monsterTexture = {
-                            id: soldier.skin,
-                            width: soldier.width,
-                            height: soldier.height
-                        };
-                        soldier.data = getTextureData(monsterTexture);
-                        game.monsters.push(soldier);
+                        var angle = radiansToDegrees(Math.atan2(dy, dx));
+                        for (i = 0; i < (1 * spawnModifier); i++) {
+                            game.monsterTotal++;
+                            const startX = monster.x + Math.cos(degreeToRadians(angle)) * 1.5;
+                            const startY = monster.y + Math.sin(degreeToRadians(angle)) * 1.5;
+                            const soldier = { ...window.MonsterData.soldier, id: `monster_${game.monsterTotal}`, x: startX, y: startY };
+                            const monsterTexture = {
+                                id: soldier.skin,
+                                width: soldier.width,
+                                height: soldier.height
+                            };
+                            soldier.data = getTextureData(monsterTexture);
+                            game.monsters.push(soldier);
+                            angle += 30;
+                        }
                         playSound('portal-sound');
                     }
                     break;
@@ -1695,11 +1716,12 @@ function updateGameObjects() {
                         }
                         if (!monster.lastSpawn || currentTime - monster.lastSpawn >= monster.spawnCooldown) {
                             monster.lastSpawn = currentTime;
-                            for (i = 0; i < 2; i++) {
+                            var angle = radiansToDegrees(Math.atan2(dy, dx));
+                            for (i = 0; i < (2 * spawnModifier); i++) {
                                 game.monsterTotal++;
-                                var rndX = Math.floor(Math.random() * 5) - 2;
-                                var rndY = Math.floor(Math.random() * 5) - 2;
-                                const cow = { ...window.MonsterData.cow, id: `monster_${game.monsterTotal}`, x: monster.x + rndX, y: monster.y + rndY };
+                                const startX = monster.x + Math.cos(degreeToRadians(angle)) * 1.5;
+                                const startY = monster.y + Math.sin(degreeToRadians(angle)) * 1.5;
+                                const cow = { ...window.MonsterData.cow, id: `monster_${game.monsterTotal}`, x: startX, y: startY };
                                 const monsterTexture = {
                                     id: cow.skin,
                                     width: cow.width,
@@ -1707,6 +1729,7 @@ function updateGameObjects() {
                                 };
                                 cow.data = getTextureData(monsterTexture);
                                 game.monsters.push(cow);
+                                angle += 30;
                             }
                             playSound('portal-sound');
                         }
@@ -1762,17 +1785,19 @@ function updateGameObjects() {
                                 var rndVal = Math.floor(Math.random() * 100) + 1;
                                 if (rndVal > 94) {
                                     monster.spawnEyeball = true;
-                                    game.monsterTotal++;
-                                    var rndX = Math.floor(Math.random() * 3) - 1;
-                                    var rndY = Math.floor(Math.random() * 3) - 1;
-                                    const eyeball = { ...window.MonsterData.eyeball, id: `monster_${game.monsterTotal}`, x: game.player.x + rndX, y: game.player.y + rndY };
-                                    const monsterTexture = {
-                                        id: eyeball.skin,
-                                        width: eyeball.width,
-                                        height: eyeball.height
-                                    };
-                                    eyeball.data = getTextureData(monsterTexture);
-                                    game.monsters.push(eyeball);
+                                    for (i = 0; i < (1 * spawnModifier); i++) {
+                                        game.monsterTotal++;
+                                        var rndX = Math.floor(Math.random() * 3) - 1;
+                                        var rndY = Math.floor(Math.random() * 3) - 1;
+                                        const eyeball = { ...window.MonsterData.eyeball, id: `monster_${game.monsterTotal}`, x: game.player.x + rndX, y: game.player.y + rndY };
+                                        const monsterTexture = {
+                                            id: eyeball.skin,
+                                            width: eyeball.width,
+                                            height: eyeball.height
+                                        };
+                                        eyeball.data = getTextureData(monsterTexture);
+                                        game.monsters.push(eyeball);
+                                    }
                                     playSound('portal-sound');
                                 }
                             }
@@ -1945,35 +1970,23 @@ function updateGameObjects() {
                         const enemydistSq = enemyX * enemyX + enemyY * enemyY;
                         if (enemydistSq < 64 && (!monster.lastShot || currentTime - monster.lastShot >= monster.attackCooldown)) {
                             // Attack the monster
-                            const angle = radiansToDegrees(Math.atan2(enemyY, enemyX));
-                            const startX = monster.x + Math.cos(degreeToRadians(angle)) * game.bulletStartDistance;
-                            const startY = monster.y + Math.sin(degreeToRadians(angle)) * game.bulletStartDistance;
-                            const seahorsebaby = { ...window.MonsterData.seahorsebaby, id: `monster_seahorsebaby`, x: startX, y: startY, spawnTime: Date.now() };
-                            const monsterTexture = {
-                                id: seahorsebaby.skin,
-                                width: seahorsebaby.width,
-                                height: seahorsebaby.height
-                            };
-                            seahorsebaby.data = getTextureData(monsterTexture);
-                            game.monsters.push(seahorsebaby);
+                            var angle = radiansToDegrees(Math.atan2(enemyY, enemyX));
+                            for (i = 0; i < (1 * spawnModifier); i++) {
+                                const startX = monster.x + Math.cos(degreeToRadians(angle)) * game.bulletStartDistance;
+                                const startY = monster.y + Math.sin(degreeToRadians(angle)) * game.bulletStartDistance;
+                                const seahorsebaby = { ...window.MonsterData.seahorsebaby, id: `monster_seahorsebaby`, x: startX, y: startY, spawnTime: Date.now() };
+                                const monsterTexture = {
+                                    id: seahorsebaby.skin,
+                                    width: seahorsebaby.width,
+                                    height: seahorsebaby.height
+                                };
+                                seahorsebaby.data = getTextureData(monsterTexture);
+                                game.monsters.push(seahorsebaby);
+                                angle += 30;
+                            }
                             monster.lastShot = currentTime;
                         }
-                        if (enemydistSq > 50 && enemydistSq < 100) {
-                            const distance = Math.sqrt(enemydistSq);
-                            const invDist = 1 / distance;
-                            const dirX = enemyX * invDist * 0.04;
-                            const dirY = enemyY * invDist * 0.04;
-                            // Try to move in X direction
-                            const newX = monster.x + dirX;
-                            if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2) {
-                                monster.x = newX;
-                            }
-                            // Try to move in Y direction
-                            const newY = monster.y + dirY;
-                            if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2) {
-                                monster.y = newY;
-                            }
-                        } else if (distSq > 5) {
+                        if (distSq > 5) {
                             const distance = Math.sqrt(distSq);
                             const invDist = 1 / distance;
                             const dirX = dx * invDist * 0.04;
@@ -3213,18 +3226,20 @@ function createEndCreditsScreen() {
     `;
     document.body.appendChild(overlay);
 
-    // Add cheat buttons in a 2x2 table
+    // Add cheat buttons in a 3x2 table
     const btnContainer = overlay.querySelector('#cheat-buttons');
     const cheatData = [
         { id: 'infiniteAmmo', label: 'Infinite Ammo' },
         { id: 'godMode', label: 'God Mode' },
         { id: 'allWeapons', label: 'All Weapons' },
-        { id: 'unlockAllLevels', label: 'Unlock All Levels' }
+        { id: 'unlockAllLevels', label: 'Level Unlock' },
+        { id: 'megaSpawns', label: '3x Spawns' },
+        { id: 'speedBoost', label: '2x Speed' }
     ];
 
     let currentRow = null;
     cheatData.forEach((cheat, idx) => {
-        if (idx % 2 === 0) {
+        if (idx % 3 === 0) {
             currentRow = document.createElement('tr');
             btnContainer.appendChild(currentRow);
         }
