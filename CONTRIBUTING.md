@@ -9,7 +9,7 @@
 # To Do
 
 - [ ] Design Levels
-- [ ] Explosions
+- [x] ~~Explosions~~
 - [x] ~~Win/Loss Screen~~
 - [x] ~~Player Taking Damage~~
 - [x] ~~Enemies Shooting Guns~~

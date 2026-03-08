@@ -1110,7 +1110,17 @@ function updateGameObjects() {
 
         // Remove if hits a wall
         if (map[mapY] && map[mapY][mapX] === 2) {
-            if (projectile.type === 'rocket') playSound('explosion-sound');
+            if (projectile.type === 'rocket') {                
+                const dx = game.player.x - projectile.x;
+                const dy = game.player.y - projectile.y;
+                var angle = radiansToDegrees(Math.atan2(dy, dx));
+                const startX = projectile.x + Math.cos(degreeToRadians(angle)) * 0.25;
+                const startY = projectile.y + Math.sin(degreeToRadians(angle)) * 0.25;
+                const explosionTexture = { id: "explosion-sprite", width: 512, height: 512 };
+                const explosion = { id: "explosion-sprite", x: startX, y: startY, width: 512, height: 512, data: getTextureData(explosionTexture), spawnTime: Date.now(), cullTime: 200 };
+                game.sprites.push(explosion);
+                playSound('explosion-sound');
+            }
             projectilesToRemove.add(i);
             continue;
         }
@@ -1134,6 +1144,14 @@ function updateGameObjects() {
                         } else if (projectile.type == 'laser') {
                             monster.health -= projectile.damage;
                         } else if (projectile.type == 'rocket') {
+                            const dx = game.player.x - projectile.x;
+                            const dy = game.player.y - projectile.y;
+                            var angle = radiansToDegrees(Math.atan2(dy, dx));
+                            const startX = projectile.x + Math.cos(degreeToRadians(angle)) * 0.25;
+                            const startY = projectile.y + Math.sin(degreeToRadians(angle)) * 0.25;
+                            const explosionTexture = { id: "explosion-sprite", width: 512, height: 512 };
+                            const explosion = { id: "explosion-sprite", x: startX, y: startY, width: 512, height: 512, data: getTextureData(explosionTexture), spawnTime: Date.now(), cullTime: 200 };
+                            game.sprites.push(explosion);
                             playSound('explosion-sound');
                             monster.health -= projectile.damage;
                         } else if (projectile.type == 'orb') {
@@ -1231,6 +1249,11 @@ function updateGameObjects() {
             const distSq = dx * dx + dy * dy;
             if (distSq < 0.10) {
                 if (projectile.type == 'rocket') {
+                    const startX = game.player.x + Math.cos(degreeToRadians(game.player.angle)) * game.bulletStartDistance;
+                    const startY = game.player.y + Math.sin(degreeToRadians(game.player.angle)) * game.bulletStartDistance;
+                    const explosionTexture = { id: "explosion-sprite", width: 512, height: 512 };
+                    const explosion = { id: "explosion-sprite", x: startX, y: startY, width: 512, height: 512, data: getTextureData(explosionTexture), spawnTime: Date.now(), cullTime: 200 };
+                    game.sprites.push(explosion);
                     game.player.health -= projectile.damage; // rocket damage
                     playSound('explosion-sound');
                 } else if (projectile.type == 'boomerang') {
@@ -1266,6 +1289,14 @@ function updateGameObjects() {
     }
     // Remove marked projectiles
     game.projectiles = game.projectiles.filter((_, idx) => !projectilesToRemove.has(idx));
+    // Remove expired explosion sprites
+    game.sprites = game.sprites.filter(sprite => {
+        if (sprite.id === 'explosion-sprite' && sprite.spawnTime) {
+            const elapsed = Date.now() - sprite.spawnTime;
+            return elapsed < sprite.cullTime;
+        }
+        return true;
+    });
 
     // Update monster positions and check for attacks
     for (let monster of game.monsters) {
