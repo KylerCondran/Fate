@@ -1116,9 +1116,7 @@ function updateGameObjects() {
                 var angle = radiansToDegrees(Math.atan2(dy, dx));
                 const startX = projectile.x + Math.cos(degreeToRadians(angle)) * 0.25;
                 const startY = projectile.y + Math.sin(degreeToRadians(angle)) * 0.25;
-                const explosionTexture = { id: "explosion-sprite", width: 512, height: 512 };
-                const explosion = { id: "explosion-sprite", x: startX, y: startY, width: 512, height: 512, data: getTextureData(explosionTexture), spawnTime: Date.now(), cullTime: 200 };
-                game.sprites.push(explosion);
+                game.sprites.push({ id: 'explosion-sprite', x: startX, y: startY, width: 512, height: 512, data: getTextureData({ id: 'explosion-sprite', width: 512, height: 512 }), spawnTime: Date.now(), cullTime: 200 });
                 playSound('explosion-sound');
             }
             projectilesToRemove.add(i);
@@ -1149,9 +1147,7 @@ function updateGameObjects() {
                             var angle = radiansToDegrees(Math.atan2(dy, dx));
                             const startX = projectile.x + Math.cos(degreeToRadians(angle)) * 0.25;
                             const startY = projectile.y + Math.sin(degreeToRadians(angle)) * 0.25;
-                            const explosionTexture = { id: "explosion-sprite", width: 512, height: 512 };
-                            const explosion = { id: "explosion-sprite", x: startX, y: startY, width: 512, height: 512, data: getTextureData(explosionTexture), spawnTime: Date.now(), cullTime: 200 };
-                            game.sprites.push(explosion);
+                            game.sprites.push({ id: 'explosion-sprite', x: startX, y: startY, width: 512, height: 512, data: getTextureData({ id: 'explosion-sprite', width: 512, height: 512 }), spawnTime: Date.now(), cullTime: 200 });
                             playSound('explosion-sound');
                             monster.health -= projectile.damage;
                         } else if (projectile.type == 'orb') {
@@ -1179,30 +1175,30 @@ function updateGameObjects() {
                             switch (monster.type) {
                                 case 'crusader':
                                 case 'king':
-                                    game.sprites.push({ id: 'tombstone-sprite', x: monster.x, y: monster.y, width: 256, height: 256, data: null });
+                                    game.sprites.push({ id: 'tombstone-sprite', x: monster.x, y: monster.y, width: 256, height: 256, data: getTextureData({ id: 'tombstone-sprite', width: 256, height: 256 }) });
                                     break;
                                 case 'alien':
-                                    game.sprites.push({ id: 'acid-sprite', x: monster.x, y: monster.y, width: 256, height: 256, data: null });
+                                    game.sprites.push({ id: 'acid-sprite', x: monster.x, y: monster.y, width: 256, height: 256, data: getTextureData({ id: 'acid-sprite', width: 256, height: 256 }) });
                                     game.levels[game.currentLevel].map[Math.floor(monster.y)][Math.floor(monster.x)] = 42;
                                     break;
                                 case 'zeus':
-                                    game.sprites.push({ id: "tridentpickup-sprite", x: Math.floor(monster.x), y: Math.floor(monster.y), width: 30, height: 80, data: null });
+                                    game.sprites.push({ id: 'tridentpickup-sprite', x: Math.floor(monster.x), y: Math.floor(monster.y), width: 30, height: 80, data: getTextureData({ id: 'tridentpickup-sprite', width: 30, height: 80 }) });
                                     game.pickupTotal++;
                                     game.levels[game.currentLevel].map[Math.floor(monster.y)][Math.floor(monster.x)] = 58;
                                     break;
                                 case 'stasischamber':
-                                    game.sprites.push({ id: 'brokenstasischamber-sprite', x: monster.x, y: monster.y, width: 512, height: 512, data: null });
+                                    game.sprites.push({ id: 'brokenstasischamber-sprite', x: monster.x, y: monster.y, width: 512, height: 512, data: getTextureData({ id: 'brokenstasischamber-sprite', width: 512, height: 512 }) });
                                     playSound('glass-sound');
                                     break;
                                 case 'tank':
                                 case 'apache':
                                 case 'robot':
                                 case 'fighterjet':
-                                    game.sprites.push({ id: 'burningdebris-sprite', x: monster.x, y: monster.y, width: 512, height: 512, data: null });
+                                    game.sprites.push({ id: 'burningdebris-sprite', x: monster.x, y: monster.y, width: 512, height: 512, data: getTextureData({ id: 'burningdebris-sprite', width: 512, height: 512 }) });
                                     game.levels[game.currentLevel].map[Math.floor(monster.y)][Math.floor(monster.x)] = 44;
                                     break;
                                 case 'ufo':
-                                    game.sprites.push({ id: 'burningdebris-sprite', x: monster.x, y: monster.y, width: 512, height: 512, data: null });
+                                    game.sprites.push({ id: 'burningdebris-sprite', x: monster.x, y: monster.y, width: 512, height: 512, data: getTextureData({ id: 'burningdebris-sprite', width: 512, height: 512 }) });
                                     game.levels[game.currentLevel].map[Math.floor(monster.y)][Math.floor(monster.x)] = 44;
                                     game.monsterTotal++;
                                     const alien1 = { ...window.MonsterData.alien1, id: `monster_${game.monsterTotal}`, x: monster.x, y: monster.y };
@@ -1215,13 +1211,8 @@ function updateGameObjects() {
                                     game.monsters.push(alien1);
                                     break;
                                 default:
-                                    game.sprites.push({ id: 'bones-sprite', x: monster.x, y: monster.y, width: 256, height: 256, data: null });
+                                    game.sprites.push({ id: 'bones-sprite', x: monster.x, y: monster.y, width: 256, height: 256, data: getTextureData({ id: 'bones-sprite', width: 256, height: 256 }) });
                                     break;
-                            }
-                            for (let i = 0; i < game.sprites.length; i++) {
-                                if (!game.sprites[i].data) {
-                                    game.sprites[i].data = getTextureData(game.sprites[i]);
-                                }
                             }
                         } else {
                             var rnd = Math.floor(Math.random() * 3);
@@ -1251,9 +1242,7 @@ function updateGameObjects() {
                 if (projectile.type == 'rocket') {
                     const startX = game.player.x + Math.cos(degreeToRadians(game.player.angle)) * game.bulletStartDistance;
                     const startY = game.player.y + Math.sin(degreeToRadians(game.player.angle)) * game.bulletStartDistance;
-                    const explosionTexture = { id: "explosion-sprite", width: 512, height: 512 };
-                    const explosion = { id: "explosion-sprite", x: startX, y: startY, width: 512, height: 512, data: getTextureData(explosionTexture), spawnTime: Date.now(), cullTime: 200 };
-                    game.sprites.push(explosion);
+                    game.sprites.push({ id: 'explosion-sprite', x: startX, y: startY, width: 512, height: 512, data: getTextureData({ id: 'explosion-sprite', width: 512, height: 512 }), spawnTime: Date.now(), cullTime: 200 });
                     game.player.health -= projectile.damage; // rocket damage
                     playSound('explosion-sound');
                 } else if (projectile.type == 'boomerang') {
@@ -1914,13 +1903,8 @@ function updateGameObjects() {
                 case 'moby':
                     if (currentTime - monster.spawnTime >= 60000) {
                         monster.isDead = true;
-                        game.sprites.push({ id: 'bones-sprite', x: monster.x, y: monster.y, width: 256, height: 256, data: null });
+                        game.sprites.push({ id: 'bones-sprite', x: monster.x, y: monster.y, width: 256, height: 256, data: getTextureData({ id: 'bones-sprite', width: 256, height: 256 }) });
                         playSound('moby-death');
-                        for (let i = 0; i < game.sprites.length; i++) {
-                            if (!game.sprites[i].data) {
-                                game.sprites[i].data = getTextureData(game.sprites[i]);
-                            }
-                        }
                         break;
                     }
                     const enemyOBJ = game.monsters.find(enemy => enemy.type != 'moby' && !enemy.isDead && isVisibleToPlayer(enemy))
@@ -1990,13 +1974,8 @@ function updateGameObjects() {
                 case 'seahorse':
                     if (currentTime - monster.spawnTime >= 60000) {
                         monster.isDead = true;
-                        game.sprites.push({ id: 'bones-sprite', x: monster.x, y: monster.y, width: 256, height: 256, data: null });
+                        game.sprites.push({ id: 'bones-sprite', x: monster.x, y: monster.y, width: 256, height: 256, data: getTextureData({ id: 'bones-sprite', width: 256, height: 256 }) });
                         playSound('moby-death');
-                        for (let i = 0; i < game.sprites.length; i++) {
-                            if (!game.sprites[i].data) {
-                                game.sprites[i].data = getTextureData(game.sprites[i]);
-                            }
-                        }
                         break;
                     }
                     const SenemyOBJ = game.monsters.find(enemy => enemy.type != 'seahorse' && enemy.type != 'seahorsebaby' && !enemy.isDead && isVisibleToPlayer(enemy))
