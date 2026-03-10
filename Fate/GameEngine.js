@@ -17,7 +17,6 @@ let game = {
     bulletRange: 400,
     knifeRange: 1,
     bulletStartDistance: 0.5,
-    monsterMoveSpeed: 0.02,
     activationDistance: 1.0,
     monsterTotal: 0,
     monsterDefeated: 0,
@@ -469,6 +468,7 @@ function loadLevel(levelIdx) {
     if (game.cheats.randomStart) {
         var checkY = Math.floor(Math.random() * mapy);
         var checkX = Math.floor(Math.random() * mapx);
+        // computationally expensive, please fix
         while (map[checkY][checkX] != 0) {
             checkY = Math.floor(Math.random() * mapy);
             checkX = Math.floor(Math.random() * mapx);         
@@ -483,7 +483,6 @@ function loadLevel(levelIdx) {
         game.player.y = game.levels[levelIdx].startlocation.y;
         game.player.angle = 0;
     }
-    game.monsterMoveSpeed = game.levels[levelIdx].monstermovespeed;
     if (game.cheats.speedBoost) {
         game.player.speed.movement = 0.16;
     } else {
@@ -1210,6 +1209,8 @@ function updateGameObjects() {
                                     alien1.data = getTextureData(monsterTexture);
                                     game.monsters.push(alien1);
                                     break;
+                                case 'seahorsebaby':
+                                    break;
                                 default:
                                     game.sprites.push({ id: 'bones-sprite', x: monster.x, y: monster.y, width: 256, height: 256, data: getTextureData({ id: 'bones-sprite', width: 256, height: 256 }) });
                                     break;
@@ -1310,8 +1311,8 @@ function updateGameObjects() {
                     if (distSq > 30 && distSq < 200) {
                         const distance = Math.sqrt(distSq);
                         const invDist = 1 / distance;
-                        const dirX = dx * invDist * game.monsterMoveSpeed;
-                        const dirY = dy * invDist * game.monsterMoveSpeed;
+                        const dirX = dx * invDist * monster.speed;
+                        const dirY = dy * invDist * monster.speed;
                         // Try to move in X direction
                         const newX = monster.x + dirX;
                         if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
@@ -1336,8 +1337,8 @@ function updateGameObjects() {
                     if (distSq > 30 && distSq < 200) {
                         const distance = Math.sqrt(distSq);
                         const invDist = 1 / distance;
-                        const dirX = dx * invDist * game.monsterMoveSpeed;
-                        const dirY = dy * invDist * game.monsterMoveSpeed;
+                        const dirX = dx * invDist * monster.speed;
+                        const dirY = dy * invDist * monster.speed;
                         // Try to move in X direction
                         const newX = monster.x + dirX;
                         if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
@@ -1374,8 +1375,8 @@ function updateGameObjects() {
                         const dirY = dy * invDist;
                         if (distSq > 50) {
                             // TOO FAR → move toward player
-                            moveX = dirX * game.monsterMoveSpeed;
-                            moveY = dirY * game.monsterMoveSpeed;
+                            moveX = dirX * monster.speed;
+                            moveY = dirY * monster.speed;
                             // Try to move in X direction
                             const newX = monster.x + moveX;
                             if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
@@ -1395,8 +1396,8 @@ function updateGameObjects() {
                             if (Math.random() < 0.01) {
                                 monster.strafeDir *= -1;
                             }
-                            moveX = perpX * monster.strafeDir * game.monsterMoveSpeed;
-                            moveY = perpY * monster.strafeDir * game.monsterMoveSpeed;
+                            moveX = perpX * monster.strafeDir * monster.speed;
+                            moveY = perpY * monster.strafeDir * monster.speed;
                             // Try to move in X direction
                             const newX = monster.x + moveX;
                             if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
@@ -1422,8 +1423,8 @@ function updateGameObjects() {
                     if (distSq > 30 && distSq < 200) {
                         const distance = Math.sqrt(distSq);
                         const invDist = 1 / distance;
-                        const dirX = dx * invDist * game.monsterMoveSpeed;
-                        const dirY = dy * invDist * game.monsterMoveSpeed;
+                        const dirX = dx * invDist * monster.speed;
+                        const dirY = dy * invDist * monster.speed;
                         // Try to move in X direction
                         const newX = monster.x + dirX;
                         if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
@@ -1441,8 +1442,8 @@ function updateGameObjects() {
                         if (distSq > 0.25 && distSq < 100) {
                             const distance = Math.sqrt(distSq);
                             const invDist = 1 / distance;
-                            const dirX = dx * invDist * game.monsterMoveSpeed;
-                            const dirY = dy * invDist * game.monsterMoveSpeed;
+                            const dirX = dx * invDist * monster.speed;
+                            const dirY = dy * invDist * monster.speed;
                             // Try to move in X direction
                             const newX = monster.x + dirX;
                             if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
@@ -1479,8 +1480,8 @@ function updateGameObjects() {
                         if (distSq > 30 && distSq < 100) {
                             const distance = Math.sqrt(distSq);
                             const invDist = 1 / distance;
-                            const dirX = dx * invDist * game.monsterMoveSpeed;
-                            const dirY = dy * invDist * game.monsterMoveSpeed;
+                            const dirX = dx * invDist * monster.speed;
+                            const dirY = dy * invDist * monster.speed;
                             // Try to move in X direction
                             const newX = monster.x + dirX;
                             if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
@@ -1511,8 +1512,8 @@ function updateGameObjects() {
                     if (distSq > 20 && distSq < 200) {
                         const distance = Math.sqrt(distSq);
                         const invDist = 1 / distance;
-                        const dirX = dx * invDist * game.monsterMoveSpeed;
-                        const dirY = dy * invDist * game.monsterMoveSpeed;
+                        const dirX = dx * invDist * monster.speed;
+                        const dirY = dy * invDist * monster.speed;
                         // Try to move in X direction
                         const newX = monster.x + dirX;
                         if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
@@ -1599,8 +1600,8 @@ function updateGameObjects() {
                     } else {
                         const distance = Math.sqrt(checkpointdistSq);
                         const invDist = 1 / distance;
-                        const dirX = checkpointX * invDist * game.monsterMoveSpeed;
-                        const dirY = checkpointY * invDist * game.monsterMoveSpeed;
+                        const dirX = checkpointX * invDist * monster.speed;
+                        const dirY = checkpointY * invDist * monster.speed;
                         // Try to move in X direction
                         const newX = monster.x + dirX;
                         if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2) {
@@ -1664,8 +1665,8 @@ function updateGameObjects() {
                         const dirY = dy * invDist;
                         if (distSq > 50) {
                             // TOO FAR → move toward player
-                            moveX = dirX * game.monsterMoveSpeed;
-                            moveY = dirY * game.monsterMoveSpeed;
+                            moveX = dirX * monster.speed;
+                            moveY = dirY * monster.speed;
                             // Try to move in X direction
                             const newX = monster.x + moveX;
                             if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
@@ -1687,8 +1688,8 @@ function updateGameObjects() {
                                 monster.strafeDir *= -1;
                             }
 
-                            moveX = perpX * monster.strafeDir * game.monsterMoveSpeed;
-                            moveY = perpY * monster.strafeDir * game.monsterMoveSpeed;
+                            moveX = perpX * monster.strafeDir * monster.speed;
+                            moveY = perpY * monster.strafeDir * monster.speed;
                             // Try to move in X direction
                             const newX = monster.x + moveX;
                             if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
@@ -1714,8 +1715,8 @@ function updateGameObjects() {
                     if (distSq > 0.25 && distSq < 200) {
                         const distance = Math.sqrt(distSq);
                         const invDist = 1 / distance;
-                        const dirX = dx * invDist * game.monsterMoveSpeed;
-                        const dirY = dy * invDist * game.monsterMoveSpeed;
+                        const dirX = dx * invDist * monster.speed;
+                        const dirY = dy * invDist * monster.speed;
                         // Try to move in X direction
                         const newX = monster.x + dirX;
                         if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
@@ -1745,8 +1746,8 @@ function updateGameObjects() {
                     if (distSq > 0.25 && distSq < 100) {
                         const distance = Math.sqrt(distSq);
                         const invDist = 1 / distance;
-                        const dirX = dx * invDist * game.monsterMoveSpeed;
-                        const dirY = dy * invDist * game.monsterMoveSpeed;
+                        const dirX = dx * invDist * monster.speed;
+                        const dirY = dy * invDist * monster.speed;
                         // Try to move in X direction
                         const newX = monster.x + dirX;
                         if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
@@ -1807,8 +1808,8 @@ function updateGameObjects() {
                     if (distSq > 30 && distSq < 200) {
                         const distance = Math.sqrt(distSq);
                         const invDist = 1 / distance;
-                        const dirX = dx * invDist * 0.04;
-                        const dirY = dy * invDist * 0.04;
+                        const dirX = dx * invDist * monster.speed;
+                        const dirY = dy * invDist * monster.speed;
                         // Try to move in X direction
                         const newX = monster.x + dirX;
                         if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
@@ -1830,6 +1831,7 @@ function updateGameObjects() {
                                     monster.spawnEyeball = true;
                                     for (i = 0; i < (1 * spawnModifier); i++) {
                                         game.monsterTotal++;
+                                        // eyeballs can spawn in walls with this setup, should fix
                                         var rndX = Math.floor(Math.random() * 3) - 1;
                                         var rndY = Math.floor(Math.random() * 3) - 1;
                                         const eyeball = { ...window.MonsterData.eyeball, id: `monster_${game.monsterTotal}`, x: game.player.x + rndX, y: game.player.y + rndY };
@@ -1853,8 +1855,8 @@ function updateGameObjects() {
                     if (distSq > 30 && distSq < 100) {
                         const distance = Math.sqrt(distSq);
                         const invDist = 1 / distance;
-                        const dirX = dx * invDist * game.monsterMoveSpeed;
-                        const dirY = dy * invDist * game.monsterMoveSpeed;
+                        const dirX = dx * invDist * monster.speed;
+                        const dirY = dy * invDist * monster.speed;
                         // Try to move in X direction
                         const newX = monster.x + dirX;
                         if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
@@ -1871,8 +1873,8 @@ function updateGameObjects() {
                     if (distSq > 0.25 && distSq < 100) {
                         const distance = Math.sqrt(distSq);
                         const invDist = 1 / distance;
-                        const dirX = dx * invDist * 0.08;
-                        const dirY = dy * invDist * 0.08;
+                        const dirX = dx * invDist * monster.speed;
+                        const dirY = dy * invDist * monster.speed;
                         // Try to move in X direction
                         const newX = monster.x + dirX;
                         if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
@@ -1907,13 +1909,13 @@ function updateGameObjects() {
                         playSound('moby-death');
                         break;
                     }
-                    const enemyOBJ = game.monsters.find(enemy => enemy.type != 'moby' && !enemy.isDead && isVisibleToPlayer(enemy))
+                    const enemyOBJ = game.monsters.find(enemy => enemy.type != 'seahorse' && enemy.type != 'seahorsebaby' && enemy.type != 'moby' && !enemy.isDead && isVisibleToPlayer(enemy))
                     if (!enemyOBJ || !Number.isFinite(enemyOBJ.x) || !Number.isFinite(enemyOBJ.y)) {
                         if (distSq > 5) {
                             const distance = Math.sqrt(distSq);
                             const invDist = 1 / distance;
-                            const dirX = dx * invDist * 0.04;
-                            const dirY = dy * invDist * 0.04;
+                            const dirX = dx * invDist * monster.speed;
+                            const dirY = dy * invDist * monster.speed;
                             // Try to move in X direction
                             const newX = monster.x + dirX;
                             if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2) {
@@ -1933,8 +1935,8 @@ function updateGameObjects() {
                         if (enemydistSq > 0.25 && enemydistSq < 100) {
                             const distance = Math.sqrt(enemydistSq);
                             const invDist = 1 / distance;
-                            const dirX = enemyX * invDist * 0.04;
-                            const dirY = enemyY * invDist * 0.04;
+                            const dirX = enemyX * invDist * monster.speed;
+                            const dirY = enemyY * invDist * monster.speed;
                             // Try to move in X direction
                             const newX = monster.x + dirX;
                             if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2) {
@@ -1956,8 +1958,8 @@ function updateGameObjects() {
                         } else if (distSq > 5) {
                             const distance = Math.sqrt(distSq);
                             const invDist = 1 / distance;
-                            const dirX = dx * invDist * 0.04;
-                            const dirY = dy * invDist * 0.04;
+                            const dirX = dx * invDist * monster.speed;
+                            const dirY = dy * invDist * monster.speed;
                             // Try to move in X direction
                             const newX = monster.x + dirX;
                             if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2) {
@@ -1978,13 +1980,13 @@ function updateGameObjects() {
                         playSound('moby-death');
                         break;
                     }
-                    const SenemyOBJ = game.monsters.find(enemy => enemy.type != 'seahorse' && enemy.type != 'seahorsebaby' && !enemy.isDead && isVisibleToPlayer(enemy))
+                    const SenemyOBJ = game.monsters.find(enemy => enemy.type != 'seahorse' && enemy.type != 'seahorsebaby' && enemy.type != 'moby' && !enemy.isDead && isVisibleToPlayer(enemy))
                     if (!SenemyOBJ || !Number.isFinite(SenemyOBJ.x) || !Number.isFinite(SenemyOBJ.y)) {
                         if (distSq > 5) {
                             const distance = Math.sqrt(distSq);
                             const invDist = 1 / distance;
-                            const dirX = dx * invDist * 0.04;
-                            const dirY = dy * invDist * 0.04;
+                            const dirX = dx * invDist * monster.speed;
+                            const dirY = dy * invDist * monster.speed;
                             // Try to move in X direction
                             const newX = monster.x + dirX;
                             if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2) {
@@ -2022,8 +2024,8 @@ function updateGameObjects() {
                         if (distSq > 5) {
                             const distance = Math.sqrt(distSq);
                             const invDist = 1 / distance;
-                            const dirX = dx * invDist * 0.04;
-                            const dirY = dy * invDist * 0.04;
+                            const dirX = dx * invDist * monster.speed;
+                            const dirY = dy * invDist * monster.speed;
                             // Try to move in X direction
                             const newX = monster.x + dirX;
                             if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2) {
@@ -2042,13 +2044,13 @@ function updateGameObjects() {
                         monster.isDead = true;
                         break;
                     }
-                    const SBenemyOBJ = game.monsters.find(enemy => enemy.type != 'seahorse' && enemy.type != 'seahorsebaby' && !enemy.isDead && isVisibleToPlayer(enemy))
+                    const SBenemyOBJ = game.monsters.find(enemy => enemy.type != 'moby' && enemy.type != 'seahorse' && enemy.type != 'seahorsebaby' && !enemy.isDead && isVisibleToPlayer(enemy))
                     if (!SBenemyOBJ || !Number.isFinite(SBenemyOBJ.x) || !Number.isFinite(SBenemyOBJ.y)) {
                         if (distSq > 5) {
                             const distance = Math.sqrt(distSq);
                             const invDist = 1 / distance;
-                            const dirX = dx * invDist * 0.04;
-                            const dirY = dy * invDist * 0.04;
+                            const dirX = dx * invDist * monster.speed;
+                            const dirY = dy * invDist * monster.speed;
                             // Try to move in X direction
                             const newX = monster.x + dirX;
                             if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2) {
@@ -2068,8 +2070,8 @@ function updateGameObjects() {
                         if (enemydistSq > 0.25 && enemydistSq < 100) {
                             const distance = Math.sqrt(enemydistSq);
                             const invDist = 1 / distance;
-                            const dirX = enemyX * invDist * 0.02;
-                            const dirY = enemyY * invDist * 0.02;
+                            const dirX = enemyX * invDist * monster.speed;
+                            const dirY = enemyY * invDist * monster.speed;
                             // Try to move in X direction
                             const newX = monster.x + dirX;
                             if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2) {
@@ -2092,8 +2094,8 @@ function updateGameObjects() {
                         } else if (distSq > 5) {
                             const distance = Math.sqrt(distSq);
                             const invDist = 1 / distance;
-                            const dirX = dx * invDist * 0.02;
-                            const dirY = dy * invDist * 0.02;
+                            const dirX = dx * invDist * monster.speed;
+                            const dirY = dy * invDist * monster.speed;
                             // Try to move in X direction
                             const newX = monster.x + dirX;
                             if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2) {
@@ -2111,8 +2113,8 @@ function updateGameObjects() {
                     if (distSq > 0.25 && distSq < 100) {
                         const distance = Math.sqrt(distSq);
                         const invDist = 1 / distance;
-                        const dirX = dx * invDist * game.monsterMoveSpeed;
-                        const dirY = dy * invDist * game.monsterMoveSpeed;
+                        const dirX = dx * invDist * monster.speed;
+                        const dirY = dy * invDist * monster.speed;
                         // Try to move in X direction
                         const newX = monster.x + dirX;
                         if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {

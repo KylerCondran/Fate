@@ -43,7 +43,6 @@ window.LevelData = [
         background: 0,
         startlocation: { x: 2, y: 2 },
         equippedweapon: 1,
-        monstermovespeed: 0.02,
         completed: false
     },
     {
@@ -75,7 +74,6 @@ window.LevelData = [
         background: 1,
         startlocation: { x: 2, y: 2 },
         equippedweapon: 1,
-        monstermovespeed: 0.02,
         completed: false
     },
     {
@@ -107,7 +105,6 @@ window.LevelData = [
         background: 0,
         startlocation: { x: 2, y: 2 },
         equippedweapon: 1,
-        monstermovespeed: 0.04,
         completed: false
     },
     {
@@ -139,7 +136,6 @@ window.LevelData = [
         background: 2,
         startlocation: { x: 2, y: 2 },
         equippedweapon: 1,
-        monstermovespeed: 0.02,
         completed: false
     },
     {
@@ -171,7 +167,6 @@ window.LevelData = [
         background: 1,
         startlocation: { x: 1, y: 1 },
         equippedweapon: 1,
-        monstermovespeed: 0.02,
         completed: false
     },
     {
@@ -204,7 +199,6 @@ window.LevelData = [
         startlocation: { x: 2, y: 4 },
         portalcoords: [{ x: 11, y: 8, exitx: 3, exity: 8, exitangle: 90 }],
         equippedweapon: 1,
-        monstermovespeed: 0.02,
         completed: false
     },
     {
@@ -246,7 +240,6 @@ window.LevelData = [
             { x: 13, y: 6, exitx: 17, exity: 9, exitangle: 270 },
             { x: 13, y: 13, exitx: 17, exity: 10, exitangle: 90 }],
         equippedweapon: 1,
-        monstermovespeed: 0.02,
         completed: false
     },
     {
@@ -278,7 +271,6 @@ window.LevelData = [
         background: 1,
         startlocation: { x: 2, y: 2 },
         equippedweapon: 1,
-        monstermovespeed: 0.07,
         completed: false
     },
     {
@@ -311,7 +303,6 @@ window.LevelData = [
         background: 0,
         startlocation: { x: 2, y: 2 },
         equippedweapon: 1,
-        monstermovespeed: 0.02,
         completed: false
     },
     {
@@ -364,7 +355,6 @@ window.LevelData = [
         background: 3,
         startlocation: { x: 2, y: 2 },
         equippedweapon: 1,
-        monstermovespeed: 0.04,
         completed: false
     },
     {
@@ -396,7 +386,6 @@ window.LevelData = [
         background: 0,
         startlocation: { x: 2, y: 2 },
         equippedweapon: 1,
-        monstermovespeed: 0.02,
         completed: false
     },
     {
@@ -449,7 +438,6 @@ window.LevelData = [
         background: 1,
         startlocation: { x: 2, y: 2 },
         equippedweapon: 1,
-        monstermovespeed: 0.02,
         completed: false
     }
 ];
