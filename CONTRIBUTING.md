@@ -56,4 +56,3 @@
 - wolf still unused
 - ufo tractor beams?
 - spyro egg thief?
-- add monster speed to monster.js
