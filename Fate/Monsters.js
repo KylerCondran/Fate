@@ -512,7 +512,7 @@ window.MonsterData = {
         skin: 'seahorsebaby-sprite',
         audio: 'seahorse',
         health: 25,
-        speed: 0.06,
+        speed: 0.04,
         isDead: false,
         width: 512,
         height: 512,

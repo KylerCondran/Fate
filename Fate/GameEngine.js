@@ -79,10 +79,10 @@ let game = {
     },
     levels: JSON.parse(JSON.stringify(window.LevelData)),
     cheats: {
-        infiniteAmmo: false,
+        infiniteAmmo: true,
         godMode: false,
-        allWeapons: false,
-        unlockAllLevels: false,
+        allWeapons: true,
+        unlockAllLevels: true,
         megaSpawns: false,
         speedBoost: false,
         randomStart: false,
