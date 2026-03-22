@@ -29,13 +29,15 @@
 # General Ideas
 
 - upgrade assets, make matrix for missing artifacts
-- dead bones decay system
+- dead bones decay system (extend sprite cull system)
+- attach starting angle to levels.js
 
 # Level Ideas
 
 - army base has huge fight between factions, winning faction helps you in mothership level
 - warcraft level, human knights and orcs, ogre mage
 - army vs terminators
+- explosive barrels
 
 # Weapon Ideas
 

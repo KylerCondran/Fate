@@ -1089,6 +1089,31 @@ function isMonsterAtPosition(x, y, excludeMonster = null) {
     return false;
 }
 
+// Find valid spawn positions for monsters
+
+function getOpenSpawnPositions(xVal, yVal, range) {
+    const positions = [];
+    // range should always be an odd number for this to work properly
+    range -= 1;
+    lowerBound = -(range/2);
+    upperBound = (range/2);
+    for (let dx = lowerBound; dx <= upperBound; dx++) {
+        for (let dy = lowerBound; dy <= upperBound; dy++) {
+            const x = xVal + dx;
+            const y = yVal + dy;
+
+            // Skip center exact tile
+            if (dx == 0 && dy == 0) continue;
+
+            if ((game.levels[game.currentLevel].map[y] && game.levels[game.currentLevel].map[y][x] != 2) && !isMonsterAtPosition(x, y)) {
+                positions.push({ x, y });
+            }
+        }
+    }
+
+    return positions;
+}
+
 // Update Game Objects
 
 function updateGameObjects() {
@@ -1527,58 +1552,58 @@ function updateGameObjects() {
                     }
                     if (monster.health < 800 && !monster.spawnPirahna) {
                         monster.spawnPirahna = true;
-                        var angle = radiansToDegrees(Math.atan2(dy, dx));
-                        for (i = 0; i < (3 * spawnModifier); i++) {
-                            game.monsterTotal++;
-                            const startX = monster.x + Math.cos(degreeToRadians(angle)) * 1.5;
-                            const startY = monster.y + Math.sin(degreeToRadians(angle)) * 1.5;
-                            const piranha = { ...window.MonsterData.piranha, id: `monster_${game.monsterTotal}`, x: startX, y: startY };
+                        for (i = 0; i < (3 * spawnModifier); i++) {                            
+                            const validSpots = getOpenSpawnPositions(Math.floor(monster.x), Math.floor(monster.y), 5);
+                            if (validSpots.length == 0) continue;
+                            const spot = validSpots[Math.floor(Math.random() * validSpots.length)];
+                            const piranha = { ...window.MonsterData.piranha, id: `monster_${game.monsterTotal}`, x: spot.x, y: spot.y };
                             const monsterTexture = {
                                 id: piranha.skin,
                                 width: piranha.width,
                                 height: piranha.height
                             };
                             piranha.data = getTextureData(monsterTexture);
+                            game.monsterTotal++;
                             game.monsters.push(piranha);
-                            angle += 30;
+                            updateMonsterGrid();
                         }
                         playSound('portal-sound');
                     }
                     if (monster.health < 600 && !monster.spawnSquid) {
                         monster.spawnSquid = true;
-                        var angle = radiansToDegrees(Math.atan2(dy, dx));
-                        for (i = 0; i < (2 * spawnModifier); i++) {
-                            game.monsterTotal++;
-                            const startX = monster.x + Math.cos(degreeToRadians(angle)) * 1.5;
-                            const startY = monster.y + Math.sin(degreeToRadians(angle)) * 1.5;
-                            const squid = { ...window.MonsterData.squid, id: `monster_${game.monsterTotal}`, x: startX, y: startY };
+                        for (i = 0; i < (2 * spawnModifier); i++) {                           
+                            const validSpots = getOpenSpawnPositions(Math.floor(monster.x), Math.floor(monster.y), 5);
+                            if (validSpots.length == 0) continue;
+                            const spot = validSpots[Math.floor(Math.random() * validSpots.length)];
+                            const squid = { ...window.MonsterData.squid, id: `monster_${game.monsterTotal}`, x: spot.x, y: spot.y };
                             const monsterTexture = {
                                 id: squid.skin,
                                 width: squid.width,
                                 height: squid.height
                             };
                             squid.data = getTextureData(monsterTexture);
+                            game.monsterTotal++;
                             game.monsters.push(squid);
-                            angle += 30;
+                            updateMonsterGrid();
                         }
                         playSound('portal-sound');
                     }
                     if (monster.health < 400 && !monster.spawnShark) {
                         monster.spawnShark = true;
-                        var angle = radiansToDegrees(Math.atan2(dy, dx));
                         for (i = 0; i < (1 * spawnModifier); i++) {
-                            game.monsterTotal++;
-                            const startX = monster.x + Math.cos(degreeToRadians(angle)) * 1.5;
-                            const startY = monster.y + Math.sin(degreeToRadians(angle)) * 1.5;
-                            const shark = { ...window.MonsterData.shark, id: `monster_${game.monsterTotal}`, x: startX, y: startY };
+                            const validSpots = getOpenSpawnPositions(Math.floor(monster.x), Math.floor(monster.y), 5);
+                            if (validSpots.length == 0) continue;
+                            const spot = validSpots[Math.floor(Math.random() * validSpots.length)];
+                            const shark = { ...window.MonsterData.shark, id: `monster_${game.monsterTotal}`, x: spot.x, y: spot.y };
                             const monsterTexture = {
                                 id: shark.skin,
                                 width: shark.width,
                                 height: shark.height
                             };
                             shark.data = getTextureData(monsterTexture);
+                            game.monsterTotal++;
                             game.monsters.push(shark);
-                            angle += 30;
+                            updateMonsterGrid();
                         }
                         playSound('portal-sound');
                     }
@@ -1760,20 +1785,20 @@ function updateGameObjects() {
                         }
                         if (!monster.lastSpawn || currentTime - monster.lastSpawn >= monster.spawnCooldown) {
                             monster.lastSpawn = currentTime;
-                            var angle = radiansToDegrees(Math.atan2(dy, dx));
-                            for (i = 0; i < (2 * spawnModifier); i++) {
-                                game.monsterTotal++;
-                                const startX = monster.x + Math.cos(degreeToRadians(angle)) * 1.5;
-                                const startY = monster.y + Math.sin(degreeToRadians(angle)) * 1.5;
-                                const cow = { ...window.MonsterData.cow, id: `monster_${game.monsterTotal}`, x: startX, y: startY };
+                            for (i = 0; i < (2 * spawnModifier); i++) {                      
+                                const validSpots = getOpenSpawnPositions(Math.floor(monster.x), Math.floor(monster.y), 5);
+                                if (validSpots.length == 0) continue;
+                                const spot = validSpots[Math.floor(Math.random() * validSpots.length)];
+                                const cow = { ...window.MonsterData.cow, id: `monster_${game.monsterTotal}`, x: spot.x, y: spot.y };
                                 const monsterTexture = {
                                     id: cow.skin,
                                     width: cow.width,
                                     height: cow.height
                                 };
                                 cow.data = getTextureData(monsterTexture);
+                                game.monsterTotal++;
                                 game.monsters.push(cow);
-                                angle += 30;
+                                updateMonsterGrid();
                             }
                             playSound('portal-sound');
                         }
@@ -1830,18 +1855,19 @@ function updateGameObjects() {
                                 if (rndVal > 94) {
                                     monster.spawnEyeball = true;
                                     for (i = 0; i < (1 * spawnModifier); i++) {
-                                        game.monsterTotal++;
-                                        // eyeballs can spawn in walls with this setup, should fix
-                                        var rndX = Math.floor(Math.random() * 3) - 1;
-                                        var rndY = Math.floor(Math.random() * 3) - 1;
-                                        const eyeball = { ...window.MonsterData.eyeball, id: `monster_${game.monsterTotal}`, x: game.player.x + rndX, y: game.player.y + rndY };
+                                        const validSpots = getOpenSpawnPositions(Math.floor(game.player.x), Math.floor(game.player.y), 3);
+                                        if (validSpots.length == 0) continue;
+                                        const spot = validSpots[Math.floor(Math.random() * validSpots.length)];
+                                        const eyeball = { ...window.MonsterData.eyeball, id: `monster_${game.monsterTotal}`, x: spot.x, y: spot.y };
                                         const monsterTexture = {
                                             id: eyeball.skin,
                                             width: eyeball.width,
                                             height: eyeball.height
                                         };
                                         eyeball.data = getTextureData(monsterTexture);
+                                        game.monsterTotal++;
                                         game.monsters.push(eyeball);
+                                        updateMonsterGrid();
                                     }
                                     playSound('portal-sound');
                                 }
