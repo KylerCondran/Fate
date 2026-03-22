@@ -464,30 +464,12 @@ function loadLevel(levelIdx) {
     let map = game.levels[levelIdx].map;
     let mapy = map.length;
     let mapx = map[0].length;
-    // Reset player position
-    if (game.cheats.randomStart) {
-        var checkY = Math.floor(Math.random() * mapy);
-        var checkX = Math.floor(Math.random() * mapx);
-        // computationally expensive, please fix
-        while (map[checkY][checkX] != 0) {
-            checkY = Math.floor(Math.random() * mapy);
-            checkX = Math.floor(Math.random() * mapx);         
-        }
-        game.player.x = checkX;
-        game.player.y = checkY;
-        const startAngles = [0, 90, 180, 270];
-        const startingAngle = startAngles[Math.floor(Math.random() * startAngles.length)];
-        game.player.angle = startingAngle;
-    } else {
-        game.player.x = game.levels[levelIdx].startlocation.x;
-        game.player.y = game.levels[levelIdx].startlocation.y;
-        game.player.angle = 0;
-    }
     if (game.cheats.speedBoost) {
         game.player.speed.movement = 0.16;
     } else {
         game.player.speed.movement = 0.08;
     }
+    const emptyPositions = [];
     const monsterValues = [3, 4, 5, 6, 7, 15, 16, 17, 18, 19, 21, 22, 23, 24, 25, 27, 28, 29, 31, 32, 33, 34, 35, 36, 37, 41, 45, 46, 47, 50, 52, 57];
     for (let i = 0; i < mapy; i++) {
         for (let j = 0; j < mapx; j++) {
@@ -496,6 +478,9 @@ function loadLevel(levelIdx) {
                 objectValue = monsterValues[Math.floor(Math.random() * monsterValues.length)];
             }
             switch (objectValue) {
+                case 0:
+                    emptyPositions.push({ i, j });
+                    break;
                 case 1:
                     switch (game.levels[levelIdx].name) {
                         case "Hell":
@@ -787,6 +772,19 @@ function loadLevel(levelIdx) {
                     break;
             }
         }
+    }
+    // Reset player position
+    if (game.cheats.randomStart) {
+        const spot = emptyPositions[Math.floor(Math.random() * emptyPositions.length)];
+        game.player.x = spot.j;
+        game.player.y = spot.i;
+        const startAngles = [0, 90, 180, 270];
+        const startingAngle = startAngles[Math.floor(Math.random() * startAngles.length)];
+        game.player.angle = startingAngle;
+    } else {
+        game.player.x = game.levels[levelIdx].startlocation.x;
+        game.player.y = game.levels[levelIdx].startlocation.y;
+        game.player.angle = 0;
     }
     // Reload textures and sprites
     loadSprites();
