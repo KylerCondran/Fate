@@ -1816,7 +1816,7 @@ function updateGameObjects() {
                     }
                     break;
                 case 'eyeball':
-                    if (distSq < 84) {
+                    if (distSq < 64) {
                         if (!monster.lastShot || currentTime - monster.lastShot >= monster.attackCooldown) {
                             const angle = radiansToDegrees(Math.atan2(dy, dx));
                             game.projectiles.push(new Projectile(monster.x, monster.y, angle + monster.attackAngle, 'eyeball', game.projectileMap['eyeball'], 'monster', 0.2, monster.damage));
@@ -1828,20 +1828,48 @@ function updateGameObjects() {
                             monster.lastShot = currentTime;
                         }
                     }
-                    if (distSq > 30 && distSq < 200) {
+                    if (distSq < 200) {
                         const distance = Math.sqrt(distSq);
                         const invDist = 1 / distance;
-                        const dirX = dx * invDist * monster.speed;
-                        const dirY = dy * invDist * monster.speed;
-                        // Try to move in X direction
-                        const newX = monster.x + dirX;
-                        if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
-                            monster.x = newX;
-                        }
-                        // Try to move in Y direction
-                        const newY = monster.y + dirY;
-                        if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
-                            monster.y = newY;
+                        const dirX = dx * invDist;
+                        const dirY = dy * invDist;
+                        if (distSq > 30) {
+                            // TOO FAR → move toward player
+                            moveX = dirX * monster.speed;
+                            moveY = dirY * monster.speed;
+                            // Try to move in X direction
+                            const newX = monster.x + moveX;
+                            if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
+                                monster.x = newX;
+                            }
+                            // Try to move in Y direction
+                            const newY = monster.y + moveY;
+                            if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
+                                monster.y = newY;
+                            }
+                        } else if (distSq > 10) {
+                            // IN RANGE → strafe sideways
+                            const perpX = -dirY;
+                            const perpY = dirX;
+
+                            // Optional: switch left/right occasionally
+                            monster.strafeDir = monster.strafeDir ?? (Math.random() < 0.5 ? -1 : 1);
+                            if (Math.random() < 0.01) {
+                                monster.strafeDir *= -1;
+                            }
+
+                            moveX = perpX * monster.strafeDir * (monster.speed/2);
+                            moveY = perpY * monster.strafeDir * (monster.speed/2);
+                            // Try to move in X direction
+                            const newX = monster.x + moveX;
+                            if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
+                                monster.x = newX;
+                            }
+                            // Try to move in Y direction
+                            const newY = monster.y + moveY;
+                            if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
+                                monster.y = newY;
+                            }
                         }
                     }
                     break;

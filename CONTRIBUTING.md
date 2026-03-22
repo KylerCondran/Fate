@@ -22,7 +22,7 @@
 
 - [ ] More Sprites - Velociraptors, Dinosaurs
 - [ ] More Weapons - Udder Gun, Shield
-- [ ] More Pickups - Battery For Laser Weapons
+- [ ] More Pickups - Battery For Laser Weapons, rapidfire
 - [ ] More Sounds
 - [ ] More Textures
 
@@ -38,6 +38,14 @@
 - warcraft level, human knights and orcs, ogre mage
 - army vs terminators
 - explosive barrels
+- prison level, escape and fight guards, get keycards to open doors
+- space station level, space suits, airlocks, space fight with aliens
+- werewolves, house in middle of forest
+- medieval castle, knights, archers, catapults
+- zombies, apocalyptic city, barricades, cars, tanks
+- proper tree sprite
+- dinosaur level
+- boss mode when you beat the game
 
 # Weapon Ideas
 
@@ -52,9 +60,9 @@
 
 - enemy ai, patroling, fleeing
 - allegiance flag on monsters (traitor gun? swaps allegiance)
-- rhino charging
 - alien2 should have burst fire
 - witch doctors can teleport you to random places on the map
 - wolf still unused
 - ufo tractor beams?
 - spyro egg thief?
+- enemy shotgunner projectile spread
