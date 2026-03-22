@@ -1924,6 +1924,79 @@ function updateGameObjects() {
                         }
                     }
                     break;
+                case 'rhino':
+                    if (distSq < 45) {
+                        if (!monster.lastCharge || currentTime - monster.lastCharge >= monster.chargeCooldown) {
+                            const angle = radiansToDegrees(Math.atan2(dy, dx));
+                            monster.chargeAngle = angle;
+                            monster.isCharging = true;
+                            monster.lastCharge = currentTime;
+                        }
+                    }
+                    if (monster.isCharging) {
+                        // Charge the player using the predetermined charge angle
+                        const chargeSpeed = monster.speed * 3; // Charge faster than normal movement
+                        const chargeDx = Math.cos(degreeToRadians(monster.chargeAngle)) * chargeSpeed;
+                        const chargeDy = Math.sin(degreeToRadians(monster.chargeAngle)) * chargeSpeed;
+
+                        // Try to move in X direction with the charge angle
+                        const newX = monster.x + chargeDx;
+                        if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
+                            monster.x = newX;
+                        }
+
+                        // Try to move in Y direction with the charge angle
+                        const newY = monster.y + chargeDy;
+                        if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
+                            monster.y = newY;
+                        }
+
+                        // If the rhino has reached a certain threshold charging time, stop charging
+                        if (currentTime - monster.lastCharge >= 2500) {
+                            monster.isCharging = false;
+                        }
+                    } else {
+                        // If not charging, follow the player
+                        if (distSq > 0.25 && distSq < 100) {
+                            const distance = Math.sqrt(distSq);
+                            const invDist = 1 / distance;
+                            const dirX = dx * invDist * monster.speed;
+                            const dirY = dy * invDist * monster.speed;
+
+                            // Try to move in X direction
+                            const newX = monster.x + dirX;
+                            if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
+                                monster.x = newX;
+                            }
+
+                            // Try to move in Y direction
+                            const newY = monster.y + dirY;
+                            if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
+                                monster.y = newY;
+                            }
+                        }
+                    }
+                    if (distSq < 0.5 && (!monster.lastAttack || currentTime - monster.lastAttack >= monster.attackCooldown)) {
+                        // Attack the player
+                        if (monster.isCharging) {
+                            game.player.health -= 100;
+                            game.lastMonsterToHitPlayer = 'Rhino Charge';
+                            // Play monster attack sound
+                            playSound('squish-sound');
+                        } else {
+                            game.player.health -= monster.damage;
+                            game.lastMonsterToHitPlayer = monster.type.charAt(0).toUpperCase() + monster.type.slice(1);
+                            // Play monster attack sound
+                            playSound('injured-sound');
+                        }                       
+                        monster.lastAttack = currentTime;                  
+                        // Check if player died
+                        if (game.player.health <= 0) {
+                            playSound('death-sound');
+                            endGameDeath();
+                        }
+                    }
+                    break;
                 case 'stasischamber':
                     break;
                 case 'moby':

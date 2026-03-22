@@ -398,7 +398,7 @@ window.MonsterData = {
         type: 'rhino',
         skin: 'rhino-sprite',
         audio: 'rhino',
-        health: 400,
+        health: 800,
         speed: 0.02,
         isDead: false,
         width: 512,
@@ -406,7 +406,11 @@ window.MonsterData = {
         data: null,
         damage: 40,
         lastAttack: 0,
-        attackCooldown: 1000
+        attackCooldown: 1000,
+        chargeCooldown: 11000,
+        lastCharge: 0,
+        chargeAngle: null,
+        isCharging: false
     },
     cheetah: {
         type: 'cheetah',
