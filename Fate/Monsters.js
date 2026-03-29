@@ -18,7 +18,7 @@ window.MonsterData = {
         skin: 'lion-sprite',
         audio: 'bigcat',
         health: 150,
-        speed: 0.04,
+        speed: 0.02,
         isDead: false,
         width: 665,
         height: 725,
@@ -522,6 +522,20 @@ window.MonsterData = {
         height: 512,
         data: null,
         damage: 25,
+        lastAttack: 0,
+        attackCooldown: 1000
+    },
+    hyena: {
+        type: 'hyena',
+        skin: 'hyena-sprite',
+        audio: 'hyena',
+        health: 250,
+        speed: 0.04,
+        isDead: false,
+        width: 512,
+        height: 512,
+        data: null,
+        damage: 20,
         lastAttack: 0,
         attackCooldown: 1000
     }

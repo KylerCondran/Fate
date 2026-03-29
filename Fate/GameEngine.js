@@ -768,6 +768,11 @@ function loadLevel(levelIdx) {
                     game.sprites.push({ id: "tridentpickup-sprite", x: j, y: i, width: 30, height: 80, data: null });
                     game.pickupTotal++;
                     break;
+                case 59:
+                    const hyena = { ...window.MonsterData.hyena, id: `monster_${game.monsterTotal}`, x: j, y: i };
+                    game.monsters.push(hyena);
+                    game.monsterTotal++;
+                    break;
                 default:
                     break;
             }
