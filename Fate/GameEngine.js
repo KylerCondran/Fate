@@ -773,6 +773,16 @@ function loadLevel(levelIdx) {
                     game.monsters.push(hyena);
                     game.monsterTotal++;
                     break;
+                case 60:
+                    const werewolf = { ...window.MonsterData.werewolf, id: `monster_${game.monsterTotal}`, x: j, y: i };
+                    game.monsters.push(werewolf);
+                    game.monsterTotal++;
+                    break;
+                case 61:
+                    const wolf = { ...window.MonsterData.wolf, id: `monster_${game.monsterTotal}`, x: j, y: i };
+                    game.monsters.push(wolf);
+                    game.monsterTotal++;
+                    break;
                 default:
                     break;
             }
@@ -1939,6 +1949,86 @@ function updateGameObjects() {
                         }
                         // Try to move in Y direction
                         const newY = monster.y + dirY;
+                        if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
+                            monster.y = newY;
+                        }
+                    }
+                    if (distSq < 0.5 && (!monster.lastAttack || currentTime - monster.lastAttack >= monster.attackCooldown)) {
+                        // Attack the player
+                        game.player.health -= monster.damage;
+                        game.lastMonsterToHitPlayer = monster.type.charAt(0).toUpperCase() + monster.type.slice(1);
+                        monster.lastAttack = currentTime;
+                        // Play monster attack sound
+                        playSound('injured-sound');
+                        // Check if player died
+                        if (game.player.health <= 0) {
+                            playSound('death-sound');
+                            endGameDeath();
+                        }
+                    }
+                    break;
+                case 'werewolf':
+                    const distance = Math.sqrt(distSq);
+                    const invDist = 1 / distance;
+                    const dirX = dx * invDist * monster.speed;
+                    const dirY = dy * invDist * monster.speed;
+                    if (monster.health < 165 && !monster.flee) {
+                        monster.flee = true;
+                    } else if (monster.flee && monster.health > 375) {
+                        monster.flee = false;
+                    }
+                    if ((!monster.lastHeal || currentTime - monster.lastHeal >= monster.healCooldown) && monster.health <= 420) {
+                        monster.health += 80;
+                        monster.lastHeal = currentTime;
+                    }
+                    if (!monster.flee) {
+                        if (distSq > 0.25) {
+                            // Try to move in X direction
+                            const newX = monster.x + dirX;
+                            if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
+                                monster.x = newX;
+                            }
+                            // Try to move in Y direction
+                            const newY = monster.y + dirY;
+                            if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
+                                monster.y = newY;
+                            }
+                        }
+                    } else {
+                        // dirX, dirY = direction FROM monster TO player
+                        // So fleeing direction is the opposite:
+                        const fleeX = -dirX;
+                        const fleeY = -dirY;
+
+                        // Perpendicular (strafe)
+                        const perpX = -dirY;
+                        const perpY = dirX;
+                        // Control how much the monster flees vs strafes
+                        const fleeWeight = 0.8;   // mostly fleeing
+                        const strafeWeight = 0.2; // small sideways motion
+
+                        monster.strafeDir = monster.strafeDir ?? (Math.random() < 0.5 ? -1 : 1);
+                        if (Math.random() < 0.01) {
+                            monster.strafeDir *= -1;
+                        }
+
+                        // Blend the directions
+                        let moveX = (fleeX * fleeWeight) + (perpX * monster.strafeDir * strafeWeight);
+                        let moveY = (fleeY * fleeWeight) + (perpY * monster.strafeDir * strafeWeight);
+
+                        // Normalize so speed stays consistent
+                        const length = Math.hypot(moveX, moveY);
+                        if (length > 0) {
+                            moveX = (moveX / length) * monster.speed;
+                            moveY = (moveY / length) * monster.speed;
+                        }
+
+                        const newX = monster.x + moveX;
+                        if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
+                            monster.x = newX;
+                        }
+
+                        const newY = monster.y + moveY;
                         if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
                             monster.y = newY;
                         }
@@ -3322,17 +3412,17 @@ function createStartScreen() {
         <p style="color: #aaa; margin-top: 2em; font-family: 'Lucida Console', monospace;">Use arrow keys to move, A & D to strafe, Number keys to swap weapons, Space to shoot.</p>
     `;
     document.body.appendChild(overlay);
-    // Add level buttons in a 2-column table
+    // Add level buttons in a 3-column table
     const btnContainer = overlay.querySelector('#level-buttons');
     let currentRow;
     game.levels.forEach((level, idx) => {
-        if (idx % 2 === 0) {
+        if (idx % 3 === 0) {
             currentRow = document.createElement('tr');
             btnContainer.appendChild(currentRow);
         }
         let td = document.createElement('td');
         let btn = document.createElement('button');
-        if (game.levels[idx].name == 'Secret Cow Level' || game.levels[idx].name == 'Dark Continent') {
+        if (game.levels[idx].name == 'Secret Cow Level' || game.levels[idx].name == 'Dark Continent' || game.levels[idx].name == 'Armageddon') {
             if (game.levels[idx].unlocked) {
                 btn.textContent = level.name;
                 btn.style.backgroundColor = '#A96A6A';
@@ -3492,7 +3582,7 @@ function endGame() {
     }
     window.removeEventListener('blur', pauseGame);
     createWinScreen();
-    if (game.currentLevel != game.levels.length - 3 && game.currentLevel != game.levels.length - 2 && game.currentLevel != game.levels.length - 1) {
+    if (game.currentLevel != game.levels.length - 4 && game.currentLevel != game.levels.length - 3 && game.currentLevel != game.levels.length - 2 && game.currentLevel != game.levels.length - 1) {
         game.levels[game.currentLevel + 1].unlocked = true;
     }
     game.levels[game.currentLevel].completed = true;

@@ -538,5 +538,36 @@ window.MonsterData = {
         damage: 20,
         lastAttack: 0,
         attackCooldown: 1000
+    },
+    werewolf: {
+        type: 'werewolf',
+        skin: 'werewolf-sprite',
+        audio: 'werewolf',
+        health: 500,
+        speed: 0.04,
+        isDead: false,
+        width: 512,
+        height: 512,
+        data: null,
+        damage: 20,
+        lastAttack: 0,
+        attackCooldown: 1000,
+        healCooldown: 10000,
+        lastHeal: 0,
+        flee: false
+    },
+    wolf: {
+        type: 'wolf',
+        skin: 'wolf-sprite',
+        audio: 'wolf',
+        health: 250,
+        speed: 0.04,
+        isDead: false,
+        width: 512,
+        height: 512,
+        data: null,
+        damage: 20,
+        lastAttack: 0,
+        attackCooldown: 1000
     }
 };
