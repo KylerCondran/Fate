@@ -57,6 +57,11 @@ git clone https://github.com/KylerCondran/Fate.git
   <li>Ninja Dojo</li>
   <li>Army Base</li>
   <li>Mothership</li>
+  <li>Forest</li>
+  <li>Prison</li>
+  <li>Jurassic</li>
+  <li>Moon</li>
+  <li>Desert</li>
   <li>Secret Levels</li>
 </ul>
 
@@ -89,6 +94,11 @@ git clone https://github.com/KylerCondran/Fate.git
   <li>Robots</li>
   <li>Aliens</li>
   <li>UFOs</li>
+  <li>Werewolves</li>
+  <li>Astronauts</li>
+  <li>Rovers</li>
+  <li>Landers</li>
+  <li>Turrets</li>
 </ul>
 
 ## Pickups

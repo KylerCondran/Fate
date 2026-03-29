@@ -569,5 +569,62 @@ window.MonsterData = {
         damage: 20,
         lastAttack: 0,
         attackCooldown: 1000
+    },
+    astronaut: {
+        type: 'astronaut',
+        skin: 'astronaut-sprite',
+        audio: 'astronaut',
+        health: 250,
+        speed: 0.01,
+        isDead: false,
+        width: 512,
+        height: 512,
+        data: null,
+        damage: 10,
+        lastAttack: 0,
+        attackCooldown: 1000
+    },
+    rover: {
+        type: 'rover',
+        skin: 'rover-sprite',
+        audio: 'rover',
+        health: 500,
+        speed: 0.04,
+        isDead: false,
+        width: 512,
+        height: 512,
+        data: null,
+        damage: 5,
+        lastSpawn: 0,
+        activeCheckpoint: 0,
+        spawnAstronaut: false
+    },
+    turret: {
+        type: 'turret',
+        skin: 'turret-sprite',
+        audio: 'turret',
+        health: 500,
+        speed: 0.02,
+        isDead: false,
+        width: 512,
+        height: 512,
+        data: null,
+        damage: 5,
+        lastShot: 0,
+        attackCooldown: 2000
+    },
+    lander: {
+        type: 'lander',
+        skin: 'lander-sprite',
+        audio: 'lander',
+        health: 1000,
+        speed: 0.02,
+        isDead: false,
+        width: 512,
+        height: 512,
+        data: null,
+        damage: 5,
+        lastSpawn: 0,
+        spawnCooldown: 60000
     }
 };

@@ -470,7 +470,7 @@ function loadLevel(levelIdx) {
         game.player.speed.movement = 0.08;
     }
     const emptyPositions = [];
-    const monsterValues = [3, 4, 5, 6, 7, 15, 16, 17, 18, 19, 21, 22, 23, 24, 25, 27, 28, 29, 31, 32, 33, 34, 35, 36, 37, 41, 45, 46, 47, 50, 52, 57];
+    const monsterValues = [3, 4, 5, 6, 7, 15, 16, 17, 18, 19, 21, 22, 23, 24, 25, 27, 28, 29, 31, 32, 33, 34, 35, 36, 37, 41, 45, 46, 47, 50, 52, 57, 60, 61, 62, 64];
     for (let i = 0; i < mapy; i++) {
         for (let j = 0; j < mapx; j++) {
             var objectValue = map[i][j];
@@ -781,6 +781,26 @@ function loadLevel(levelIdx) {
                 case 61:
                     const wolf = { ...window.MonsterData.wolf, id: `monster_${game.monsterTotal}`, x: j, y: i };
                     game.monsters.push(wolf);
+                    game.monsterTotal++;
+                    break;
+                case 62:
+                    const astronaut = { ...window.MonsterData.astronaut, id: `monster_${game.monsterTotal}`, x: j, y: i };
+                    game.monsters.push(astronaut);
+                    game.monsterTotal++;
+                    break;
+                case 63:
+                    const rover = { ...window.MonsterData.rover, id: `monster_${game.monsterTotal}`, x: j, y: i };
+                    game.monsters.push(rover);
+                    game.monsterTotal++;
+                    break;
+                case 64:
+                    const turret = { ...window.MonsterData.turret, id: `monster_${game.monsterTotal}`, x: j, y: i };
+                    game.monsters.push(turret);
+                    game.monsterTotal++;
+                    break;
+                case 65:
+                    const lander = { ...window.MonsterData.lander, id: `monster_${game.monsterTotal}`, x: j, y: i };
+                    game.monsters.push(lander);
                     game.monsterTotal++;
                     break;
                 default:
@@ -1231,8 +1251,13 @@ function updateGameObjects() {
                                 case 'apache':
                                 case 'robot':
                                 case 'fighterjet':
+                                case 'rover':
                                     game.sprites.push({ id: 'burningdebris-sprite', x: monster.x, y: monster.y, width: 512, height: 512, data: getTextureData({ id: 'burningdebris-sprite', width: 512, height: 512 }) });
                                     game.levels[game.currentLevel].map[Math.floor(monster.y)][Math.floor(monster.x)] = 44;
+                                    break;
+                                case 'turret':
+                                case 'lander':
+                                    game.sprites.push({ id: 'burningdebris-sprite', x: monster.x, y: monster.y, width: 512, height: 512, data: getTextureData({ id: 'burningdebris-sprite', width: 512, height: 512 }) });
                                     break;
                                 case 'ufo':
                                     game.sprites.push({ id: 'burningdebris-sprite', x: monster.x, y: monster.y, width: 512, height: 512, data: getTextureData({ id: 'burningdebris-sprite', width: 512, height: 512 }) });
@@ -2122,6 +2147,27 @@ function updateGameObjects() {
                     break;
                 case 'stasischamber':
                     break;
+                case 'lander':
+                    if (!monster.lastSpawn || currentTime - monster.lastSpawn >= monster.spawnCooldown) {
+                        monster.lastSpawn = currentTime;
+                        for (i = 0; i < (1 * spawnModifier); i++) {
+                            const validSpots = getOpenSpawnPositions(Math.floor(monster.x), Math.floor(monster.y), 3);
+                            if (validSpots.length == 0) continue;
+                            const spot = validSpots[Math.floor(Math.random() * validSpots.length)];
+                            const rover = { ...window.MonsterData.rover, id: `monster_${game.monsterTotal}`, x: spot.x, y: spot.y };
+                            const monsterTexture = {
+                                id: rover.skin,
+                                width: rover.width,
+                                height: rover.height
+                            };
+                            rover.data = getTextureData(monsterTexture);
+                            game.monsterTotal++;
+                            game.monsters.push(rover);
+                            updateMonsterGrid();
+                        }
+                        playSound('portal-sound');
+                    }
+                    break;
                 case 'moby':
                     if (currentTime - monster.spawnTime >= 60000) {
                         monster.isDead = true;
@@ -2326,6 +2372,75 @@ function updateGameObjects() {
                             if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2) {
                                 monster.y = newY;
                             }
+                        }
+                    }
+                    break;
+                case 'rover':
+                    // Checkpoint route movement code
+                    const RcheckpointOBJ = game.checkpoints.find(checkpoint => checkpoint.type == `checkpoint_${monster.activeCheckpoint}`);
+                    if (!RcheckpointOBJ || !Number.isFinite(RcheckpointOBJ.x) || !Number.isFinite(RcheckpointOBJ.y)) {
+                        break; // NaN safeguard
+                    }
+                    const RcheckpointX = RcheckpointOBJ.x - monster.x;
+                    const RcheckpointY = RcheckpointOBJ.y - monster.y;
+                    const RcheckpointdistSq = RcheckpointX * RcheckpointX + RcheckpointY * RcheckpointY;
+                    if (RcheckpointdistSq < 1) {
+                        monster.activeCheckpoint++;
+                        if (monster.activeCheckpoint >= game.checkpointTotal) {
+                            monster.activeCheckpoint = 0;
+                        }
+                    } else {
+                        if (distSq > 15) {
+                            const distance = Math.sqrt(RcheckpointdistSq);
+                            const invDist = 1 / distance;
+                            const dirX = RcheckpointX * invDist * monster.speed;
+                            const dirY = RcheckpointY * invDist * monster.speed;
+                            // Try to move in X direction
+                            const newX = monster.x + dirX;
+                            if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2) {
+                                monster.x = newX;
+                            }
+                            // Try to move in Y direction
+                            const newY = monster.y + dirY;
+                            if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2) {
+                                monster.y = newY;
+                            }
+                        } else {
+                            if (!monster.spawnAstronaut) {
+                                monster.spawnAstronaut = true;
+                                for (i = 0; i < (4 * spawnModifier); i++) {
+                                    const validSpots = getOpenSpawnPositions(Math.floor(monster.x), Math.floor(monster.y), 3);
+                                    if (validSpots.length == 0) continue;
+                                    const spot = validSpots[Math.floor(Math.random() * validSpots.length)];
+                                    const astronaut = { ...window.MonsterData.astronaut, id: `monster_${game.monsterTotal}`, x: spot.x, y: spot.y };
+                                    const monsterTexture = {
+                                        id: astronaut.skin,
+                                        width: astronaut.width,
+                                        height: astronaut.height
+                                    };
+                                    astronaut.data = getTextureData(monsterTexture);
+                                    game.monsterTotal++;
+                                    game.monsters.push(astronaut);
+                                    updateMonsterGrid();
+                                }
+                                playSound('portal-sound');
+                            }
+                        }
+                    }
+                    break;
+                case 'turret':
+                    if (distSq < 80 && isVisibleToPlayer(monster)) {
+                        if (!monster.lastShot || currentTime - monster.lastShot >= monster.attackCooldown) {
+                            const angle = radiansToDegrees(Math.atan2(dy, dx));
+                            let texture;
+                            texture = game.projectileMap['laser'];
+                            playSound('laserblast-sound');
+                            game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'laser', texture, 'monster', 0.2, monster.damage));
+                            game.projectiles.push(new Projectile(monster.x, monster.y, angle + 2, 'laser', texture, 'monster', 0.2, monster.damage));
+                            game.projectiles.push(new Projectile(monster.x, monster.y, angle + 4, 'laser', texture, 'monster', 0.2, monster.damage));
+                            game.projectiles.push(new Projectile(monster.x, monster.y, angle - 2, 'laser', texture, 'monster', 0.2, monster.damage));
+                            game.projectiles.push(new Projectile(monster.x, monster.y, angle - 4, 'laser', texture, 'monster', 0.2, monster.damage));
+                            monster.lastShot = currentTime;
                         }
                     }
                     break;
