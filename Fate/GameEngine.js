@@ -2654,7 +2654,7 @@ function movePlayer() {
                     //drop secret totem
                     itemPickup(Math.floor(game.player.y), Math.floor(game.player.x), 'secretunlock-sound');
                     game.pickupCollected++;
-                    game.levels[10].unlocked = true;
+                    game.levels[15].unlocked = true;
                     game.keysUnlocked.cowkey = false;
                 } else {
                     playSound('locked-sound');
@@ -2708,7 +2708,7 @@ function movePlayer() {
                     //drop secret totem
                     itemPickup(Math.floor(game.player.y), Math.floor(game.player.x), 'secretunlock-sound');
                     game.pickupCollected++;
-                    game.levels[11].unlocked = true;
+                    game.levels[16].unlocked = true;
                     game.keysUnlocked.monkeykey = false;
                 } else {
                     playSound('locked-sound');
