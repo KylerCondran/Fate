@@ -799,8 +799,13 @@ function loadLevel(levelIdx) {
                     game.monsterTotal++;
                     break;
                 case 65:
-                    const lander = { ...window.MonsterData.lander, id: `monster_${game.monsterTotal}`, x: j, y: i };
+                    const lander = { ...window.MonsterData.lander, id: `monster_${game.monsterTotal}`, x: j, y: i, landerNumber: 1 };
                     game.monsters.push(lander);
+                    game.monsterTotal++;
+                    break;
+                case 66:
+                    const lander2 = { ...window.MonsterData.lander, id: `monster_${game.monsterTotal}`, x: j, y: i, landerNumber: 2 };
+                    game.monsters.push(lander2);
                     game.monsterTotal++;
                     break;
                 default:
@@ -2154,7 +2159,9 @@ function updateGameObjects() {
                             const validSpots = getOpenSpawnPositions(Math.floor(monster.x), Math.floor(monster.y), 3);
                             if (validSpots.length == 0) continue;
                             const spot = validSpots[Math.floor(Math.random() * validSpots.length)];
-                            const rover = { ...window.MonsterData.rover, id: `monster_${game.monsterTotal}`, x: spot.x, y: spot.y };
+                            let checkVal = 0;
+                            if (monster.landerNumber == 2) { checkVal = 2 }
+                            const rover = { ...window.MonsterData.rover, id: `monster_${game.monsterTotal}`, x: spot.x, y: spot.y, activeCheckpoint: checkVal };
                             const monsterTexture = {
                                 id: rover.skin,
                                 width: rover.width,
@@ -2408,7 +2415,7 @@ function updateGameObjects() {
                         } else {
                             if (!monster.spawnAstronaut) {
                                 monster.spawnAstronaut = true;
-                                for (i = 0; i < (4 * spawnModifier); i++) {
+                                for (i = 0; i < (2 * spawnModifier); i++) {
                                     const validSpots = getOpenSpawnPositions(Math.floor(monster.x), Math.floor(monster.y), 3);
                                     if (validSpots.length == 0) continue;
                                     const spot = validSpots[Math.floor(Math.random() * validSpots.length)];

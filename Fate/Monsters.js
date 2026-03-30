@@ -625,6 +625,7 @@ window.MonsterData = {
         data: null,
         damage: 5,
         lastSpawn: 0,
-        spawnCooldown: 60000
+        spawnCooldown: 60000,
+        landerNumber: 1
     }
 };
