@@ -39,7 +39,8 @@ let game = {
     },
     keysUnlocked: {
         cowkey: false,
-        monkeykey: false
+        monkeykey: false,
+        goatkey: false
     },
     screen: {
         width: window.innerWidth,
@@ -808,6 +809,16 @@ function loadLevel(levelIdx) {
                     game.monsters.push(lander2);
                     game.monsterTotal++;
                     break;
+                case 67:
+                    //goat chest
+                    game.sprites.push({ id: "lockedchest-sprite", x: j, y: i, width: 512, height: 512, data: null });
+                    game.pickupTotal++;
+                    break;
+                case 68:
+                    //goat key
+                    game.sprites.push({ id: "key-sprite", x: j, y: i, width: 64, height: 64, data: null });
+                    game.pickupTotal++;
+                    break;
                 default:
                     break;
             }
@@ -1247,6 +1258,11 @@ function updateGameObjects() {
                                     game.sprites.push({ id: 'tridentpickup-sprite', x: Math.floor(monster.x), y: Math.floor(monster.y), width: 30, height: 80, data: getTextureData({ id: 'tridentpickup-sprite', width: 30, height: 80 }) });
                                     game.pickupTotal++;
                                     game.levels[game.currentLevel].map[Math.floor(monster.y)][Math.floor(monster.x)] = 58;
+                                    break;
+                                case 'cowking':
+                                    game.sprites.push({ id: 'key-sprite', x: Math.floor(monster.x), y: Math.floor(monster.y), width: 64, height: 64, data: getTextureData({ id: 'key-sprite', width: 64, height: 64 }) });
+                                    game.pickupTotal++;
+                                    game.levels[game.currentLevel].map[Math.floor(monster.y)][Math.floor(monster.x)] = 68;
                                     break;
                                 case 'stasischamber':
                                     game.sprites.push({ id: 'brokenstasischamber-sprite', x: monster.x, y: monster.y, width: 512, height: 512, data: getTextureData({ id: 'brokenstasischamber-sprite', width: 512, height: 512 }) });
@@ -2747,6 +2763,26 @@ function movePlayer() {
                 game.tridentammo = true;
                 game.pickupCollected++;
                 break;
+            // Goat Chest pickup
+            case 67:
+                if (game.keysUnlocked.goatkey) {
+                    game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
+                    //drop secret totem
+                    itemPickup(Math.floor(game.player.y), Math.floor(game.player.x), 'secretunlock-sound');
+                    game.pickupCollected++;
+                    game.levels[17].unlocked = true;
+                    game.keysUnlocked.goatkey = false;
+                } else {
+                    playSound('locked-sound');
+                }
+                break;
+            // Goat Key pickup
+            case 68:
+                game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
+                itemPickup(Math.floor(game.player.y), Math.floor(game.player.x), 'pickup-sound');
+                game.pickupCollected++;
+                game.keysUnlocked.goatkey = true;
+                break;
         }
     }
     if (game.key.one.active && game.weaponsUnlocked.knife) {
@@ -3426,6 +3462,9 @@ function drawHUD(ctx) {
         }
         if (game.keysUnlocked.monkeykey) {
             keyText += 'Monkey ';
+        }
+        if (game.keysUnlocked.goatkey) {
+            keyText += 'Goat ';
         }
         return keyText;
     })();

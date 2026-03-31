@@ -13,7 +13,7 @@ Level Legend:
 51 = medkit, 52 = stasischamber, 53 = checkpoint_0, 54 = checkpoint_1, 55 = checkpoint_2
 56 = checkpoint_3, 57 = spider, 58 = tridentpickup, 59 = hyena, 60 = werewolf
 61 = wolf, 62 = astronaut, 63 = rover, 64 = turret, 65 = lander
-66 = lander2
+66 = lander2, goatchest = 67, goatkey = 68
 */
 window.LevelData = [
     {
@@ -631,7 +631,7 @@ window.LevelData = [
             [2, 0, 0, 0, 57, 0, 0, 0, 0, 0, 0, 0, 47, 0, 0, 0, 0, 47, 0, 2],
             [2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 2],
             [2, 0, 47, 0, 47, 0, 47, 0, 2, 0, 0, 0, 0, 47, 0, 1, 0, 0, 0, 2],
-            [2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+            [2, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 67, 2],
             [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
         ],
         unlocked: false,
