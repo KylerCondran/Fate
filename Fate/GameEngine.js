@@ -819,6 +819,16 @@ function loadLevel(levelIdx) {
                     game.sprites.push({ id: "key-sprite", x: j, y: i, width: 64, height: 64, data: null });
                     game.pickupTotal++;
                     break;
+                case 69:
+                    const dinosauregg = { ...window.MonsterData.dinosauregg, id: `monster_${game.monsterTotal}`, x: j, y: i };
+                    game.monsters.push(dinosauregg);
+                    game.monsterTotal++;
+                    break;
+                case 70:
+                    const lizard = { ...window.MonsterData.lizard, id: `monster_${game.monsterTotal}`, x: j, y: i };
+                    game.monsters.push(lizard);
+                    game.monsterTotal++;
+                    break;
                 default:
                     break;
             }
@@ -1294,6 +1304,17 @@ function updateGameObjects() {
                                     game.monsters.push(alien1);
                                     break;
                                 case 'seahorsebaby':
+                                    break;
+                                case 'dinosauregg':
+                                    game.monsterTotal++;
+                                    const lizard = { ...window.MonsterData.lizard, id: `monster_${game.monsterTotal}`, x: monster.x, y: monster.y };
+                                    const lizardTexture = {
+                                        id: lizard.skin,
+                                        width: lizard.width,
+                                        height: lizard.height
+                                    };
+                                    lizard.data = getTextureData(lizardTexture);
+                                    game.monsters.push(lizard);
                                     break;
                                 default:
                                     game.sprites.push({ id: 'bones-sprite', x: monster.x, y: monster.y, width: 256, height: 256, data: getTextureData({ id: 'bones-sprite', width: 256, height: 256 }) });
@@ -2166,6 +2187,7 @@ function updateGameObjects() {
                         }
                     }
                     break;
+                case 'dinosauregg':
                 case 'stasischamber':
                     break;
                 case 'lander':
@@ -2464,6 +2486,51 @@ function updateGameObjects() {
                             game.projectiles.push(new Projectile(monster.x, monster.y, angle - 2, 'laser', texture, 'monster', 0.2, monster.damage));
                             game.projectiles.push(new Projectile(monster.x, monster.y, angle - 4, 'laser', texture, 'monster', 0.2, monster.damage));
                             monster.lastShot = currentTime;
+                        }
+                    }
+                    break;
+                case 'lizard':
+                    if (distSq < 150) {
+                        const distance = Math.sqrt(distSq);
+                        const invDist = 1 / distance;
+                        const dirX = dx * invDist * monster.speed;
+                        const dirY = dy * invDist * monster.speed;
+                        // dirX, dirY = direction FROM monster TO player
+                        // So fleeing direction is the opposite:
+                        const fleeX = -dirX;
+                        const fleeY = -dirY;
+
+                        // Perpendicular (strafe)
+                        const perpX = -dirY;
+                        const perpY = dirX;
+                        // Control how much the monster flees vs strafes
+                        const fleeWeight = 0.8;   // mostly fleeing
+                        const strafeWeight = 0.2; // small sideways motion
+
+                        monster.strafeDir = monster.strafeDir ?? (Math.random() < 0.5 ? -1 : 1);
+                        if (Math.random() < 0.01) {
+                            monster.strafeDir *= -1;
+                        }
+
+                        // Blend the directions
+                        let moveX = (fleeX * fleeWeight) + (perpX * monster.strafeDir * strafeWeight);
+                        let moveY = (fleeY * fleeWeight) + (perpY * monster.strafeDir * strafeWeight);
+
+                        // Normalize so speed stays consistent
+                        const length = Math.hypot(moveX, moveY);
+                        if (length > 0) {
+                            moveX = (moveX / length) * monster.speed;
+                            moveY = (moveY / length) * monster.speed;
+                        }
+
+                        const newX = monster.x + moveX;
+                        if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
+                            monster.x = newX;
+                        }
+
+                        const newY = monster.y + moveY;
+                        if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
+                            monster.y = newY;
                         }
                     }
                     break;

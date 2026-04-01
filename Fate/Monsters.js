@@ -627,5 +627,33 @@ window.MonsterData = {
         lastSpawn: 0,
         spawnCooldown: 60000,
         landerNumber: 1
+    },
+    dinosauregg: {
+        type: 'dinosauregg',
+        skin: 'dinosauregg-sprite',
+        audio: 'dinosauregg',
+        health: 10,
+        speed: 0.02,
+        isDead: false,
+        width: 512,
+        height: 512,
+        data: null,
+        damage: 0,
+        lastAttack: 0,
+        attackCooldown: 1000
+    },
+    lizard: {
+        type: 'lizard',
+        skin: 'lizard-sprite',
+        audio: 'lizard',
+        health: 10,
+        speed: 0.06,
+        isDead: false,
+        width: 512,
+        height: 512,
+        data: null,
+        damage: 10,
+        lastAttack: 0,
+        attackCooldown: 1000
     }
 };
