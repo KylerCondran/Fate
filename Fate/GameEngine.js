@@ -834,6 +834,11 @@ function loadLevel(levelIdx) {
                     game.monsters.push(raptor);
                     game.monsterTotal++;
                     break;
+                case 72:
+                    const brontosaurus = { ...window.MonsterData.brontosaurus, id: `monster_${game.monsterTotal}`, x: j, y: i };
+                    game.monsters.push(brontosaurus);
+                    game.monsterTotal++;
+                    break;
                 default:
                     break;
             }
@@ -2756,6 +2761,53 @@ function updateGameObjects() {
                         if (game.player.health <= 0) {
                             playSound('death-sound');
                             endGameDeath();
+                        }
+                    }
+                    break;
+                case 'brontosaurus':
+                    if (distSq > 0.25) {
+                        // Pick a new random direction every wanderCooldown seconds
+                        if (!monster.lastWanderTime || currentTime - monster.lastWanderTime >= monster.wanderCooldown) {
+                            const angle = Math.random() * Math.PI * 2;
+                            monster.dirX = Math.cos(angle);
+                            monster.dirY = Math.sin(angle);
+
+                            monster.lastWanderTime = currentTime;
+                        }
+
+                        // Move using the stored random direction
+                        const dirX = monster.dirX * monster.speed;
+                        const dirY = monster.dirY * monster.speed;
+
+                        // Try to move in X direction
+                        const newX = monster.x + dirX;
+                        if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
+                            monster.x = newX;
+                        } else {
+                            // Hit a wall → pick a new direction immediately
+                            monster.lastWanderTime = 0;
+                        }
+
+                        // Try to move in Y direction
+                        const newY = monster.y + dirY;
+                        if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
+                            monster.y = newY;
+                        } else {
+                            // Hit a wall → pick a new direction immediately
+                            monster.lastWanderTime = 0;
+                        }
+                        if (distSq < 0.5 && (!monster.lastAttack || currentTime - monster.lastAttack >= monster.attackCooldown)) {
+                            // Attack the player
+                            game.player.health -= monster.damage;
+                            game.lastMonsterToHitPlayer = monster.type.charAt(0).toUpperCase() + monster.type.slice(1);
+                            monster.lastAttack = currentTime;
+                            // Play monster attack sound
+                            playSound('squish-sound');
+                            // Check if player died
+                            if (game.player.health <= 0) {
+                                playSound('death-sound');
+                                endGameDeath();
+                            }
                         }
                     }
                     break;

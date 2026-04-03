@@ -675,5 +675,23 @@ window.MonsterData = {
         dirY: 0,
         lastAttack: 0,
         attackCooldown: 1000
+    },
+    brontosaurus: {
+        type: 'brontosaurus',
+        skin: 'brontosaurus-sprite',
+        audio: 'brontosaurus',
+        health: 1500,
+        speed: 0.01,
+        isDead: false,
+        width: 512,
+        height: 512,
+        data: null,
+        damage: 100,
+        lastAttack: 0,
+        attackCooldown: 1000,
+        lastWanderTime: 0,
+        wanderCooldown: 9000,
+        dirX: 0,
+        dirY: 0
     }
 };
