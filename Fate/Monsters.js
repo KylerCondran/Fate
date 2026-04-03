@@ -669,6 +669,10 @@ window.MonsterData = {
         height: 512,
         data: null,
         damage: 25,
+        lastWanderTime: 0,
+        wanderCooldown: 6000,
+        dirX: 0,
+        dirY: 0,
         lastAttack: 0,
         attackCooldown: 1000
     }
