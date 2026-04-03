@@ -2571,7 +2571,7 @@ function updateGameObjects() {
                     }
                     break;
                 case 'raptor':
-                    if (distSq > 0.25 && distSq < 100) {
+                    if (distSq > 0.25 && distSq < 80) {
                         const distance = Math.sqrt(distSq);
                         const invDist = 1 / distance;
                         const dirX = dx * invDist * monster.speed;
@@ -2586,9 +2586,26 @@ function updateGameObjects() {
                         if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
                             monster.y = newY;
                         }
-                    } else if (distSq > 100) {
-                        const enemyOBJ = game.monsters.find(enemy => enemy.type != 'raptor' && enemy.type != 'dinosauregg' && !enemy.isDead);
-                        if (!enemyOBJ || !Number.isFinite(enemyOBJ.x) || !Number.isFinite(enemyOBJ.y)) {
+                    } else if (distSq > 80) {
+                        const closestEnemy = game.monsters.reduce((closest, enemy) => {
+                            // Skip excluded enemy types and dead enemies
+                            if (enemy.type == 'raptor' || enemy.type == 'dinosauregg' || enemy.isDead) {
+                                return closest;
+                            }
+
+                            // Calculate distance to this enemy
+                            const edx = enemy.x - monster.x;
+                            const edy = enemy.y - monster.y;
+                            const enemyDistSq = edx * edx + edy * edy;
+
+                            // Update closest if this enemy is closer
+                            if (!closest || enemyDistSq < closest.distanceSq) {
+                                return { ...enemy, distanceSq: enemyDistSq };
+                            }
+                            return closest;
+                        }, null);
+
+                        if (!closestEnemy || !Number.isFinite(closestEnemy.x) || !Number.isFinite(closestEnemy.y)) {
                             // Pick a new random direction every wanderCooldown seconds
                             if (!monster.lastWanderTime || currentTime - monster.lastWanderTime >= monster.wanderCooldown) {
                                 const angle = Math.random() * Math.PI * 2;
@@ -2619,12 +2636,12 @@ function updateGameObjects() {
                                 // Hit a wall → pick a new direction immediately
                                 monster.lastWanderTime = 0;
                             }
-                            break; // NaN safeguard
+                            break;
                         } else {
-                            const enemyX = enemyOBJ.x - monster.x;
-                            const enemyY = enemyOBJ.y - monster.y;
+                            const enemyX = closestEnemy.x - monster.x;
+                            const enemyY = closestEnemy.y - monster.y;
                             const enemydistSq = enemyX * enemyX + enemyY * enemyY;
-                            if (enemydistSq > 0.25 && enemydistSq < 100) {
+                            if (enemydistSq > 0.25 && enemydistSq < 80) {
                                 const distance = Math.sqrt(enemydistSq);
                                 const invDist = 1 / distance;
                                 const dirX = enemyX * invDist * monster.speed;
@@ -2679,7 +2696,7 @@ function updateGameObjects() {
                                 }
                             }
                         }
-                    } 
+                    }
                     if (distSq < 0.5 && (!monster.lastAttack || currentTime - monster.lastAttack >= monster.attackCooldown)) {
                         // Attack the player
                         game.player.health -= monster.damage;
