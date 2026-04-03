@@ -1126,7 +1126,7 @@ function handleShooting(e) {
 function updateMonsterGrid() {
     game.monsterGrid = {};
     for (let monster of game.monsters) {
-        if (!monster.isDead && monster.type != 'moby' && monster.type != 'seahorse' && monster.type != 'seahorsebaby') {
+        if (!monster.isDead && monster.type != 'moby' && monster.type != 'seahorse' && monster.type != 'seahorsebaby' && monster.type != 'dinosauregg') {
             const gridKey = `${Math.floor(monster.x)}_${Math.floor(monster.y)}`;
             if (!game.monsterGrid[gridKey]) {
                 game.monsterGrid[gridKey] = [];
@@ -2225,7 +2225,7 @@ function updateGameObjects() {
                         playSound('moby-death');
                         break;
                     }
-                    const enemyOBJ = game.monsters.find(enemy => enemy.type != 'seahorse' && enemy.type != 'seahorsebaby' && enemy.type != 'moby' && !enemy.isDead && isVisibleToPlayer(enemy))
+                    const enemyOBJ = game.monsters.find(enemy => enemy.type != 'seahorse' && enemy.type != 'seahorsebaby' && enemy.type != 'moby' && !enemy.isDead && isVisibleToPlayer(enemy));
                     if (!enemyOBJ || !Number.isFinite(enemyOBJ.x) || !Number.isFinite(enemyOBJ.y)) {
                         if (distSq > 5) {
                             const distance = Math.sqrt(distSq);
@@ -2296,7 +2296,7 @@ function updateGameObjects() {
                         playSound('moby-death');
                         break;
                     }
-                    const SenemyOBJ = game.monsters.find(enemy => enemy.type != 'seahorse' && enemy.type != 'seahorsebaby' && enemy.type != 'moby' && !enemy.isDead && isVisibleToPlayer(enemy))
+                    const SenemyOBJ = game.monsters.find(enemy => enemy.type != 'seahorse' && enemy.type != 'seahorsebaby' && enemy.type != 'moby' && !enemy.isDead && isVisibleToPlayer(enemy));
                     if (!SenemyOBJ || !Number.isFinite(SenemyOBJ.x) || !Number.isFinite(SenemyOBJ.y)) {
                         if (distSq > 5) {
                             const distance = Math.sqrt(distSq);
@@ -2360,7 +2360,7 @@ function updateGameObjects() {
                         monster.isDead = true;
                         break;
                     }
-                    const SBenemyOBJ = game.monsters.find(enemy => enemy.type != 'moby' && enemy.type != 'seahorse' && enemy.type != 'seahorsebaby' && !enemy.isDead && isVisibleToPlayer(enemy))
+                    const SBenemyOBJ = game.monsters.find(enemy => enemy.type != 'moby' && enemy.type != 'seahorse' && enemy.type != 'seahorsebaby' && !enemy.isDead && isVisibleToPlayer(enemy));
                     if (!SBenemyOBJ || !Number.isFinite(SBenemyOBJ.x) || !Number.isFinite(SBenemyOBJ.y)) {
                         if (distSq > 5) {
                             const distance = Math.sqrt(distSq);
@@ -2587,37 +2587,99 @@ function updateGameObjects() {
                             monster.y = newY;
                         }
                     } else if (distSq > 100) {
-                        // Pick a new random direction every wanderCooldown seconds
-                        if (!monster.lastWanderTime || currentTime - monster.lastWanderTime >= monster.wanderCooldown) {
-                            const angle = Math.random() * Math.PI * 2;
-                            monster.dirX = Math.cos(angle);
-                            monster.dirY = Math.sin(angle);
+                        const enemyOBJ = game.monsters.find(enemy => enemy.type != 'raptor' && enemy.type != 'dinosauregg' && !enemy.isDead);
+                        if (!enemyOBJ || !Number.isFinite(enemyOBJ.x) || !Number.isFinite(enemyOBJ.y)) {
+                            // Pick a new random direction every wanderCooldown seconds
+                            if (!monster.lastWanderTime || currentTime - monster.lastWanderTime >= monster.wanderCooldown) {
+                                const angle = Math.random() * Math.PI * 2;
+                                monster.dirX = Math.cos(angle);
+                                monster.dirY = Math.sin(angle);
 
-                            monster.lastWanderTime = currentTime;
-                        }
+                                monster.lastWanderTime = currentTime;
+                            }
 
-                        // Move using the stored random direction
-                        const dirX = monster.dirX * monster.speed;
-                        const dirY = monster.dirY * monster.speed;
+                            // Move using the stored random direction
+                            const dirX = monster.dirX * monster.speed;
+                            const dirY = monster.dirY * monster.speed;
 
-                        // Try to move in X direction
-                        const newX = monster.x + dirX;
-                        if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
-                            monster.x = newX;
+                            // Try to move in X direction
+                            const newX = monster.x + dirX;
+                            if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
+                                monster.x = newX;
+                            } else {
+                                // Hit a wall → pick a new direction immediately
+                                monster.lastWanderTime = 0;
+                            }
+
+                            // Try to move in Y direction
+                            const newY = monster.y + dirY;
+                            if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
+                                monster.y = newY;
+                            } else {
+                                // Hit a wall → pick a new direction immediately
+                                monster.lastWanderTime = 0;
+                            }
+                            break; // NaN safeguard
                         } else {
-                            // Hit a wall → pick a new direction immediately
-                            monster.lastWanderTime = 0;
-                        }
+                            const enemyX = enemyOBJ.x - monster.x;
+                            const enemyY = enemyOBJ.y - monster.y;
+                            const enemydistSq = enemyX * enemyX + enemyY * enemyY;
+                            if (enemydistSq > 0.25 && enemydistSq < 100) {
+                                const distance = Math.sqrt(enemydistSq);
+                                const invDist = 1 / distance;
+                                const dirX = enemyX * invDist * monster.speed;
+                                const dirY = enemyY * invDist * monster.speed;
+                                // Try to move in X direction
+                                const newX = monster.x + dirX;
+                                if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
+                                    monster.x = newX;
+                                }
+                                // Try to move in Y direction
+                                const newY = monster.y + dirY;
+                                if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
+                                    monster.y = newY;
+                                }
+                                if (enemydistSq < 0.5 && (!monster.lastAttack || currentTime - monster.lastAttack >= monster.attackCooldown)) {
+                                    // Attack the monster
+                                    const angle = radiansToDegrees(Math.atan2(enemyY, enemyX));
+                                    let blankTexture;
+                                    game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'knife', blankTexture, 'player', 0.6, monster.damage));
+                                    monster.lastAttack = currentTime;
+                                }
+                            } else {
+                                // Pick a new random direction every wanderCooldown seconds
+                                if (!monster.lastWanderTime || currentTime - monster.lastWanderTime >= monster.wanderCooldown) {
+                                    const angle = Math.random() * Math.PI * 2;
+                                    monster.dirX = Math.cos(angle);
+                                    monster.dirY = Math.sin(angle);
 
-                        // Try to move in Y direction
-                        const newY = monster.y + dirY;
-                        if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
-                            monster.y = newY;
-                        } else {
-                            // Hit a wall → pick a new direction immediately
-                            monster.lastWanderTime = 0;
+                                    monster.lastWanderTime = currentTime;
+                                }
+
+                                // Move using the stored random direction
+                                const dirX = monster.dirX * monster.speed;
+                                const dirY = monster.dirY * monster.speed;
+
+                                // Try to move in X direction
+                                const newX = monster.x + dirX;
+                                if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
+                                    monster.x = newX;
+                                } else {
+                                    // Hit a wall → pick a new direction immediately
+                                    monster.lastWanderTime = 0;
+                                }
+
+                                // Try to move in Y direction
+                                const newY = monster.y + dirY;
+                                if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
+                                    monster.y = newY;
+                                } else {
+                                    // Hit a wall → pick a new direction immediately
+                                    monster.lastWanderTime = 0;
+                                }
+                            }
                         }
-                    }
+                    } 
                     if (distSq < 0.5 && (!monster.lastAttack || currentTime - monster.lastAttack >= monster.attackCooldown)) {
                         // Attack the player
                         game.player.health -= monster.damage;
