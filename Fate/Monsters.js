@@ -693,5 +693,23 @@ window.MonsterData = {
         wanderCooldown: 9000,
         dirX: 0,
         dirY: 0
+    },
+    stegosaurus: {
+        type: 'stegosaurus',
+        skin: 'stegosaurus-sprite',
+        audio: 'stegosaurus',
+        health: 1200,
+        speed: 0.02,
+        isDead: false,
+        width: 512,
+        height: 512,
+        data: null,
+        damage: 50,
+        lastAttack: 0,
+        attackCooldown: 1000,
+        lastWanderTime: 0,
+        wanderCooldown: 7000,
+        dirX: 0,
+        dirY: 0
     }
 };

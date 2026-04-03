@@ -99,6 +99,10 @@ git clone https://github.com/KylerCondran/Fate.git
   <li>Rovers</li>
   <li>Landers</li>
   <li>Turrets</li>
+  <li>Lizards</li>
+  <li>Raptors</li>
+  <li>Brontosaurus</li>
+  <li>Stegosaurus</li>
 </ul>
 
 ## Pickups
