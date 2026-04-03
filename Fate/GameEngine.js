@@ -2225,8 +2225,24 @@ function updateGameObjects() {
                         playSound('moby-death');
                         break;
                     }
-                    const enemyOBJ = game.monsters.find(enemy => enemy.type != 'seahorse' && enemy.type != 'seahorsebaby' && enemy.type != 'moby' && !enemy.isDead && isVisibleToPlayer(enemy));
-                    if (!enemyOBJ || !Number.isFinite(enemyOBJ.x) || !Number.isFinite(enemyOBJ.y)) {
+                    const MclosestEnemy = game.monsters.reduce((closest, enemy) => {
+                        // Skip excluded enemy types and dead enemies
+                        if (enemy.type == 'seahorse' || enemy.type == 'seahorsebaby' || enemy.type == 'moby' || enemy.isDead) {
+                            return closest;
+                        }
+
+                        // Calculate distance to this enemy
+                        const edx = enemy.x - monster.x;
+                        const edy = enemy.y - monster.y;
+                        const enemyDistSq = edx * edx + edy * edy;
+
+                        // Update closest if this enemy is closer
+                        if (!closest || enemyDistSq < closest.distanceSq) {
+                            return { ...enemy, distanceSq: enemyDistSq };
+                        }
+                        return closest;
+                    }, null);
+                    if (!MclosestEnemy || !Number.isFinite(MclosestEnemy.x) || !Number.isFinite(MclosestEnemy.y)) {
                         if (distSq > 5) {
                             const distance = Math.sqrt(distSq);
                             const invDist = 1 / distance;
@@ -2245,8 +2261,8 @@ function updateGameObjects() {
                         }
                         break; // NaN safeguard
                     } else {
-                        const enemyX = enemyOBJ.x - monster.x;
-                        const enemyY = enemyOBJ.y - monster.y;
+                        const enemyX = MclosestEnemy.x - monster.x;
+                        const enemyY = MclosestEnemy.y - monster.y;
                         const enemydistSq = enemyX * enemyX + enemyY * enemyY;
                         if (enemydistSq > 0.25 && enemydistSq < 100) {
                             const distance = Math.sqrt(enemydistSq);
@@ -2296,8 +2312,24 @@ function updateGameObjects() {
                         playSound('moby-death');
                         break;
                     }
-                    const SenemyOBJ = game.monsters.find(enemy => enemy.type != 'seahorse' && enemy.type != 'seahorsebaby' && enemy.type != 'moby' && !enemy.isDead && isVisibleToPlayer(enemy));
-                    if (!SenemyOBJ || !Number.isFinite(SenemyOBJ.x) || !Number.isFinite(SenemyOBJ.y)) {
+                    const SclosestEnemy = game.monsters.reduce((closest, enemy) => {
+                        // Skip excluded enemy types and dead enemies
+                        if (enemy.type == 'seahorse' || enemy.type == 'seahorsebaby' || enemy.type == 'moby' || enemy.isDead) {
+                            return closest;
+                        }
+
+                        // Calculate distance to this enemy
+                        const edx = enemy.x - monster.x;
+                        const edy = enemy.y - monster.y;
+                        const enemyDistSq = edx * edx + edy * edy;
+
+                        // Update closest if this enemy is closer
+                        if (!closest || enemyDistSq < closest.distanceSq) {
+                            return { ...enemy, distanceSq: enemyDistSq };
+                        }
+                        return closest;
+                    }, null);
+                    if (!SclosestEnemy || !Number.isFinite(SclosestEnemy.x) || !Number.isFinite(SclosestEnemy.y)) {
                         if (distSq > 5) {
                             const distance = Math.sqrt(distSq);
                             const invDist = 1 / distance;
@@ -2316,8 +2348,8 @@ function updateGameObjects() {
                         }
                         break; // NaN safeguard
                     } else {
-                        const enemyX = SenemyOBJ.x - monster.x;
-                        const enemyY = SenemyOBJ.y - monster.y;
+                        const enemyX = SclosestEnemy.x - monster.x;
+                        const enemyY = SclosestEnemy.y - monster.y;
                         const enemydistSq = enemyX * enemyX + enemyY * enemyY;
                         if (enemydistSq < 64 && (!monster.lastShot || currentTime - monster.lastShot >= monster.attackCooldown)) {
                             // Attack the monster
@@ -2360,8 +2392,24 @@ function updateGameObjects() {
                         monster.isDead = true;
                         break;
                     }
-                    const SBenemyOBJ = game.monsters.find(enemy => enemy.type != 'moby' && enemy.type != 'seahorse' && enemy.type != 'seahorsebaby' && !enemy.isDead && isVisibleToPlayer(enemy));
-                    if (!SBenemyOBJ || !Number.isFinite(SBenemyOBJ.x) || !Number.isFinite(SBenemyOBJ.y)) {
+                    const SBclosestEnemy = game.monsters.reduce((closest, enemy) => {
+                        // Skip excluded enemy types and dead enemies
+                        if (enemy.type == 'seahorse' || enemy.type == 'seahorsebaby' || enemy.type == 'moby' || enemy.isDead) {
+                            return closest;
+                        }
+
+                        // Calculate distance to this enemy
+                        const edx = enemy.x - monster.x;
+                        const edy = enemy.y - monster.y;
+                        const enemyDistSq = edx * edx + edy * edy;
+
+                        // Update closest if this enemy is closer
+                        if (!closest || enemyDistSq < closest.distanceSq) {
+                            return { ...enemy, distanceSq: enemyDistSq };
+                        }
+                        return closest;
+                    }, null);
+                    if (!SBclosestEnemy || !Number.isFinite(SBclosestEnemy.x) || !Number.isFinite(SBclosestEnemy.y)) {
                         if (distSq > 5) {
                             const distance = Math.sqrt(distSq);
                             const invDist = 1 / distance;
@@ -2380,8 +2428,8 @@ function updateGameObjects() {
                         }
                         break; // NaN safeguard
                     } else {
-                        const enemyX = SBenemyOBJ.x - monster.x;
-                        const enemyY = SBenemyOBJ.y - monster.y;
+                        const enemyX = SBclosestEnemy.x - monster.x;
+                        const enemyY = SBclosestEnemy.y - monster.y;
                         const enemydistSq = enemyX * enemyX + enemyY * enemyY;
                         if (enemydistSq > 0.25 && enemydistSq < 100) {
                             const distance = Math.sqrt(enemydistSq);
