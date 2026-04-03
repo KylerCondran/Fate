@@ -653,6 +653,22 @@ window.MonsterData = {
         height: 512,
         data: null,
         damage: 10,
+        lastWanderTime: 0,
+        wanderCooldown: 6000,
+        dirX: 0,
+        dirY: 0
+    },
+    raptor: {
+        type: 'raptor',
+        skin: 'raptor-sprite',
+        audio: 'raptor',
+        health: 250,
+        speed: 0.04,
+        isDead: false,
+        width: 512,
+        height: 512,
+        data: null,
+        damage: 25,
         lastAttack: 0,
         attackCooldown: 1000
     }

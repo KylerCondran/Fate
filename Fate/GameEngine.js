@@ -471,7 +471,7 @@ function loadLevel(levelIdx) {
         game.player.speed.movement = 0.08;
     }
     const emptyPositions = [];
-    const monsterValues = [3, 4, 5, 6, 7, 15, 16, 17, 18, 19, 21, 22, 23, 24, 25, 27, 28, 29, 31, 32, 33, 34, 35, 36, 37, 41, 45, 46, 47, 50, 52, 57, 60, 61, 62, 64];
+    const monsterValues = [3, 4, 5, 6, 7, 15, 16, 17, 18, 19, 21, 22, 23, 24, 25, 27, 28, 29, 31, 32, 33, 34, 35, 36, 37, 41, 45, 46, 47, 50, 52, 57, 60, 61, 62, 64, 69, 70, 71];
     for (let i = 0; i < mapy; i++) {
         for (let j = 0; j < mapx; j++) {
             var objectValue = map[i][j];
@@ -827,6 +827,11 @@ function loadLevel(levelIdx) {
                 case 70:
                     const lizard = { ...window.MonsterData.lizard, id: `monster_${game.monsterTotal}`, x: j, y: i };
                     game.monsters.push(lizard);
+                    game.monsterTotal++;
+                    break;
+                case 71:
+                    const raptor = { ...window.MonsterData.raptor, id: `monster_${game.monsterTotal}`, x: j, y: i };
+                    game.monsters.push(raptor);
                     game.monsterTotal++;
                     break;
                 default:
@@ -2490,7 +2495,7 @@ function updateGameObjects() {
                     }
                     break;
                 case 'lizard':
-                    if (distSq < 150) {
+                    if (distSq < 100) {
                         const distance = Math.sqrt(distSq);
                         const invDist = 1 / distance;
                         const dirX = dx * invDist * monster.speed;
@@ -2531,6 +2536,37 @@ function updateGameObjects() {
                         const newY = monster.y + moveY;
                         if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
                             monster.y = newY;
+                        }
+                    } else {
+                        // Pick a new random direction every 2–4 seconds
+                        if (!monster.lastWanderTime || currentTime - monster.lastWanderTime >= monster.wanderCooldown) {
+                            const angle = Math.random() * Math.PI * 2;
+                            monster.dirX = Math.cos(angle);
+                            monster.dirY = Math.sin(angle);
+
+                            monster.lastWanderTime = currentTime;
+                        }
+
+                        // Move using the stored random direction
+                        const dirX = monster.dirX * monster.speed;
+                        const dirY = monster.dirY * monster.speed;
+
+                        // Try to move in X direction
+                        const newX = monster.x + dirX;
+                        if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
+                            monster.x = newX;
+                        } else {
+                            // Hit a wall → pick a new direction immediately
+                            monster.lastWanderTime = 0;
+                        }
+
+                        // Try to move in Y direction
+                        const newY = monster.y + dirY;
+                        if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
+                            monster.y = newY;
+                        } else {
+                            // Hit a wall → pick a new direction immediately
+                            monster.lastWanderTime = 0;
                         }
                     }
                     break;
