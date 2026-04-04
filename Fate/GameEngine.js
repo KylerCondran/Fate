@@ -1420,7 +1420,7 @@ function updateGameObjects() {
 
             switch (monster.type) {
                 case 'spider':
-                    if (distSq < 64) {
+                    if (distSq < 64 && isVisibleToPlayer(monster)) {
                         if (!monster.lastShot || currentTime - monster.lastShot >= monster.attackCooldown) {
                             const angle = radiansToDegrees(Math.atan2(dy, dx));
                             game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'web', game.projectileMap['web'], 'monster', 0.2, monster.damage));
@@ -1428,7 +1428,7 @@ function updateGameObjects() {
                             monster.lastShot = currentTime;
                         }
                     }
-                    if (distSq > 30 && distSq < 200) {
+                    if (distSq > 30 && distSq < 200 && isVisibleToPlayer(monster)) {
                         const distance = Math.sqrt(distSq);
                         const invDist = 1 / distance;
                         const dirX = dx * invDist * monster.speed;
@@ -1446,7 +1446,7 @@ function updateGameObjects() {
                     }
                     break;
                 case 'alien':
-                    if (distSq < 64) {
+                    if (distSq < 64 && isVisibleToPlayer(monster)) {
                         if (!monster.lastShot || currentTime - monster.lastShot >= monster.attackCooldown) {
                             const angle = radiansToDegrees(Math.atan2(dy, dx));
                             game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'laser', game.projectileMap['laser'], 'monster', 0.2, monster.damage));
@@ -1472,7 +1472,7 @@ function updateGameObjects() {
                     }
                     break;
                 case 'ufo':
-                    if (distSq < 64) {
+                    if (distSq < 64 && isVisibleToPlayer(monster)) {
                         if (!monster.lastShot || currentTime - monster.lastShot >= monster.attackCooldown) {
                             const angle = radiansToDegrees(Math.atan2(dy, dx));
                             game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'laser', game.projectileMap['laser'], 'monster', 0.2, 5));
@@ -1480,7 +1480,7 @@ function updateGameObjects() {
                             monster.lastShot = currentTime;
                         }
                     }
-                    if (distSq < 100) {
+                    if (distSq < 100 && isVisibleToPlayer(monster)) {
                         if (!monster.rocketlastShot || currentTime - monster.rocketlastShot >= monster.rocketCooldown) {
                             const angle = radiansToDegrees(Math.atan2(dy, dx));
                             game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'rocket', game.projectileMap['inboundrocket'], 'monster', 0.2, 25));
@@ -1532,7 +1532,7 @@ function updateGameObjects() {
                     }
                     break;
                 case 'soldier':
-                    if (distSq < 64) {
+                    if (distSq < 64 && isVisibleToPlayer(monster)) {
                         if (!monster.lastShot || currentTime - monster.lastShot >= monster.attackCooldown) {
                             const angle = radiansToDegrees(Math.atan2(dy, dx));
                             game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'bullet', game.projectileMap['bullet'], 'monster', 0.2, monster.damage));
@@ -1589,7 +1589,7 @@ function updateGameObjects() {
                             }
                         }
                     } else {
-                        if (distSq < 64) {
+                        if (distSq < 64 && isVisibleToPlayer(monster)) {
                             if (!monster.lastShot || currentTime - monster.lastShot >= monster.attackCooldown) {
                                 const angle = radiansToDegrees(Math.atan2(dy, dx));
                                 game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'shuriken', game.projectileMap['shuriken'], 'monster', 0.2, 5));
@@ -1616,7 +1616,7 @@ function updateGameObjects() {
                     }
                     break;
                 case 'zeus':
-                    if (distSq < 64) {
+                    if (distSq < 64 && isVisibleToPlayer(monster)) {
                         const delay = monster.shotsInBurst < 3 ? 1000 : monster.attackCooldown;
                         if (!monster.lastShot || currentTime - monster.lastShot >= delay) {
                             const angle = radiansToDegrees(Math.atan2(dy, dx));
@@ -1733,7 +1733,7 @@ function updateGameObjects() {
                             monster.y = newY;
                         }
                     }
-                    if (distSq < 50) {
+                    if (distSq < 50 && isVisibleToPlayer(monster)) {
                         if (!monster.lastShot || currentTime - monster.lastShot >= monster.attackCooldown) {
                             const angle = radiansToDegrees(Math.atan2(dy, dx));
                             game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'bullet', game.projectileMap['bullet'], 'monster', 0.2, monster.damage));
@@ -1762,7 +1762,7 @@ function updateGameObjects() {
                     }
                     break;
                 case 'fighterjet':
-                    if (distSq < 64) {
+                    if (distSq < 64 && isVisibleToPlayer(monster)) {
                         if (!monster.lastShot || currentTime - monster.lastShot >= monster.attackCooldown) {
                             const angle = radiansToDegrees(Math.atan2(dy, dx));
                             game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'bullet', game.projectileMap['bullet'], 'monster', 0.2, 5));
@@ -1770,7 +1770,7 @@ function updateGameObjects() {
                             monster.lastShot = currentTime;
                         }
                     }
-                    if (distSq < 100) {
+                    if (distSq < 100 && isVisibleToPlayer(monster)) {
                         if (!monster.rocketlastShot || currentTime - monster.rocketlastShot >= monster.rocketCooldown) {
                             const angle = radiansToDegrees(Math.atan2(dy, dx));
                             game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'rocket', game.projectileMap['inboundrocket'], 'monster', 0.2, 25));
@@ -1824,7 +1824,7 @@ function updateGameObjects() {
                     }
                     break;
                 case 'tank':
-                    if (distSq < 100) {
+                    if (distSq < 100 && isVisibleToPlayer(monster)) {
                         if (!monster.rocketlastShot || currentTime - monster.rocketlastShot >= monster.rocketCooldown) {
                             const angle = radiansToDegrees(Math.atan2(dy, dx));
                             game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'rocket', game.projectileMap['inboundrocket'], 'monster', 0.2, 25));
@@ -1913,7 +1913,7 @@ function updateGameObjects() {
                     }
                     break;
                 case 'eyeball':
-                    if (distSq < 64) {
+                    if (distSq < 64 && isVisibleToPlayer(monster)) {
                         if (!monster.lastShot || currentTime - monster.lastShot >= monster.attackCooldown) {
                             const angle = radiansToDegrees(Math.atan2(dy, dx));
                             game.projectiles.push(new Projectile(monster.x, monster.y, angle + monster.attackAngle, 'eyeball', game.projectileMap['eyeball'], 'monster', 0.2, monster.damage));
@@ -1971,7 +1971,7 @@ function updateGameObjects() {
                     }
                     break;
                 case 'witchdoctor':
-                    if (distSq < 84) {
+                    if (distSq < 84 && isVisibleToPlayer(monster)) {
                         if (!monster.lastShot || currentTime - monster.lastShot >= monster.attackCooldown) {
                             if (!monster.spawnEyeball) {
                                 var rndVal = Math.floor(Math.random() * 100) + 1;
@@ -2001,7 +2001,7 @@ function updateGameObjects() {
                             monster.lastShot = currentTime;
                         }
                     }
-                    if (distSq > 30 && distSq < 100) {
+                    if (distSq > 30 && distSq < 100 && isVisibleToPlayer(monster)) {
                         const distance = Math.sqrt(distSq);
                         const invDist = 1 / distance;
                         const dirX = dx * invDist * monster.speed;
