@@ -303,6 +303,13 @@ let game = {
             height: 16,
             id: "magma-texture",
             data: null
+        },
+        {
+            id: 21,
+            width: 16,
+            height: 16,
+            id: "volcanic-texture",
+            data: null
         }
     ],
     projectileTextures: [
