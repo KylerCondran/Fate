@@ -711,5 +711,19 @@ window.MonsterData = {
         wanderCooldown: 7000,
         dirX: 0,
         dirY: 0
+    },
+    scarab: {
+        type: 'scarab',
+        skin: 'scarab-sprite',
+        audio: 'scarab',
+        health: 800,
+        speed: 0.04,
+        isDead: false,
+        width: 512,
+        height: 512,
+        data: null,
+        damage: 20,
+        lastAttack: 0,
+        attackCooldown: 1000
     }
 };

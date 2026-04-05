@@ -844,6 +844,11 @@ function loadLevel(levelIdx) {
                     game.monsters.push(stegosaurus);
                     game.monsterTotal++;
                     break;
+                case 74:
+                    const scarab = { ...window.MonsterData.scarab, id: `monster_${game.monsterTotal}`, x: j, y: i };
+                    game.monsters.push(scarab);
+                    game.monsterTotal++;
+                    break;
                 default:
                     break;
             }

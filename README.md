@@ -61,7 +61,7 @@ git clone https://github.com/KylerCondran/Fate.git
   <li>Prison</li>
   <li>Jurassic</li>
   <li>Moon</li>
-  <li>Desert</li>
+  <li>Ancient Eqypt</li>
   <li>Secret Levels</li>
 </ul>
 
@@ -116,6 +116,22 @@ git clone https://github.com/KylerCondran/Fate.git
   <li>Chests</li>
   <li>Speed Boost</li>
   <li>Health Kits</li>
+</ul>
+
+## Cheats
+
+Available upon completing all levels:
+
+<ul>
+  <li>Infinite Ammo</li>
+  <li>God Mode</li>
+  <li>Unlock All Weapons</li>
+  <li>Unlock All Levels</li>
+  <li>Mega Spawns</li>
+  <li>Speed Boost</li>
+  <li>Random Start</li>
+  <li>Rapid Fire</li>
+  <li>Random Enemies</li>
 </ul>
 
 ## Inspiration
