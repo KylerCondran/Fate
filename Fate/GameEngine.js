@@ -158,75 +158,129 @@ let game = {
     },
     textures: [
         {
+            id: 0,
             width: 16,
             height: 16,
             id: "texture",
             data: null
         },
         {
+            id: 1,
             width: 16,
             height: 16,
             id: "texture2",
             data: null
         },
         {
+            id: 2,
             width: 16,
             height: 16,
             id: "invis",
             data: null
         },
         {
+            id: 3,
             width: 16,
             height: 16,
             id: "ice",
             data: null
         },
         {
+            id: 4,
             width: 16,
             height: 16,
             id: "grass-texture",
             data: null
         },
         {
+            id: 5,
             width: 16,
             height: 16,
             id: "lava-texture",
             data: null
         },
         {
+            id: 6,
             width: 16,
             height: 16,
             id: "woods-texture",
             data: null
         },
         {
+            id: 7,
             width: 16,
             height: 16,
             id: "cloud",
             data: null
         },
         {
+            id: 8,
             width: 16,
             height: 16,
             id: "sand-texture",
             data: null
         },
         {
+            id: 9,
             width: 16,
             height: 16,
             id: "tech-texture",
             data: null
         },
         {
+            id: 10,
             width: 16,
             height: 16,
             id: "water-texture",
             data: null
         },
         {
+            id: 11,
             width: 16,
             height: 16,
             id: "fence-texture",
+            data: null
+        },
+        {
+            id: 12,
+            width: 16,
+            height: 16,
+            id: "sandstone-texture",
+            data: null
+        },
+        {
+            id: 13,
+            width: 16,
+            height: 16,
+            id: "cobblestone-texture",
+            data: null
+        },
+        {
+            id: 14,
+            width: 16,
+            height: 16,
+            id: "cobblestonebrick-texture",
+            data: null
+        },
+        {
+            id: 15,
+            width: 16,
+            height: 16,
+            id: "dirt-texture",
+            data: null
+        },
+        {
+            id: 16,
+            width: 16,
+            height: 16,
+            id: "cobblestonemossy-texture",
+            data: null
+        },
+        {
+            id: 17,
+            width: 16,
+            height: 16,
+            id: "cobblestonebrickmossy-texture",
             data: null
         }
     ],
@@ -471,7 +525,7 @@ function loadLevel(levelIdx) {
         game.player.speed.movement = 0.08;
     }
     const emptyPositions = [];
-    const monsterValues = [3, 4, 5, 6, 7, 15, 16, 17, 18, 19, 21, 22, 23, 24, 25, 27, 28, 29, 31, 32, 33, 34, 35, 36, 37, 41, 45, 46, 47, 50, 52, 57, 60, 61, 62, 64, 69, 70, 71, 72, 73];
+    const monsterValues = [3, 4, 5, 6, 7, 15, 16, 17, 18, 19, 21, 22, 23, 24, 25, 27, 28, 29, 31, 32, 33, 34, 35, 36, 37, 41, 45, 46, 47, 50, 52, 57, 60, 61, 62, 64, 69, 70, 71, 72, 73, 74];
     for (let i = 0; i < mapy; i++) {
         for (let j = 0; j < mapx; j++) {
             var objectValue = map[i][j];

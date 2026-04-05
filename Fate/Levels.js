@@ -165,8 +165,8 @@ window.LevelData = [
             [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
         ],
         unlocked: false,
-        floor: 8,
-        wall: 1,
+        floor: 13,
+        wall: 14,
         background: 1,
         startlocation: { x: 1, y: 1 },
         equippedweapon: 1,
@@ -633,8 +633,8 @@ window.LevelData = [
             [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
         ],
         unlocked: false,
-        floor: 4,
-        wall: 6,
+        floor: 8,
+        wall: 12,
         background: 0,
         startlocation: { x: 2, y: 2 },
         equippedweapon: 1,

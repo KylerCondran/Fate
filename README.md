@@ -103,6 +103,7 @@ git clone https://github.com/KylerCondran/Fate.git
   <li>Raptors</li>
   <li>Brontosaurus</li>
   <li>Stegosaurus</li>
+  <li>Scarabs</li>
 </ul>
 
 ## Pickups
