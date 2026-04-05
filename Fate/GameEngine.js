@@ -282,6 +282,27 @@ let game = {
             height: 16,
             id: "cobblestonebrickmossy-texture",
             data: null
+        },
+        {
+            id: 18,
+            width: 16,
+            height: 16,
+            id: "bamboo-texture",
+            data: null
+        },
+        {
+            id: 19,
+            width: 16,
+            height: 16,
+            id: "bambooplank-texture",
+            data: null
+        },
+        {
+            id: 20,
+            width: 16,
+            height: 16,
+            id: "magma-texture",
+            data: null
         }
     ],
     projectileTextures: [
