@@ -725,5 +725,19 @@ window.MonsterData = {
         damage: 20,
         lastAttack: 0,
         attackCooldown: 1000
+    },
+    sphinx: {
+        type: 'sphinx',
+        skin: 'sphinx-sprite',
+        audio: 'sphinx',
+        health: 800,
+        speed: 0.04,
+        isDead: false,
+        width: 512,
+        height: 512,
+        data: null,
+        damage: 20,
+        lastAttack: 0,
+        attackCooldown: 1000
     }
 };

@@ -104,6 +104,7 @@ git clone https://github.com/KylerCondran/Fate.git
   <li>Brontosaurus</li>
   <li>Stegosaurus</li>
   <li>Scarabs</li>
+  <li>Sphinx</li>
 </ul>
 
 ## Pickups
