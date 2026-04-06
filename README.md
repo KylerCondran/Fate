@@ -47,64 +47,86 @@ git clone https://github.com/KylerCondran/Fate.git
 ## Levels
 
 <ul>
-  <li>Jungle</li>
-  <li>Hell</li>
-  <li>Ocean</li>
-  <li>Arctic</li>
-  <li>Labyrinth</li>
-  <li>Heaven</li>
-  <li>Death Pit</li>
-  <li>Ninja Dojo</li>
-  <li>Army Base</li>
-  <li>Mothership</li>
-  <li>Forest</li>
-  <li>Prison</li>
-  <li>Jurassic</li>
-  <li>Moon</li>
-  <li>Ancient Eqypt</li>
-  <li>Secret Levels</li>
-</ul>
-
-## Monsters
-
-<ul>
-  <li>Imps</li>
-  <li>Lions</li>
-  <li>Tigers</li>
-  <li>Bears</li>
-  <li>Cheetahs</li>
-  <li>Rhinos</li>
-  <li>Wolves</li>
-  <li>Yetis</li>
-  <li>Minotaurs</li>
-  <li>Jackalopes</li>
-  <li>Demons</li>
-  <li>Skeletons</li>
-  <li>Crusaders</li>
-  <li>King</li>
-  <li>Piranhas</li>
-  <li>Squids</li>
-  <li>Sharks</li>
-  <li>Zeus</li>
-  <li>Soldiers</li>
-  <li>Apaches</li>
-  <li>Fighter Jets</li>
-  <li>Tanks</li>
-  <li>Ninjas</li>
-  <li>Robots</li>
-  <li>Aliens</li>
-  <li>UFOs</li>
-  <li>Werewolves</li>
-  <li>Astronauts</li>
-  <li>Rovers</li>
-  <li>Landers</li>
-  <li>Turrets</li>
-  <li>Lizards</li>
-  <li>Raptors</li>
-  <li>Brontosaurus</li>
-  <li>Stegosaurus</li>
-  <li>Scarabs</li>
-  <li>Sphinx</li>
+	<li>Jungle
+		<ul>
+			<li>Monsters: Lions, Tigers, Bears</li>
+		</ul>
+	</li>
+	<li>Hell
+		<ul>
+			<li>Monsters: Skeletons, Imps, Demons</li>
+		</ul>
+	</li>
+	<li>Ocean
+		<ul>
+			<li>Monsters: Zeus, Piranhas, Squids, Sharks</li>
+		</ul>
+	</li>
+	<li>Arctic
+		<ul>
+			<li>Monsters: Yetis, Jackalopes</li>
+		</ul>
+	</li>
+	<li>Labyrinth
+		<ul>
+			<li>Monsters: Minotaurs</li>
+		</ul>
+	</li>
+	<li>Heaven
+		<ul>
+			<li>Monsters: Crusaders, King</li>
+		</ul>
+	</li>
+	<li>Death Pit
+		<ul>
+			<li>Monsters: Demons</li>
+		</ul>
+	</li>
+	<li>Ninja Dojo
+		<ul>
+			<li>Monsters: Ninjas</li>
+		</ul>
+	</li>
+	<li>Army Base
+		<ul>
+			<li>Monsters: Soldiers, Tanks, Apaches, Fighter Jets</li>
+		</ul>
+	</li>
+	<li>Mothership
+		<ul>
+			<li>Monsters: Aliens, UFOS, Robots, Stasis Chambers</li>
+		</ul>
+	</li>
+	<li>Forest
+		<ul>
+			<li>Monsters: Wolves, Werewolves</li>
+		</ul>
+	</li>
+	<li>Prison
+		<ul>
+			<li>Monsters: ???</li>
+		</ul>
+	</li>
+	<li>Jurassic
+		<ul>
+			<li>Monsters: Raptors, Eggs, Lizards, Brontosaurus, Stegosaurus</li>
+		</ul>
+	</li>
+	<li>Moon
+		<ul>
+			<li>Monsters: Rovers, Landers, Astronauts, UFOS, Turrets</li>
+		</ul>
+	</li>
+	<li>Ancient Eqypt
+		<ul>
+			<li>Monsters: Scarabs, Sphinx</li>
+		</ul>
+	</li>
+	<li>Secret Levels
+		<ul>
+			<li>Monsters: ???</li>
+		</ul>
+	</li>
 </ul>
 
 ## Pickups
@@ -158,4 +180,4 @@ See our contributing guide at [CONTRIBUTING.md](../master/CONTRIBUTING.md).
 ## Copyright and License
 >The [MIT License](https://github.com/KylerCondran/Fate/blob/master/LICENSE.txt)
 >
->Copyright (c) 2025 Kyler Condran
+>Copyright (c) 2026 Kyler Condran

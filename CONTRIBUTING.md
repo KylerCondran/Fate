@@ -60,3 +60,4 @@
 - witch doctors can teleport you to random places on the map
 - ufo tractor beams?
 - spyro egg thief?
+- tanks invulnerable to bullets

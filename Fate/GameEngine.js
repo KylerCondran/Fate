@@ -382,24 +382,28 @@ let game = {
     ],
     backgrounds: [
         {
+            id: 0,
             width: 360,
             height: 60,
             id: "sunny",
             data: null
         },
         {
+            id: 1,
             width: 360,
             height: 60,
             id: "night",
             data: null
         },
         {
+            id: 2,
             width: 360,
             height: 60,
             id: "snowy",
             data: null
         },
         {
+            id: 3,
             width: 360,
             height: 60,
             id: "space",
