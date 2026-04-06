@@ -20,9 +20,9 @@
 
 # More Existing Features
 
-- [ ] More Sprites - Velociraptors, Dinosaurs
+- [ ] More Sprites
 - [ ] More Weapons - Udder Gun, Shield
-- [ ] More Pickups - Battery For Laser Weapons, rapidfire
+- [ ] More Pickups - Battery For Laser Weapons, rapidfire buff, armor?
 - [ ] More Sounds
 - [ ] More Textures
 
@@ -42,6 +42,7 @@
 - zombies, apocalyptic city, barricades, cars, tanks
 - proper tree sprite
 - boss mode when you beat the game
+- more ammo dispursed around levels
 
 # Weapon Ideas
 
@@ -51,13 +52,20 @@
 - energy shield / physical shield that absorbs 1000 dmg
 - freeze gun
 - boomerang ammo if not caught and hits wall, spawns pickup on ground
+- make laser shotgun have a cooldown
 
 # Enemy Ideas
 
 - enemy ai, patroling, fleeing
 - allegiance flag on monsters (traitor gun? swaps allegiance)
-- alien2 should have burst fire
+- alien2 should have burst fire (purple laser)
 - witch doctors can teleport you to random places on the map
 - ufo tractor beams?
 - spyro egg thief?
+- more enemies freeze player, teleport player, steal weapons, steal health, steal ammo
+- sphinx teleports
 - tanks invulnerable to bullets
+- update ninja moveset to charge and strafe
+- scarab steals a random weapon, creates mimics of himself
+- wizard that randomly attacks you on a predetermined level, only active for 1 minute, killing him gives you a powerful weapon or drops a red portal to somewhere
+- 
