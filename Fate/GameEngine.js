@@ -5,6 +5,7 @@ let game = {
     sprites: [], // Only trees and other non-monster sprites
     checkpoints: [], // Checkpoints for pre scripted NPC pathing
     projectiles: [], // Bullets, rockets, etc.
+    notifications: [], // Array to hold active notification messages
     weaponSprite: document.getElementById('knife-sprite'),
     equippedWeapon: 1,
     ammo: 0,
@@ -486,6 +487,7 @@ function main() {
     drawSprites();
     renderBuffer();
     drawGun(screenContext);
+    drawNotifications();
     drawHUD(screenContext);
     }, game.render.delay);
 }
@@ -1225,6 +1227,16 @@ function handleShooting(e) {
                 break;
         }
     }
+}
+
+// Display game notifications
+
+function showNotification(notification) {
+    game.notifications.push({
+        text: `${notification}`,
+        startTime: Date.now(),
+        duration: 3000
+    });
 }
 
 // Build spatial grid of monsters for collision detection
@@ -3190,13 +3202,19 @@ function movePlayer() {
             case 9:
                 game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
                 itemPickup(Math.floor(game.player.y), Math.floor(game.player.x), 'pickup-sound');
-                game.weaponsUnlocked.pistol = true;
+                if (!game.weaponsUnlocked.pistol) {
+                    showNotification('Weapon Unlocked: Pistol');
+                }
+                game.weaponsUnlocked.pistol = true;      
                 game.pickupCollected++;
                 break;
             // Machinegun pickup
             case 10:
                 game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
                 itemPickup(Math.floor(game.player.y), Math.floor(game.player.x), 'pickup-sound');
+                if (!game.weaponsUnlocked.machinegun) {
+                    showNotification('Weapon Unlocked: Machine Gun');
+                }
                 game.weaponsUnlocked.machinegun = true;
                 game.pickupCollected++;
                 break;
@@ -3204,6 +3222,9 @@ function movePlayer() {
             case 11:
                 game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
                 itemPickup(Math.floor(game.player.y), Math.floor(game.player.x), 'pickup-sound');
+                if (!game.weaponsUnlocked.yetipistol) {
+                    showNotification('Weapon Unlocked: Yeti Pistol');
+                }
                 game.weaponsUnlocked.yetipistol = true;
                 game.pickupCollected++;
                 break;
@@ -3211,6 +3232,9 @@ function movePlayer() {
             case 12:
                 game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
                 itemPickup(Math.floor(game.player.y), Math.floor(game.player.x), 'pickup-sound');
+                if (!game.weaponsUnlocked.rocketlauncher) {
+                    showNotification('Weapon Unlocked: Rocket Launcher');
+                }
                 game.weaponsUnlocked.rocketlauncher = true;
                 game.pickupCollected++;
                 break;
@@ -3225,6 +3249,9 @@ function movePlayer() {
             case 14:
                 game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
                 itemPickup(Math.floor(game.player.y), Math.floor(game.player.x), 'pickup-sound');
+                if (!game.weaponsUnlocked.scepter) {
+                    showNotification('Weapon Unlocked: Scepter');
+                }
                 game.weaponsUnlocked.scepter = true;
                 game.pickupCollected++;
                 break;
@@ -3244,6 +3271,9 @@ function movePlayer() {
             case 26:
                 game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
                 itemPickup(Math.floor(game.player.y), Math.floor(game.player.x), 'pickup-sound');
+                if (!game.weaponsUnlocked.boomerang) {
+                    showNotification('Weapon Unlocked: Boomerang');
+                }
                 game.weaponsUnlocked.boomerang = true;
                 game.boomerangammo++;
                 game.pickupCollected++;
@@ -3254,6 +3284,7 @@ function movePlayer() {
                     game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
                     //drop secret totem
                     itemPickup(Math.floor(game.player.y), Math.floor(game.player.x), 'secretunlock-sound');
+                    showNotification('Level Unlocked: Secret Cow Level');
                     game.pickupCollected++;
                     game.levels[15].unlocked = true;
                     game.keysUnlocked.cowkey = false;
@@ -3265,6 +3296,9 @@ function movePlayer() {
             case 39:
                 game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
                 itemPickup(Math.floor(game.player.y), Math.floor(game.player.x), 'pickup-sound');
+                if (!game.keysUnlocked.cowkey) {
+                    showNotification('Key Unlocked: Cow');
+                }
                 game.pickupCollected++;
                 game.keysUnlocked.cowkey = true;
                 break;
@@ -3289,6 +3323,9 @@ function movePlayer() {
             case 43:
                 game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
                 itemPickup(Math.floor(game.player.y), Math.floor(game.player.x), 'pickup-sound');
+                if (!game.weaponsUnlocked.lasershotgun) {
+                    showNotification('Weapon Unlocked: Laser Shotgun');
+                }
                 game.weaponsUnlocked.lasershotgun = true;
                 game.pickupCollected++;
                 break;
@@ -3308,6 +3345,7 @@ function movePlayer() {
                     game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
                     //drop secret totem
                     itemPickup(Math.floor(game.player.y), Math.floor(game.player.x), 'secretunlock-sound');
+                    showNotification('Level Unlocked: Dark Continent');
                     game.pickupCollected++;
                     game.levels[16].unlocked = true;
                     game.keysUnlocked.monkeykey = false;
@@ -3319,6 +3357,9 @@ function movePlayer() {
             case 49:
                 game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
                 itemPickup(Math.floor(game.player.y), Math.floor(game.player.x), 'pickup-sound');
+                if (!game.keysUnlocked.monkeykey) {
+                    showNotification('Key Unlocked: Monkey');
+                }
                 game.pickupCollected++;
                 game.keysUnlocked.monkeykey = true;
                 break;
@@ -3337,6 +3378,9 @@ function movePlayer() {
             case 58:
                 game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
                 itemPickup(Math.floor(game.player.y), Math.floor(game.player.x), 'pickup-sound');
+                if (!game.weaponsUnlocked.trident) {
+                    showNotification('Weapon Unlocked: Trident');
+                }
                 game.weaponsUnlocked.trident = true;
                 game.tridentammo = true;
                 game.pickupCollected++;
@@ -3347,6 +3391,7 @@ function movePlayer() {
                     game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
                     //drop secret totem
                     itemPickup(Math.floor(game.player.y), Math.floor(game.player.x), 'secretunlock-sound');
+                    showNotification('Level Unlocked: Armageddon');
                     game.pickupCollected++;
                     game.levels[17].unlocked = true;
                     game.keysUnlocked.goatkey = false;
@@ -3358,6 +3403,9 @@ function movePlayer() {
             case 68:
                 game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
                 itemPickup(Math.floor(game.player.y), Math.floor(game.player.x), 'pickup-sound');
+                if (!game.keysUnlocked.goatkey) {
+                    showNotification('Key Unlocked: Goat');
+                }
                 game.pickupCollected++;
                 game.keysUnlocked.goatkey = true;
                 break;
@@ -3928,6 +3976,65 @@ function drawSprite(xProjection, spriteWidth, spriteHeight, sprite) {
             }
         }
     }
+}
+
+// Draw active notifications with fade effect
+
+function drawNotifications() {
+    const currentTime = Date.now();
+
+    // Remove expired notifications
+    game.notifications = game.notifications.filter(notif =>
+        currentTime - notif.startTime < notif.duration
+    );
+
+    // Save the current transform
+    screenContext.save();
+
+    // Reset the scale to draw at actual pixel coordinates
+    screenContext.setTransform(1, 0, 0, 1, 0, 0);
+
+    // Draw each active notification
+    game.notifications.forEach((notif, index) => {
+        const elapsed = currentTime - notif.startTime;
+        const progress = elapsed / notif.duration;
+
+        // Calculate alpha for fade effect
+        let alpha = 1;
+        if (progress > 0.85) {
+            alpha = 1 - ((progress - 0.85) / 0.15);
+        }
+
+        // Flash effect
+        const flashCycle = (elapsed % 500) / 500;
+        const flashAlpha = flashCycle > 0.5 ? 1 : 0.6;
+
+        const finalAlpha = alpha * flashAlpha;
+
+        // Set font to measure text width
+        screenContext.font = 'bold 20px "Lucida Console"';
+        const textWidth = screenContext.measureText(notif.text).width;
+        const padding = 20; // Padding on each side
+        const boxWidth = textWidth + (padding * 2);
+        const boxHeight = 40;
+
+        // Center the box
+        const notifX = game.screen.width / 2 - boxWidth / 2;
+        const notifY = 50 + (index * 60); // Increased spacing for variable-width boxes
+
+        // Draw semi-transparent background
+        screenContext.fillStyle = `rgba(0, 0, 0, ${0.7 * finalAlpha})`;
+        screenContext.fillRect(notifX, notifY, boxWidth, boxHeight);
+
+        // Draw notification text
+        screenContext.fillStyle = `rgba(255, 215, 0, ${finalAlpha})`;
+        screenContext.textAlign = 'center';
+        screenContext.textBaseline = 'middle';
+        screenContext.fillText(notif.text, game.screen.width / 2, notifY + boxHeight / 2);
+    });
+
+    // Restore the transform
+    screenContext.restore();
 }
 
 // Draw Gun
