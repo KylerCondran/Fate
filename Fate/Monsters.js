@@ -768,5 +768,19 @@ window.MonsterData = {
         damage: 20,
         lastAttack: 0,
         attackCooldown: 1000
+    },
+    mummy: {
+        type: 'mummy',
+        skin: 'mummy-sprite',
+        audio: 'mummy',
+        health: 200,
+        speed: 0.02,
+        isDead: false,
+        width: 512,
+        height: 512,
+        data: null,
+        damage: 10,
+        lastAttack: 0,
+        attackCooldown: 1000
     }
 };

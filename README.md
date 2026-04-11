@@ -119,7 +119,7 @@ git clone https://github.com/KylerCondran/Fate.git
 	</li>
 	<li>Ancient Eqypt
 		<ul>
-			<li>Monsters: Scarabs, Sphinx</li>
+			<li>Monsters: Scarabs, Sphinx, Anubis, Mummies</li>
 		</ul>
 	</li>
 	<li>Secret Levels

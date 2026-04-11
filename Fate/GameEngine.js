@@ -968,6 +968,11 @@ function loadLevel(levelIdx) {
                     game.monsters.push(anubis);
                     game.monsterTotal++;
                     break;
+                case 78:
+                    const mummy = { ...window.MonsterData.mummy, id: `monster_${game.monsterTotal}`, x: j, y: i };
+                    game.monsters.push(mummy);
+                    game.monsterTotal++;
+                    break;
                 default:
                     break;
             }
