@@ -58,7 +58,6 @@
 
 - enemy ai, patroling, fleeing
 - allegiance flag on monsters (traitor gun? swaps allegiance)
-- alien2 should have burst fire (purple laser)
 - witch doctors can teleport you to random places on the map
 - ufo tractor beams?
 - spyro egg thief?

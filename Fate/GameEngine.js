@@ -380,6 +380,12 @@ let game = {
             width: 27,
             height: 27,
             data: null
+        },
+        {
+            id: 'laserpurple-sprite',
+            width: 27,
+            height: 27,
+            data: null
         }
     ],
     backgrounds: [
@@ -466,7 +472,8 @@ game.projectileMap = {
     waterorb: game.projectileTextures[7],
     eyeball: game.projectileTextures[8],
     fireball: game.projectileTextures[9],
-    web: game.projectileTextures[10]
+    web: game.projectileTextures[10],
+    laserpurple: game.projectileTextures[11],
 };
 
 // Main loop
@@ -1189,7 +1196,7 @@ function handleShooting(e) {
                 }
                 break;
             case 8:
-                texture = game.projectileMap['laser'];
+                texture = game.projectileMap['laserpurple'];
                 playSound('laserblast-sound');
                 game.projectiles.push(new Projectile(startX, startY, game.player.angle, 'laser', texture, 'player', 0.2, 50));
                 game.projectiles.push(new Projectile(startX, startY, game.player.angle + 2, 'laser', texture, 'player', 0.2, 50));
@@ -1563,11 +1570,25 @@ function updateGameObjects() {
                     break;
                 case 'alien':
                     if (distSq < 64 && isVisibleToPlayer(monster)) {
-                        if (!monster.lastShot || currentTime - monster.lastShot >= monster.attackCooldown) {
-                            const angle = radiansToDegrees(Math.atan2(dy, dx));
-                            game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'laser', game.projectileMap['laser'], 'monster', 0.2, monster.damage));
-                            playSound('laser-sound');
-                            monster.lastShot = currentTime;
+                        if (monster.variant === 'alien2') {
+                            const delay = monster.shotsInBurst < 3 ? 500 : monster.attackCooldown;
+                            if (!monster.lastShot || currentTime - monster.lastShot >= delay) {
+                                const angle = radiansToDegrees(Math.atan2(dy, dx));
+                                game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'laser', game.projectileMap['laserpurple'], 'monster', 0.2, monster.damage));
+                                playSound('laser-sound');
+                                monster.lastShot = currentTime;
+                                monster.shotsInBurst++;
+                                if (monster.shotsInBurst > 3) {
+                                    monster.shotsInBurst = 1;
+                                }
+                            }
+                        } else {
+                            if (!monster.lastShot || currentTime - monster.lastShot >= monster.attackCooldown) {
+                                const angle = radiansToDegrees(Math.atan2(dy, dx));
+                                game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'laser', game.projectileMap['laser'], 'monster', 0.2, monster.damage));
+                                playSound('laser-sound');
+                                monster.lastShot = currentTime;
+                            }
                         }
                     }
                     if (distSq > 30 && distSq < 200) {
@@ -2767,7 +2788,7 @@ function updateGameObjects() {
                         if (!monster.lastShot || currentTime - monster.lastShot >= monster.attackCooldown) {
                             const angle = radiansToDegrees(Math.atan2(dy, dx));
                             let texture;
-                            texture = game.projectileMap['laser'];
+                            texture = game.projectileMap['laserpurple'];
                             playSound('laserblast-sound');
                             game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'laser', texture, 'monster', 0.2, monster.damage));
                             game.projectiles.push(new Projectile(monster.x, monster.y, angle + 2, 'laser', texture, 'monster', 0.2, monster.damage));

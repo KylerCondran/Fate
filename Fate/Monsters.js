@@ -157,6 +157,7 @@ window.MonsterData = {
         type: 'alien',
         skin: 'alien1-sprite',
         audio: 'alien',
+        variant: 'alien1',
         health: 350,
         speed: 0.04,
         isDead: false,
@@ -171,6 +172,7 @@ window.MonsterData = {
         type: 'alien',
         skin: 'alien2-sprite',
         audio: 'alien',
+        variant: 'alien2',
         health: 350,
         speed: 0.04,
         isDead: false,
@@ -179,7 +181,8 @@ window.MonsterData = {
         data: null,
         damage: 5,
         lastShot: 0,
-        attackCooldown: 2000
+        attackCooldown: 3000,
+        shotsInBurst: 0,
     },
     ufo: {
         type: 'ufo',
