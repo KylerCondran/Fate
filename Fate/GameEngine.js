@@ -4080,7 +4080,10 @@ function drawSpriteInWorld(sprite) {
             // Find maxHealth (initial health at spawn)
             let maxHealth = sprite.maxHealth || sprite._maxHealth || sprite.health;
             if (!sprite._maxHealth) sprite._maxHealth = sprite.health;
-            drawHealthBar(barX, barY, barWidth, barHeight, sprite.health, maxHealth);
+            // Format monster name (capitalize)
+            const monsterName = sprite.type.toUpperCase();
+
+            drawHealthBar(barX, barY, barWidth, barHeight, sprite.health, maxHealth, monsterName);
         }
     }
 }
@@ -4346,7 +4349,7 @@ function drawHUD(ctx) {
 
 // Draw Health Bar
 
-function drawHealthBar(x, y, width, height, health, maxHealth) {
+function drawHealthBar(x, y, width, height, health, maxHealth, monsterName = '') {
     // Draw red background (depleted health)
     for (let i = 0; i < width; i++) {
         for (let j = 0; j < height; j++) {
@@ -4368,6 +4371,69 @@ function drawHealthBar(x, y, width, height, health, maxHealth) {
     for (let j = 0; j < height; j++) {
         drawPixel(x, y + j, new Color(0, 0, 0, 255));
         drawPixel(x + width - 1, y + j, new Color(0, 0, 0, 255));
+    }
+
+    // Draw monster name below health bar if provided
+    if (monsterName) {
+        if (monsterName == 'STASISCHAMBER') { monsterName = 'STASIS' }
+        if (monsterName == 'DINOSAUREGG') { monsterName = 'EGG' }
+        const namePixels = monsterName.length * 4; // Approximate width (4 pixels per character)
+        const nameX = Math.max(0, x + Math.floor((width - namePixels) / 2));
+        const nameY = y - height;
+        drawMonsterName(nameX, nameY, monsterName);
+    }
+}
+
+// Draw Monster Name
+
+function drawMonsterName(x, y, name) {
+    // Simple 1-pixel text rendering (drawing white pixels to form letters)
+    // Map of letter patterns (each letter is 4x5 pixels)
+    const letterMap = {
+        'A': [0b0110, 0b1001, 0b1111, 0b1001, 0b1001],
+        'B': [0b1110, 0b1001, 0b1110, 0b1001, 0b1110],
+        'C': [0b0111, 0b1000, 0b1000, 0b1000, 0b0111],
+        'D': [0b1110, 0b1001, 0b1001, 0b1001, 0b1110],
+        'E': [0b1111, 0b1000, 0b1110, 0b1000, 0b1111],
+        'F': [0b1111, 0b1000, 0b1110, 0b1000, 0b1000],
+        'G': [0b0111, 0b1000, 0b1011, 0b1001, 0b0111],
+        'H': [0b1001, 0b1001, 0b1111, 0b1001, 0b1001],
+        'I': [0b0111, 0b0010, 0b0010, 0b0010, 0b0111],
+        'J': [0b1111, 0b0001, 0b0001, 0b1001, 0b0110],
+        'K': [0b1001, 0b1010, 0b1100, 0b1010, 0b1001],
+        'L': [0b1000, 0b1000, 0b1000, 0b1000, 0b1111],
+        'M': [0b1001, 0b1111, 0b1111, 0b1001, 0b1001],
+        'N': [0b1001, 0b1101, 0b1011, 0b1001, 0b1001],
+        'O': [0b0110, 0b1001, 0b1001, 0b1001, 0b0110],
+        'P': [0b1110, 0b1001, 0b1110, 0b1000, 0b1000],
+        'Q': [0b0110, 0b1001, 0b1001, 0b0110, 0b0011],
+        'R': [0b1110, 0b1001, 0b1110, 0b1010, 0b1001],
+        'S': [0b0111, 0b1000, 0b0110, 0b0001, 0b1110],
+        'T': [0b1111, 0b0010, 0b0010, 0b0010, 0b0010],
+        'U': [0b1001, 0b1001, 0b1001, 0b1001, 0b0110],
+        'V': [0b1001, 0b1001, 0b1001, 0b0110, 0b0010],
+        'W': [0b1001, 0b1001, 0b1111, 0b1111, 0b1001],
+        'X': [0b1001, 0b1001, 0b0110, 0b1001, 0b1001],
+        'Y': [0b1001, 0b0110, 0b0010, 0b0010, 0b0010],
+        'Z': [0b1111, 0b0001, 0b0110, 0b1000, 0b1111],
+        ' ': [0b0000, 0b0000, 0b0000, 0b0000, 0b0000]
+    };
+
+    let currentX = x;
+    const white = new Color(255, 255, 255, 255);
+
+    for (let char of name) {
+        const pattern = letterMap[char] || letterMap[' '];
+
+        for (let row = 0; row < 5; row++) {
+            const bits = pattern[row];
+            for (let col = 0; col < 4; col++) {
+                if ((bits >> (3 - col)) & 1) {
+                    drawPixel(currentX + col, y + row, white);
+                }
+            }
+        }
+        currentX += 5; // Move to next character position (4 pixels + 1 space)
     }
 }
 
