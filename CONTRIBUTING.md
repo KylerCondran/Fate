@@ -22,7 +22,7 @@
 
 - [ ] More Sprites
 - [ ] More Weapons - Udder Gun, Shield
-- [ ] More Pickups - Battery For Laser Weapons, rapidfire buff, armor?
+- [ ] More Pickups - rapidfire buff, armor?
 - [ ] More Sounds
 - [ ] More Textures
 
@@ -55,7 +55,6 @@
 
 # Enemy Ideas
 
-- enemy ai, patroling, fleeing
 - allegiance flag on monsters (traitor gun? swaps allegiance)
 - witch doctors can teleport you to random places on the map
 - ufo tractor beams?

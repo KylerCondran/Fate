@@ -641,7 +641,7 @@ window.LevelData = [
         unlocked: false,
         floor: 8,
         wall: 12,
-        background: 0,
+        background: 4,
         startlocation: { x: 2, y: 2 },
         equippedweapon: 1,
         completed: false

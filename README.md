@@ -140,6 +140,7 @@ git clone https://github.com/KylerCondran/Fate.git
   <li>Chests</li>
   <li>Speed Boost</li>
   <li>Health Kits</li>
+  <li>Batteries</li>
 </ul>
 
 ## Cheats

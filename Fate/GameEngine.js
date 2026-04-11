@@ -418,6 +418,13 @@ let game = {
             height: 60,
             id: "space",
             data: null
+        },
+        {
+            id: 4,
+            width: 360,
+            height: 88,
+            id: "egypt",
+            data: null
         }
     ]
 };
@@ -1014,6 +1021,7 @@ function applyCheats() {
         game.ammo = 9999;
         game.rocketammo = 9999;
         game.boomerangammo = 9999;
+        game.laserbattery = 9999;
     }
     if (game.cheats.allWeapons) {
         game.weaponsUnlocked.pistol = true;
@@ -3252,7 +3260,7 @@ function movePlayer() {
     let mapWidth = map[0]?.length ?? 0; 
     const currentTime = Date.now();
     if (!game.laserrechargetick || currentTime - game.laserrechargetick >= 10000) {
-        if (game.laserbattery < 96) {
+        if (game.laserbattery < 96 || game.cheats.infiniteAmmo) {
             game.laserbattery += 5;
         } else {
             game.laserbattery = 100;
