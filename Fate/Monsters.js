@@ -754,5 +754,19 @@ window.MonsterData = {
         damage: 20,
         lastAttack: 0,
         attackCooldown: 1000
+    },
+    anubis: {
+        type: 'anubis',
+        skin: 'anubis-sprite',
+        audio: 'anubis',
+        health: 800,
+        speed: 0.04,
+        isDead: false,
+        width: 512,
+        height: 512,
+        data: null,
+        damage: 20,
+        lastAttack: 0,
+        attackCooldown: 1000
     }
 };

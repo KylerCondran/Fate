@@ -963,6 +963,11 @@ function loadLevel(levelIdx) {
                     game.sprites.push({ id: "battery-sprite", x: j, y: i, width: 256, height: 256, data: null });
                     game.pickupTotal++;
                     break;
+                case 77:
+                    const anubis = { ...window.MonsterData.anubis, id: `monster_${game.monsterTotal}`, x: j, y: i };
+                    game.monsters.push(anubis);
+                    game.monsterTotal++;
+                    break;
                 default:
                     break;
             }
