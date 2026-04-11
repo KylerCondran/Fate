@@ -52,7 +52,6 @@
 - energy shield / physical shield that absorbs 1000 dmg
 - freeze gun
 - boomerang ammo if not caught and hits wall, spawns pickup on ground
-- make laser shotgun have a cooldown
 
 # Enemy Ideas
 

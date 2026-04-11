@@ -12,6 +12,8 @@ let game = {
     rocketammo: 0,
     boomerangammo: 0,
     tridentammo: true,
+    laserbattery: 100,
+    laserrechargetick: 0,
     lastShot: 0,
     shootCooldown: 600,
     bulletHitboxRadius: 0.25,
@@ -950,6 +952,10 @@ function loadLevel(levelIdx) {
                     game.monsters.push(sphinx);
                     game.monsterTotal++;
                     break;
+                case 76:
+                    game.sprites.push({ id: "battery-sprite", x: j, y: i, width: 256, height: 256, data: null });
+                    game.pickupTotal++;
+                    break;
                 default:
                     break;
             }
@@ -1163,6 +1169,10 @@ function handleShooting(e) {
             //boomerang fail throw / trident fail sound
             playSound('invalid-sound');
             return;
+        } else if ((game.equippedWeapon == 4 && game.laserbattery == 0) || (game.equippedWeapon == 8 && game.laserbattery <= 4)) {
+            //yeti pistol / laser shotgun fail sound
+            playSound('overheat-sound');
+            return;
         }
         // Start the bullet slightly in front of the player in the direction they're facing
         const startX = game.player.x + Math.cos(degreeToRadians(game.player.angle)) * game.bulletStartDistance;
@@ -1176,6 +1186,7 @@ function handleShooting(e) {
             case 4:
                 playSound('laser-sound');
                 game.projectiles.push(new Projectile(startX, startY, game.player.angle, 'laser', game.projectileMap['laser'], 'player', 0.2, 50));
+                game.laserbattery--;
                 break;
             case 5:
                 playSound('rocketlaunch-sound');
@@ -1203,6 +1214,7 @@ function handleShooting(e) {
                 game.projectiles.push(new Projectile(startX, startY, game.player.angle + 4, 'laser', texture, 'player', 0.2, 50));
                 game.projectiles.push(new Projectile(startX, startY, game.player.angle - 2, 'laser', texture, 'player', 0.2, 50));
                 game.projectiles.push(new Projectile(startX, startY, game.player.angle - 4, 'laser', texture, 'player', 0.2, 50));
+                game.laserbattery -= 5;
                 break;
             case 9:
                 playSound('portal-sound');
@@ -3239,6 +3251,14 @@ function movePlayer() {
     let mapHeight = map.length;
     let mapWidth = map[0]?.length ?? 0; 
     const currentTime = Date.now();
+    if (!game.laserrechargetick || currentTime - game.laserrechargetick >= 10000) {
+        if (game.laserbattery < 96) {
+            game.laserbattery += 5;
+        } else {
+            game.laserbattery = 100;
+        }
+        game.laserrechargetick = currentTime;       
+    }
     if (game.playerFrozen && currentTime - game.playerFrozenTime >= game.playerFrozenDuration) {
         game.playerFrozen = false;
     }
@@ -3547,6 +3567,16 @@ function movePlayer() {
                 }
                 game.pickupCollected++;
                 game.keysUnlocked.goatkey = true;
+                break;
+            case 76:
+                if (game.laserbattery <= 75) {
+                    game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
+                    itemPickup(Math.floor(game.player.y), Math.floor(game.player.x), 'pickup-sound');
+                    game.pickupCollected++;
+                    game.laserbattery += 25;
+                } else {
+                    playSound('invalid-sound');
+                }
                 break;
         }
     }
@@ -4230,8 +4260,10 @@ function drawHUD(ctx) {
 
     // Draw ammo count
     const ammoText = (() => {
-        if (game.equippedWeapon == 1 || game.equippedWeapon == 4 || game.equippedWeapon == 6 || game.equippedWeapon == 8) {
+        if (game.equippedWeapon == 1 || game.equippedWeapon == 6) {
             return '∞'; 
+        } else if (game.equippedWeapon == 4 || game.equippedWeapon == 8) {
+            return `${game.laserbattery}`; // Special ammo type for laser weapons
         } else if (game.equippedWeapon == 5) {
             return `${game.rocketammo}`; // Special ammo type for rocket launcher
         } else if (game.equippedWeapon == 7) {
@@ -4246,7 +4278,11 @@ function drawHUD(ctx) {
             return `${game.ammo}`; // Regular ammo for guns
         }
     })();
-    ctx.fillText(`Ammo: ${ammoText}`, 0, 15);
+    if (game.equippedWeapon == 4 || game.equippedWeapon == 8) {
+        ctx.fillText(`Battery: ${ammoText}%`, 0, 15);
+    } else {
+        ctx.fillText(`Ammo: ${ammoText}`, 0, 15);
+    }
     const unlocks = (() => {
         let unlockText = '';
         if (game.weaponsUnlocked.knife) {
