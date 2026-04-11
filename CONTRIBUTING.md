@@ -65,6 +65,5 @@
 - more enemies freeze player, teleport player, steal weapons, steal health, steal ammo
 - sphinx teleports
 - tanks invulnerable to bullets
-- update ninja moveset to charge and strafe
 - scarab steals a random weapon, creates mimics of himself
 - wizard that randomly attacks you on a predetermined level, only active for 1 minute, killing him gives you a powerful weapon or drops a red portal to somewhere

@@ -27,6 +27,7 @@ let game = {
     lastMonsterToHitPlayer: 'Unknown',
     playerFrozen: false,
     playerFrozenTime: 0,
+    playerFrozenDuration: 0,
     weaponsUnlocked: {
         knife: true,
         pistol: false,
@@ -1484,9 +1485,16 @@ function updateGameObjects() {
                 } else {
                     game.player.health -= projectile.damage; // All other projectile damage
                 }
-                if (projectile.type === 'web') {
-                    game.playerFrozen = true;
-                    game.playerFrozenTime = Date.now();
+                if (projectile.type === 'web' || projectile.type === 'shuriken') {
+                    if (!game.playerFrozen) {
+                        game.playerFrozen = true;
+                        game.playerFrozenTime = Date.now();
+                        if (projectile.type === 'web') {
+                            game.playerFrozenDuration = 2000;
+                        } else if (projectile.type === 'shuriken') {
+                            game.playerFrozenDuration = 1000;
+                        }
+                    }
                 }
                 if (!(projectile.type === 'boomerang')) {
                     playSound('injured-sound');
@@ -1693,7 +1701,7 @@ function updateGameObjects() {
                                 monster.y = newY;
                             }
 
-                            // If the rhino has reached a certain threshold charging time, stop charging
+                            // If the ninja has reached a certain threshold charging time, stop charging
                             if (currentTime - monster.lastCharge >= 1000) {
                                 monster.isCharging = false;
                             }
@@ -1733,7 +1741,7 @@ function updateGameObjects() {
                         }
                     } else {
                         if (distSq < 64 && isVisibleToPlayer(monster)) {
-                            if (!monster.lastShot || currentTime - monster.lastShot >= monster.attackCooldown) {
+                            if (!monster.lastShot || currentTime - monster.lastShot >= monster.rangedCooldown) {
                                 const angle = radiansToDegrees(Math.atan2(dy, dx));
                                 game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'shuriken', game.projectileMap['shuriken'], 'monster', 0.2, 5));
                                 playSound('shuriken-sound');
@@ -1761,14 +1769,15 @@ function updateGameObjects() {
                                 }
                             } else {
                                 if (distSq < 45) {
-                                    var rndVal = Math.floor(Math.random() * 100) + 1;
-                                    if (rndVal > 66) {
-                                        if (!monster.lastCharge || currentTime - monster.lastCharge >= monster.chargeCooldown) {
+                                    // When ninja is weakened, only 50% chance of charging when cooldown is available
+                                    if (!monster.lastCharge || currentTime - monster.lastCharge >= monster.chargeCooldown) {
+                                        var rndVal = Math.floor(Math.random() * 100) + 1;
+                                        if (rndVal > 50) {
                                             const angle = radiansToDegrees(Math.atan2(dy, dx));
                                             monster.chargeAngle = angle;
                                             monster.isCharging = true;
-                                            monster.lastCharge = currentTime;
-                                        }
+                                        } 
+                                        monster.lastCharge = currentTime;
                                     }
                                 }
                                 if (monster.isCharging) {
@@ -1789,7 +1798,7 @@ function updateGameObjects() {
                                         monster.y = newY;
                                     }
 
-                                    // If the rhino has reached a certain threshold charging time, stop charging
+                                    // If the ninja has reached a certain threshold charging time, stop charging
                                     if (currentTime - monster.lastCharge >= 1000) {
                                         monster.isCharging = false;
                                     }
@@ -3209,7 +3218,7 @@ function movePlayer() {
     let mapHeight = map.length;
     let mapWidth = map[0]?.length ?? 0; 
     const currentTime = Date.now();
-    if (game.playerFrozen && currentTime - game.playerFrozenTime >= 1500) {
+    if (game.playerFrozen && currentTime - game.playerFrozenTime >= game.playerFrozenDuration) {
         game.playerFrozen = false;
     }
     if (game.key.up.active && !game.playerFrozen) {
