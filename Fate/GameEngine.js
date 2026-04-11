@@ -1667,20 +1667,55 @@ function updateGameObjects() {
                     break;
                 case 'ninja':
                     if (monster.health > 75) {
-                        if (distSq > 0.25 && distSq < 100) {
-                            const distance = Math.sqrt(distSq);
-                            const invDist = 1 / distance;
-                            const dirX = dx * invDist * monster.speed;
-                            const dirY = dy * invDist * monster.speed;
-                            // Try to move in X direction
-                            const newX = monster.x + dirX;
+                        if (distSq < 45) {
+                            if (!monster.lastCharge || currentTime - monster.lastCharge >= monster.chargeCooldown) {
+                                const angle = radiansToDegrees(Math.atan2(dy, dx));
+                                monster.chargeAngle = angle;
+                                monster.isCharging = true;
+                                monster.lastCharge = currentTime;
+                            }
+                        }
+                        if (monster.isCharging) {
+                            // Charge the player using the predetermined charge angle
+                            const chargeSpeed = monster.speed * 2; // Charge faster than normal movement
+                            const chargeDx = Math.cos(degreeToRadians(monster.chargeAngle)) * chargeSpeed;
+                            const chargeDy = Math.sin(degreeToRadians(monster.chargeAngle)) * chargeSpeed;
+
+                            // Try to move in X direction with the charge angle
+                            const newX = monster.x + chargeDx;
                             if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
                                 monster.x = newX;
                             }
-                            // Try to move in Y direction
-                            const newY = monster.y + dirY;
+
+                            // Try to move in Y direction with the charge angle
+                            const newY = monster.y + chargeDy;
                             if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
                                 monster.y = newY;
+                            }
+
+                            // If the rhino has reached a certain threshold charging time, stop charging
+                            if (currentTime - monster.lastCharge >= 1000) {
+                                monster.isCharging = false;
+                            }
+                        } else {
+                            // If not charging, follow the player
+                            if (distSq > 0.25 && distSq < 200) {
+                                const distance = Math.sqrt(distSq);
+                                const invDist = 1 / distance;
+                                const dirX = dx * invDist * monster.speed;
+                                const dirY = dy * invDist * monster.speed;
+
+                                // Try to move in X direction
+                                const newX = monster.x + dirX;
+                                if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
+                                    monster.x = newX;
+                                }
+
+                                // Try to move in Y direction
+                                const newY = monster.y + dirY;
+                                if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
+                                    monster.y = newY;
+                                }
                             }
                         }
                         if (distSq < 0.5 && (!monster.lastAttack || currentTime - monster.lastAttack >= monster.attackCooldown)) {
@@ -1705,20 +1740,94 @@ function updateGameObjects() {
                                 monster.lastShot = currentTime;
                             }
                         }
-                        if (distSq > 30 && distSq < 100) {
+                        if (distSq < 200) {
                             const distance = Math.sqrt(distSq);
                             const invDist = 1 / distance;
-                            const dirX = dx * invDist * monster.speed;
-                            const dirY = dy * invDist * monster.speed;
-                            // Try to move in X direction
-                            const newX = monster.x + dirX;
-                            if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
-                                monster.x = newX;
+                            const dirX = dx * invDist;
+                            const dirY = dy * invDist;
+                            if (distSq > 40) {
+                                // TOO FAR → move toward player
+                                moveX = dirX * monster.speed;
+                                moveY = dirY * monster.speed;
+                                // Try to move in X direction
+                                const newX = monster.x + moveX;
+                                if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
+                                    monster.x = newX;
+                                }
+                                // Try to move in Y direction
+                                const newY = monster.y + moveY;
+                                if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
+                                    monster.y = newY;
+                                }
+                            } else {
+                                if (distSq < 45) {
+                                    var rndVal = Math.floor(Math.random() * 100) + 1;
+                                    if (rndVal > 66) {
+                                        if (!monster.lastCharge || currentTime - monster.lastCharge >= monster.chargeCooldown) {
+                                            const angle = radiansToDegrees(Math.atan2(dy, dx));
+                                            monster.chargeAngle = angle;
+                                            monster.isCharging = true;
+                                            monster.lastCharge = currentTime;
+                                        }
+                                    }
+                                }
+                                if (monster.isCharging) {
+                                    // Charge the player using the predetermined charge angle
+                                    const chargeSpeed = monster.speed * 2; // Charge faster than normal movement
+                                    const chargeDx = Math.cos(degreeToRadians(monster.chargeAngle)) * chargeSpeed;
+                                    const chargeDy = Math.sin(degreeToRadians(monster.chargeAngle)) * chargeSpeed;
+
+                                    // Try to move in X direction with the charge angle
+                                    const newX = monster.x + chargeDx;
+                                    if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
+                                        monster.x = newX;
+                                    }
+
+                                    // Try to move in Y direction with the charge angle
+                                    const newY = monster.y + chargeDy;
+                                    if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
+                                        monster.y = newY;
+                                    }
+
+                                    // If the rhino has reached a certain threshold charging time, stop charging
+                                    if (currentTime - monster.lastCharge >= 1000) {
+                                        monster.isCharging = false;
+                                    }
+                                } else {
+                                    // IN RANGE → strafe sideways
+                                    const perpX = -dirY;
+                                    const perpY = dirX;
+                                    // Optional: switch left/right occasionally
+                                    monster.strafeDir = monster.strafeDir ?? (Math.random() < 0.5 ? -1 : 1);
+                                    if (Math.random() < 0.01) {
+                                        monster.strafeDir *= -1;
+                                    }
+                                    moveX = perpX * monster.strafeDir * monster.speed;
+                                    moveY = perpY * monster.strafeDir * monster.speed;
+                                    // Try to move in X direction
+                                    const newX = monster.x + moveX;
+                                    if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
+                                        monster.x = newX;
+                                    }
+                                    // Try to move in Y direction
+                                    const newY = monster.y + moveY;
+                                    if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
+                                        monster.y = newY;
+                                    }
+                                }
                             }
-                            // Try to move in Y direction
-                            const newY = monster.y + dirY;
-                            if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
-                                monster.y = newY;
+                        }
+                        if (distSq < 0.5 && (!monster.lastAttack || currentTime - monster.lastAttack >= monster.attackCooldown)) {
+                            // Attack the player
+                            game.player.health -= monster.damage;
+                            game.lastMonsterToHitPlayer = monster.type.charAt(0).toUpperCase() + monster.type.slice(1);
+                            monster.lastAttack = currentTime;
+                            // Play monster attack sound
+                            playSound('injured-sound');
+                            // Check if player died
+                            if (game.player.health <= 0) {
+                                playSound('death-sound');
+                                endGameDeath();
                             }
                         }
                     }

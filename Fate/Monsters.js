@@ -216,7 +216,7 @@ window.MonsterData = {
         skin: 'ninja1-sprite',
         audio: 'ninja',
         health: 250,
-        speed: 0.07,
+        speed: 0.06,
         isDead: false,
         width: 512,
         height: 512,
@@ -224,14 +224,19 @@ window.MonsterData = {
         damage: 15,
         lastAttack: 0,
         lastShot: 0,
-        attackCooldown: 1500
+        attackCooldown: 1500,
+        chargeCooldown: 7000,
+        lastCharge: 0,
+        chargeAngle: null,
+        isCharging: false,
+        strafeDir: 1
     },
     ninja2: {
         type: 'ninja',
         skin: 'ninja2-sprite',
         audio: 'ninja',
         health: 250,
-        speed: 0.07,
+        speed: 0.06,
         isDead: false,
         width: 512,
         height: 512,
@@ -239,7 +244,12 @@ window.MonsterData = {
         damage: 15,
         lastAttack: 0,
         lastShot: 0,
-        attackCooldown: 1500
+        attackCooldown: 1500,
+        chargeCooldown: 7000,
+        lastCharge: 0,
+        chargeAngle: null,
+        isCharging: false,
+        strafeDir: 1
     },
     soldier: {
         type: 'soldier',
