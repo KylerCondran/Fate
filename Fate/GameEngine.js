@@ -594,31 +594,31 @@ function loadLevel(levelIdx) {
                             game.sprites.push({ id: "cauldron-sprite", x: j, y: i, width: 512, height: 512, data: null });
                             break;
                         case "Arctic":
-                            game.sprites.push({ id: "snowytree-sprite", x: j, y: i, width: 552, height: 552, data: null });
+                            game.sprites.push({ id: "snowytree-sprite", x: j, y: i, width: 552, height: 552, data: null, spriteScale: 2.0 });
                             break;
                         case "Heaven":
-                            game.sprites.push({ id: "pillar-sprite", x: j, y: i, width: 320, height: 640, data: null });
+                            game.sprites.push({ id: "pillar-sprite", x: j, y: i, width: 320, height: 640, data: null, spriteScale: 2.0 });
                             break;
                         case "Ocean":
-                            game.sprites.push({ id: "kelp-sprite", x: j, y: i, width: 512, height: 512, data: null });
+                            game.sprites.push({ id: "kelp-sprite", x: j, y: i, width: 512, height: 512, data: null, spriteScale: 3.0 });
                             break;
                         case "Army Base":
                             game.sprites.push({ id: "militarytent-sprite", x: j, y: i, width: 512, height: 512, data: null });
                             break;
                         case "Ninja Dojo":
-                            game.sprites.push({ id: "cherryblossom-sprite", x: j, y: i, width: 512, height: 512, data: null });
+                            game.sprites.push({ id: "cherryblossom-sprite", x: j, y: i, width: 512, height: 512, data: null, spriteScale: 3.0 });
                             break;
                         case "Secret Cow Level":
                             game.sprites.push({ id: "haybale-sprite", x: j, y: i, width: 512, height: 512, data: null });
                             break;
                         case "Jurassic":
-                            game.sprites.push({ id: "fern-sprite", x: j, y: i, width: 512, height: 512, data: null });
+                            game.sprites.push({ id: "fern-sprite", x: j, y: i, width: 512, height: 512, data: null, spriteScale: 3.0 });
                             break;
                         case "Ancient Egypt":
-                            game.sprites.push({ id: "obelisk-sprite", x: j, y: i, width: 512, height: 512, data: null });
+                            game.sprites.push({ id: "obelisk-sprite", x: j, y: i, width: 512, height: 512, data: null, spriteScale: 3.0 });
                             break;
                         default:
-                            game.sprites.push({ id: "tree-sprite", x: j, y: i, width: 8, height: 16, data: null });
+                            game.sprites.push({ id: "tree-sprite", x: j, y: i, width: 8, height: 16, data: null, spriteScale: 2.0 });
                             break;
                     }
                     break;
@@ -701,7 +701,7 @@ function loadLevel(levelIdx) {
                     game.monsterTotal++;
                     break;
                 case 20:
-                    game.sprites.push({ id: "portal-sprite", x: j, y: i, width: 1024, height: 1024, data: null });
+                    game.sprites.push({ id: "portal-sprite", x: j, y: i, width: 1024, height: 1024, data: null, spriteScale: 1.5 });
                     break
                 case 21:
                     const jackalope = { ...window.MonsterData.jackalope, id: `monster_${game.monsterTotal}`, x: j, y: i };
@@ -807,14 +807,14 @@ function loadLevel(levelIdx) {
                     game.monsterTotal++;
                     break;
                 case 42:
-                    game.sprites.push({ id: 'acid-sprite', x: j, y: i, width: 256, height: 256, data: null });
+                    game.sprites.push({ id: 'acid-sprite', x: j, y: i, width: 256, height: 256, data: null, spriteScale: 2.0 });
                     break;
                 case 43:
                     game.sprites.push({ id: "lasershotgunpickup-sprite", x: j, y: i, width: 80, height: 29, data: null });
                     game.pickupTotal++;
                     break;
                 case 44:
-                    game.sprites.push({ id: 'burningdebris-sprite', x: j, y: i, width: 512, height: 512, data: null });
+                    game.sprites.push({ id: 'burningdebris-sprite', x: j, y: i, width: 512, height: 512, data: null, spriteScale: 2.0 });
                     break;
                 case 45:
                     const rhino = { ...window.MonsterData.rhino, id: `monster_${game.monsterTotal}`, x: j, y: i };
@@ -4131,8 +4131,9 @@ function drawSpriteInWorld(sprite) {
         }
         drawBulletSprite(spriteX, spriteWidth, spriteHeight, sprite);
     } else {
-        spriteHeight = Math.floor(game.projection.halfHeight / distance);
-        spriteWidth = Math.floor(game.projection.halfWidth / distance);
+        const spriteScale = sprite.spriteScale || 1.0;
+        spriteHeight = Math.floor(game.projection.halfHeight / distance * spriteScale);
+        spriteWidth = Math.floor(game.projection.halfWidth / distance * spriteScale);
         drawSprite(spriteX, spriteWidth, spriteHeight, sprite);
     }
 
