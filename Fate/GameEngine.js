@@ -614,6 +614,9 @@ function loadLevel(levelIdx) {
                         case "Jurassic":
                             game.sprites.push({ id: "fern-sprite", x: j, y: i, width: 512, height: 512, data: null });
                             break;
+                        case "Ancient Egypt":
+                            game.sprites.push({ id: "obelisk-sprite", x: j, y: i, width: 512, height: 512, data: null });
+                            break;
                         default:
                             game.sprites.push({ id: "tree-sprite", x: j, y: i, width: 8, height: 16, data: null });
                             break;
