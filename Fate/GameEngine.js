@@ -1389,6 +1389,9 @@ function updateGameObjects() {
                             } else {
                                 monster.health -= 75;
                             }
+                        } else if ((monster.type == 'moon' || monster.type == 'sun' || monster.type == 'saturn') && monster.invulnerable) {
+                            projectilesToRemove.add(i);
+                            break;
                         } else if (projectile.type == 'laser') {
                             monster.health -= projectile.damage;
                         } else if (projectile.type == 'rocket') {
@@ -3286,6 +3289,187 @@ function updateGameObjects() {
                         const newY = monster.y + dirY;
                         if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
                             monster.y = newY;
+                        }
+                    }
+                    break;
+                case 'anubis':
+                    if (distSq < 400 && isVisibleToPlayer(monster)) {                       
+                        if (!monster.spawnMoon) {
+                            monster.spawnMoon = true;
+                            for (i = 0; i < (1 * spawnModifier); i++) {
+                                const validSpots = getOpenSpawnPositions(Math.floor(monster.x), Math.floor(monster.y), 5);
+                                if (validSpots.length == 0) continue;
+                                const spot = validSpots[Math.floor(Math.random() * validSpots.length)];
+                                const moon = { ...window.MonsterData.moon, id: `monster_${game.monsterTotal}`, x: spot.x, y: spot.y };
+                                const monsterTexture = {
+                                    id: moon.skin,
+                                    width: moon.width,
+                                    height: moon.height
+                                };
+                                moon.data = getTextureData(monsterTexture);
+                                game.monsterTotal++;
+                                game.monsters.push(moon);
+                                updateMonsterGrid();
+                            }                          
+                        }
+                        if (!monster.spawnSun) {
+                            monster.spawnSun = true;
+                            for (i = 0; i < (1 * spawnModifier); i++) {
+                                const validSpots = getOpenSpawnPositions(Math.floor(monster.x), Math.floor(monster.y), 5);
+                                if (validSpots.length == 0) continue;
+                                const spot = validSpots[Math.floor(Math.random() * validSpots.length)];
+                                const sun = { ...window.MonsterData.sun, id: `monster_${game.monsterTotal}`, x: spot.x, y: spot.y };
+                                const monsterTexture = {
+                                    id: sun.skin,
+                                    width: sun.width,
+                                    height: sun.height
+                                };
+                                sun.data = getTextureData(monsterTexture);
+                                game.monsterTotal++;
+                                game.monsters.push(sun);
+                                updateMonsterGrid();
+                            }
+                        }
+                        if (!monster.spawnSaturn) {
+                            monster.spawnSaturn = true;
+                            for (i = 0; i < (1 * spawnModifier); i++) {
+                                const validSpots = getOpenSpawnPositions(Math.floor(monster.x), Math.floor(monster.y), 5);
+                                if (validSpots.length == 0) continue;
+                                const spot = validSpots[Math.floor(Math.random() * validSpots.length)];
+                                const saturn = { ...window.MonsterData.saturn, id: `monster_${game.monsterTotal}`, x: spot.x, y: spot.y };
+                                const monsterTexture = {
+                                    id: saturn.skin,
+                                    width: saturn.width,
+                                    height: saturn.height
+                                };
+                                saturn.data = getTextureData(monsterTexture);
+                                game.monsterTotal++;
+                                game.monsters.push(saturn);
+                                updateMonsterGrid();
+                                playSound('portal-sound');
+                            }
+                        }  
+                    }
+                    if (distSq > 0.25 && distSq < 100) {
+                        const distance = Math.sqrt(distSq);
+                        const invDist = 1 / distance;
+                        const dirX = dx * invDist * monster.speed;
+                        const dirY = dy * invDist * monster.speed;
+                        // Try to move in X direction
+                        const newX = monster.x + dirX;
+                        if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
+                            monster.x = newX;
+                        }
+                        // Try to move in Y direction
+                        const newY = monster.y + dirY;
+                        if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
+                            monster.y = newY;
+                        }
+                    }
+                    break;
+                case 'moon':
+                case 'sun':
+                case 'saturn':
+                    // Celestial route movement code
+                    const celestialOBJ = game.monsters.find(monster => monster.type == 'anubis');
+                    if (!celestialOBJ || !Number.isFinite(celestialOBJ.x) || !Number.isFinite(celestialOBJ.y)) {
+                        break; // NaN safeguard
+                    }
+                    const celestialX = celestialOBJ.x - monster.x;
+                    const celestialY = celestialOBJ.y - monster.y;
+                    const celestialdistSq = celestialX * celestialX + celestialY * celestialY;
+                    if (monster.type == 'moon' && celestialOBJ.health < 800 && monster.invulnerable) {
+                        monster.invulnerable = false;
+                        monster.speed = 0.06; 
+                    }
+                    if (monster.type == 'sun' && celestialOBJ.health < 600 && monster.invulnerable) {
+                        monster.invulnerable = false;
+                        monster.speed = 0.06; 
+                    }
+                    if (monster.type == 'saturn' && celestialOBJ.health < 400 && monster.invulnerable) {
+                        monster.invulnerable = false;
+                        monster.speed = 0.06; 
+                    }
+                    if (celestialdistSq > 0.01 && monster.invulnerable) {
+                        const distance = Math.sqrt(celestialdistSq);
+
+                        // Normalize direction to center
+                        const nx = celestialX / distance;
+                        const ny = celestialY / distance;
+
+                        // Get perpendicular (tangent) direction
+                        // Swap and negate one axis → 90° rotation
+                        const tangentX = -ny;  // clockwise orbit
+                        const tangentY = nx;
+
+                        // maintain orbit radius (spring effect)
+                        const desiredRadius = 1;
+                        const radiusError = distance - desiredRadius;
+
+                        const pullStrength = 0.05; // how strongly it corrects radius
+
+                        // Combine orbit + radius correction
+                        const moveX = (tangentX * monster.speed) + (nx * radiusError * pullStrength);
+                        const moveY = (tangentY * monster.speed) + (ny * radiusError * pullStrength);
+
+                        // Move with collision checks (same as your system)
+                        const newX = monster.x + moveX;
+                        if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
+                            monster.x = newX;
+                        }
+
+                        const newY = monster.y + moveY;
+                        if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
+                            monster.y = newY;
+                        }
+                    } else {
+                        const distance = Math.sqrt(distSq);
+                        const invDist = 1 / distance;
+                        const dirX = dx * invDist * monster.speed;
+                        const dirY = dy * invDist * monster.speed;
+                        // Try to move in X direction
+                        const newX = monster.x + dirX;
+                        if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
+                            monster.x = newX;
+                        }
+                        // Try to move in Y direction
+                        const newY = monster.y + dirY;
+                        if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
+                            monster.y = newY;
+                        }
+                    }
+                    if (distSq < 0.5 && (!monster.lastAttack || currentTime - monster.lastAttack >= monster.attackCooldown)) {
+                        // Attack the player
+                        game.player.health -= monster.damage;
+                        game.lastMonsterToHitPlayer = monster.type.charAt(0).toUpperCase() + monster.type.slice(1);
+                        monster.lastAttack = currentTime;
+                        // Play monster attack sound
+                        //playSound('squish-sound');
+                        // Check if player died
+                        if (game.player.health <= 0) {
+                            playSound('death-sound');
+                            endGameDeath();
+                        }
+                    }
+                    if (distSq < 44 && isVisibleToPlayer(monster)) {
+                        if (!monster.lastShot || currentTime - monster.lastShot >= monster.attackCooldown) {
+                            const angle = radiansToDegrees(Math.atan2(dy, dx));
+                            monster.spinOffset += 20;
+                            monster.spinOffset = monster.spinOffset % 360;
+                            switch (monster.type) {
+                                case 'moon':                            
+                                    break;
+                                case 'sun':
+                                    game.projectiles.push(new Projectile(monster.x, monster.y, angle + monster.spinOffset, 'fireball', game.projectileMap['fireball'], 'monster', 0.04, 5));
+                                    game.projectiles.push(new Projectile(monster.x, monster.y, angle + 90 + monster.spinOffset, 'fireball', game.projectileMap['fireball'], 'monster', 0.04, 5));
+                                    game.projectiles.push(new Projectile(monster.x, monster.y, angle + 180 + monster.spinOffset, 'fireball', game.projectileMap['fireball'], 'monster', 0.04, 5));
+                                    game.projectiles.push(new Projectile(monster.x, monster.y, angle + 270 + monster.spinOffset, 'fireball', game.projectileMap['fireball'], 'monster', 0.04, 5));
+                                    playSound('fireball-sound');
+                                    break;
+                                case 'saturn':
+                                    break;
+                            }
+                            monster.lastShot = currentTime;
                         }
                     }
                     break;
