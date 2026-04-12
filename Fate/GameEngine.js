@@ -576,7 +576,7 @@ function loadLevel(levelIdx) {
         game.player.speed.movement = 0.08;
     }
     const emptyPositions = [];
-    const monsterValues = [3, 4, 5, 6, 7, 15, 16, 17, 18, 19, 21, 22, 23, 24, 25, 27, 28, 29, 31, 32, 33, 34, 35, 36, 37, 41, 45, 46, 47, 50, 52, 57, 59, 60, 61, 62, 64, 69, 70, 71, 72, 73, 74, 75];
+    const monsterValues = [3, 4, 5, 6, 7, 15, 16, 17, 18, 19, 21, 22, 23, 24, 25, 27, 28, 29, 31, 32, 33, 34, 35, 36, 37, 41, 45, 46, 47, 50, 52, 57, 59, 60, 61, 62, 64, 69, 70, 71, 72, 73, 74, 75, 77, 78];
     for (let i = 0; i < mapy; i++) {
         for (let j = 0; j < mapx; j++) {
             var objectValue = map[i][j];
@@ -955,7 +955,7 @@ function loadLevel(levelIdx) {
                     game.monsterTotal++;
                     break;
                 case 75:
-                    const sphinx = { ...window.MonsterData.sphinx, id: `monster_${game.monsterTotal}`, x: j, y: i };
+                    const sphinx = { ...window.MonsterData.sphinx, id: `monster_${game.monsterTotal}`, x: j, y: i, leashX: j, leashY: i };
                     game.monsters.push(sphinx);
                     game.monsterTotal++;
                     break;
@@ -3223,6 +3223,63 @@ function updateGameObjects() {
                         if (game.player.health <= 0) {
                             playSound('death-sound');
                             endGameDeath();
+                        }
+                    }
+                    break;
+                case 'sphinx':
+                    if (distSq < 400 && isVisibleToPlayer(monster)) {
+                        if (!monster.lastShot || currentTime - monster.lastShot >= monster.attackCooldown) {
+                            const angle = radiansToDegrees(Math.atan2(dy, dx));
+                            const perpX = -Math.sin(angle);
+                            const perpY = Math.cos(angle);
+                            const spacing = 0.1;
+                            game.projectiles.push(new Projectile(monster.x + perpX * spacing, monster.y + perpY * spacing, angle, 'laser', game.projectileMap['laserpurple'], 'monster', 0.2, monster.damage));
+                            game.projectiles.push(new Projectile(monster.x - perpX * spacing, monster.y - perpY * spacing, angle, 'laser', game.projectileMap['laserpurple'], 'monster', 0.2, monster.damage));
+                            playSound('laser-sound');
+                            monster.lastShot = currentTime;
+                            var rndVal = Math.floor(Math.random() * 100) + 1;
+                            if (rndVal > 94) {
+                                const validSpots = getOpenSpawnPositions(Math.floor(monster.x), Math.floor(monster.y), 9);
+                                const spot = validSpots[Math.floor(Math.random() * validSpots.length)];
+                                monster.x = spot.x;
+                                monster.y = spot.y;
+                                playSound('portal-sound');
+                            }
+                        }
+                    }
+                    const lx = monster.leashX - monster.x;
+                    const ly = monster.leashY - monster.y;
+                    const leashdistSq = lx * lx + ly * ly;
+                    if (leashdistSq > 1 && !isVisibleToPlayer(monster)) {
+                        // if sphinx do not see the player they will leash back to starting position and guard
+                        const distance = Math.sqrt(leashdistSq);
+                        const invDist = 1 / distance;
+                        const dirX = lx * invDist * monster.speed;
+                        const dirY = ly * invDist * monster.speed;
+                        // Try to move in X direction
+                        const newX = monster.x + dirX;
+                        if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
+                            monster.x = newX;
+                        }
+                        // Try to move in Y direction
+                        const newY = monster.y + dirY;
+                        if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
+                            monster.y = newY;
+                        }
+                    } else if (distSq > 10 && isVisibleToPlayer(monster)) {
+                        const distance = Math.sqrt(distSq);
+                        const invDist = 1 / distance;
+                        const dirX = dx * invDist * monster.speed;
+                        const dirY = dy * invDist * monster.speed;
+                        // Try to move in X direction
+                        const newX = monster.x + dirX;
+                        if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
+                            monster.x = newX;
+                        }
+                        // Try to move in Y direction
+                        const newY = monster.y + dirY;
+                        if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
+                            monster.y = newY;
                         }
                     }
                     break;

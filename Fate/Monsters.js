@@ -751,9 +751,11 @@ window.MonsterData = {
         width: 512,
         height: 512,
         data: null,
-        damage: 20,
-        lastAttack: 0,
-        attackCooldown: 1000
+        damage: 10,
+        lastShot: 0,
+        attackCooldown: 500,
+        leashX: 0,
+        leashY: 0
     },
     anubis: {
         type: 'anubis',
