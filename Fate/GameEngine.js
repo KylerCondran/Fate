@@ -4055,35 +4055,52 @@ function drawBackground(x, y1, y2, background) {
 // Sprite drawing method
 
 function drawSprites() {
-    // Draw trees and other non-monster sprites
+    const spritesToDraw = [];
+
+    // Collect all sprites with their distances
     for (let sprite of game.sprites) {
         if (sprite.data) {
             if (isVisibleToPlayer(sprite)) {
-                drawSpriteInWorld(sprite);
+                const distance = Math.sqrt(Math.pow(game.player.x - sprite.x, 2) + Math.pow(game.player.y - sprite.y, 2));
+                spritesToDraw.push({ sprite, distance, isMonster: false });
             }
         }
     }
 
-    // Draw monsters
+    // Collect monsters with their distances
     for (let monster of game.monsters) {
         if (!monster.isDead && monster.data) {
             if (isVisibleToPlayer(monster)) {
-                drawSpriteInWorld(monster);
+                const distance = Math.sqrt(Math.pow(game.player.x - monster.x, 2) + Math.pow(game.player.y - monster.y, 2));
+                spritesToDraw.push({ sprite: monster, distance, isMonster: true });
             }
         }
     }
 
-    // Draw projectiles
+    // Collect projectiles with their distances
     for (let projectile of game.projectiles) {
-        drawSpriteInWorld({
-            x: projectile.x,
-            y: projectile.y,
-            width: 4,
-            height: 4,
-            isBullet: true,
-            owner: projectile.owner,
-            texture: projectile.texture
+        const distance = Math.sqrt(Math.pow(game.player.x - projectile.x, 2) + Math.pow(game.player.y - projectile.y, 2));
+        spritesToDraw.push({
+            sprite: {
+                x: projectile.x,
+                y: projectile.y,
+                width: 4,
+                height: 4,
+                isBullet: true,
+                owner: projectile.owner,
+                texture: projectile.texture
+            },
+            distance,
+            isProjectile: true
         });
+    }
+
+    // Sort by distance (farthest first)
+    spritesToDraw.sort((a, b) => b.distance - a.distance);
+
+    // Draw in order from farthest to nearest
+    for (let item of spritesToDraw) {
+        drawSpriteInWorld(item.sprite);
     }
 }
 
