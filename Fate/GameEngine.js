@@ -30,6 +30,7 @@ let game = {
     playerFrozen: false,
     playerFrozenTime: 0,
     playerFrozenDuration: 0,
+    activeGravityWell: null,
     weaponsUnlocked: {
         knife: true,
         pistol: false,
@@ -313,6 +314,13 @@ let game = {
             width: 16,
             height: 16,
             id: "volcanic-texture",
+            data: null
+        },
+        {
+            id: 22,
+            width: 16,
+            height: 16,
+            id: "star-texture",
             data: null
         }
     ],
@@ -3349,21 +3357,114 @@ function updateGameObjects() {
                                 playSound('portal-sound');
                             }
                         }  
-                    }
-                    if (distSq > 0.25 && distSq < 100) {
-                        const distance = Math.sqrt(distSq);
-                        const invDist = 1 / distance;
-                        const dirX = dx * invDist * monster.speed;
-                        const dirY = dy * invDist * monster.speed;
-                        // Try to move in X direction
-                        const newX = monster.x + dirX;
-                        if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
-                            monster.x = newX;
+                        // GRAVITY WELL MECHANIC
+                        if (!monster.gravityWellActive) {
+                            if (!monster.lastGravityWell || currentTime - monster.lastGravityWell >= 8000) {
+                                const validSpots = getOpenSpawnPositions(Math.floor(monster.x), Math.floor(monster.y), 13);
+                                if (validSpots.length == 0) continue;
+                                const spot = validSpots[Math.floor(Math.random() * validSpots.length)];
+                                monster.gravityWellActive = true;
+                                monster.gravityWellStartTime = currentTime;
+                                monster.gravityWellX = spot.x;
+                                monster.gravityWellY = spot.y;
+                                monster.lastGravityWell = currentTime;
+                            }
                         }
-                        // Try to move in Y direction
-                        const newY = monster.y + dirY;
-                        if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
-                            monster.y = newY;
+                        // PROCESS ACTIVE GRAVITY WELL
+                        if (monster.gravityWellActive) {
+                            const gravityWellDuration = 3000;
+                            const timeSinceStart = currentTime - monster.gravityWellStartTime;
+
+                            if (timeSinceStart < gravityWellDuration) {
+                                const gravityWellRadius = 5;
+                                const pullStrength = 0.15;
+
+                                // Pull player
+                                const playerDx = monster.gravityWellX - game.player.x;
+                                const playerDy = monster.gravityWellY - game.player.y;
+                                const playerDist = Math.sqrt(playerDx * playerDx + playerDy * playerDy);
+
+                                if (playerDist > 0.25 && playerDist < gravityWellRadius) {
+                                    const pullX = (playerDx / playerDist) * pullStrength;
+                                    const pullY = (playerDy / playerDist) * pullStrength;
+
+                                    const newPlayerX = game.player.x + pullX;
+                                    const newPlayerY = game.player.y + pullY;
+
+                                    if (map[Math.floor(newPlayerY)] && map[Math.floor(newPlayerY)][Math.floor(newPlayerX)] !== 2) {
+                                        game.player.x = newPlayerX;
+                                    }
+                                    if (map[Math.floor(game.player.y)] && map[Math.floor(game.player.y)][Math.floor(newPlayerX)] !== 2) {
+                                        game.player.y = newPlayerY;
+                                    }
+                                }
+
+                                // Pull monsters
+                                for (const otherMonster of game.monsters) {
+                                    if (!otherMonster.isDead && otherMonster.type !== 'moon' && otherMonster.type !== 'sun' && otherMonster.type !== 'saturn' && otherMonster.id !== monster.id) {
+                                        const monsterDx = monster.gravityWellX - otherMonster.x;
+                                        const monsterDy = monster.gravityWellY - otherMonster.y;
+                                        const monsterDist = Math.sqrt(monsterDx * monsterDx + monsterDy * monsterDy);
+
+                                        if (monsterDist > 0.25 && monsterDist < gravityWellRadius) {
+                                            const pullX = (monsterDx / monsterDist) * pullStrength * 0.5;
+                                            const pullY = (monsterDy / monsterDist) * pullStrength * 0.5;
+
+                                            const newMonsterX = otherMonster.x + pullX;
+                                            const newMonsterY = otherMonster.y + pullY;
+
+                                            if (map[Math.floor(newMonsterY)] && map[Math.floor(newMonsterY)][Math.floor(newMonsterX)] !== 2 && !isMonsterAtPosition(newMonsterX, otherMonster.y, otherMonster)) {
+                                                otherMonster.x = newMonsterX;
+                                            }
+                                            if (map[Math.floor(otherMonster.y)] && map[Math.floor(otherMonster.y)][Math.floor(newMonsterX)] !== 2 && !isMonsterAtPosition(otherMonster.x, newMonsterY, otherMonster)) {
+                                                otherMonster.y = newMonsterY;
+                                            }
+                                        }
+                                    }
+                                }
+
+                                // Pull projectiles
+                                for (let i = 0; i < game.projectiles.length; i++) {
+                                    const projectile = game.projectiles[i];
+                                    const projDx = monster.gravityWellX - projectile.x;
+                                    const projDy = monster.gravityWellY - projectile.y;
+                                    const projDist = Math.sqrt(projDx * projDx + projDy * projDy);
+
+                                    if (projDist < gravityWellRadius && projectile.owner !== 'monster') {
+                                        const pullX = (projDx / projDist) * pullStrength * 0.8;
+                                        const pullY = (projDy / projDist) * pullStrength * 0.8;
+                                        projectile.x += pullX;
+                                        projectile.y += pullY;
+                                    }
+                                }
+
+                                // Store gravity well data for floor rendering
+                                game.activeGravityWell = {
+                                    x: monster.gravityWellX,
+                                    y: monster.gravityWellY,
+                                    radius: gravityWellRadius,
+                                    progress: timeSinceStart / gravityWellDuration
+                                };
+                            } else {
+                                monster.gravityWellActive = false;
+                                game.activeGravityWell = null;
+                            }
+                        }
+                        if (distSq > 0.25 && distSq < 400) {
+                            const distance = Math.sqrt(distSq);
+                            const invDist = 1 / distance;
+                            const dirX = dx * invDist * monster.speed;
+                            const dirY = dy * invDist * monster.speed;
+                            // Try to move in X direction
+                            const newX = monster.x + dirX;
+                            if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
+                                monster.x = newX;
+                            }
+                            // Try to move in Y direction
+                            const newY = monster.y + dirY;
+                            if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
+                                monster.y = newY;
+                            }
                         }
                     }
                     break;
@@ -3402,7 +3503,7 @@ function updateGameObjects() {
                         const tangentX = -ny;  // clockwise orbit
                         const tangentY = nx;
 
-                        // maintain orbit radius (spring effect)
+                        // maintain orbit radius (spring effect)    
                         const desiredRadius = 1;
                         const radiusError = distance - desiredRadius;
 
@@ -3449,27 +3550,6 @@ function updateGameObjects() {
                         if (game.player.health <= 0) {
                             playSound('death-sound');
                             endGameDeath();
-                        }
-                    }
-                    if (distSq < 44 && isVisibleToPlayer(monster)) {
-                        if (!monster.lastShot || currentTime - monster.lastShot >= monster.attackCooldown) {
-                            const angle = radiansToDegrees(Math.atan2(dy, dx));
-                            monster.spinOffset += 20;
-                            monster.spinOffset = monster.spinOffset % 360;
-                            switch (monster.type) {
-                                case 'moon':                            
-                                    break;
-                                case 'sun':
-                                    game.projectiles.push(new Projectile(monster.x, monster.y, angle + monster.spinOffset, 'fireball', game.projectileMap['fireball'], 'monster', 0.04, 5));
-                                    game.projectiles.push(new Projectile(monster.x, monster.y, angle + 90 + monster.spinOffset, 'fireball', game.projectileMap['fireball'], 'monster', 0.04, 5));
-                                    game.projectiles.push(new Projectile(monster.x, monster.y, angle + 180 + monster.spinOffset, 'fireball', game.projectileMap['fireball'], 'monster', 0.04, 5));
-                                    game.projectiles.push(new Projectile(monster.x, monster.y, angle + 270 + monster.spinOffset, 'fireball', game.projectileMap['fireball'], 'monster', 0.04, 5));
-                                    playSound('fireball-sound');
-                                    break;
-                                case 'saturn':
-                                    break;
-                            }
-                            monster.lastShot = currentTime;
                         }
                     }
                     break;
@@ -4152,29 +4232,66 @@ function drawFloor(x1, wallHeight, rayAngle) {
     directionSin = Math.sin(degreeToRadians(rayAngle));
     playerAngle = game.player.angle;
     for (y = start; y < game.projection.height; y++) {
-        // Create distance and calculate it
         distance = game.projection.height / (2 * y - game.projection.height);
-        // distance = distance * Math.cos(degreeToRadians(playerAngle) - degreeToRadians(rayAngle))
 
-        // Get the tile position
         tilex = distance * directionCos;
         tiley = distance * directionSin;
         tilex += game.player.x;
         tiley += game.player.y;
 
-        // Get texture
         texture = game.textures[game.levels[game.currentLevel].floor];
 
         if (!texture) {
             continue;
         }
 
-        // Define texture coords
         texture_x = (Math.floor(tilex * texture.width)) % texture.width;
         texture_y = (Math.floor(tiley * texture.height)) % texture.height;
 
-        // Get pixel color
         color = texture.data[texture_x + texture_y * texture.width];
+
+        // Check if this floor tile is in the gravity well
+        if (game.activeGravityWell) {
+            const wellCenterX = game.activeGravityWell.x;
+            const wellCenterY = game.activeGravityWell.y;
+            const wellRadius = game.activeGravityWell.radius;
+
+            // Distance from pixel to well center
+            const dx = tilex - wellCenterX;
+            const dy = tiley - wellCenterY;
+            const distToWell = Math.sqrt(dx * dx + dy * dy);
+
+            if (distToWell < wellRadius) {
+                // Inside the well - use well texture
+                const wellTexture = game.textures[22]; // star texture
+                if (wellTexture) {
+                    const well_x = (Math.floor(tilex * wellTexture.width) + Math.floor(game.activeGravityWell.progress * 100)) % wellTexture.width;
+                    const well_y = (Math.floor(tiley * wellTexture.height)) % wellTexture.height;
+                    color = wellTexture.data[well_x + well_y * wellTexture.width];
+                } else {
+                    // Fallback to solid purple
+                    const intensity = Math.max(0, 1 - game.activeGravityWell.progress);
+                    color = new Color(
+                        Math.floor(200 * intensity),
+                        Math.floor(80 * intensity),
+                        Math.floor(255 * intensity),
+                        255
+                    );
+                }
+            } else if (distToWell < wellRadius + 0.5) {
+                // Edge of well - create a glowing ring
+                const edgeDistance = distToWell - wellRadius;
+                const ringGlow = Math.max(0, 1 - (edgeDistance / 0.5)) * (1 - game.activeGravityWell.progress);
+
+                color = new Color(
+                    Math.floor(color.r * (1 - ringGlow * 0.8) + 0 * ringGlow),
+                    Math.floor(color.g * (1 - ringGlow * 0.8) + 0 * ringGlow),
+                    Math.floor(color.b * (1 - ringGlow * 0.8) + 0 * ringGlow),
+                    color.a
+                );
+            }
+        }
+
         drawPixel(x1, y, color);
     }
 }

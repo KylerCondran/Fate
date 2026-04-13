@@ -773,7 +773,13 @@ window.MonsterData = {
         attackCooldown: 1000,
         spawnMoon: false,
         spawnSun: false,
-        spawnSaturn: false
+        spawnSaturn: false,
+        gravityWellActive: false,
+        gravityWellStartTime: 0,
+        gravityWellX: 0,
+        gravityWellY: 0,
+        lastGravityWell: 0,
+        gravityWellDamageTime: 0
     },
     mummy: {
         type: 'mummy',
@@ -819,8 +825,7 @@ window.MonsterData = {
         lastShot: 0,
         lastAttack: 0,
         attackCooldown: 1000,
-        invulnerable: true,
-        spinOffset: 20
+        invulnerable: true
     },
     saturn: {
         type: 'saturn',
