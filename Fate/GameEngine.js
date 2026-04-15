@@ -163,161 +163,161 @@ let game = {
     },
     textures: [
         {
-            id: 0,
+            number: 0,
             width: 16,
             height: 16,
             id: "texture",
             data: null
         },
         {
-            id: 1,
+            number: 1,
             width: 16,
             height: 16,
             id: "texture2",
             data: null
         },
         {
-            id: 2,
+            number: 2,
             width: 16,
             height: 16,
             id: "invis",
             data: null
         },
         {
-            id: 3,
+            number: 3,
             width: 16,
             height: 16,
             id: "ice",
             data: null
         },
         {
-            id: 4,
+            number: 4,
             width: 16,
             height: 16,
             id: "grass-texture",
             data: null
         },
         {
-            id: 5,
+            number: 5,
             width: 16,
             height: 16,
             id: "lava-texture",
             data: null
         },
         {
-            id: 6,
+            number: 6,
             width: 16,
             height: 16,
             id: "woods-texture",
             data: null
         },
         {
-            id: 7,
+            number: 7,
             width: 16,
             height: 16,
             id: "cloud",
             data: null
         },
         {
-            id: 8,
+            number: 8,
             width: 16,
             height: 16,
             id: "sand-texture",
             data: null
         },
         {
-            id: 9,
+            number: 9,
             width: 16,
             height: 16,
             id: "tech-texture",
             data: null
         },
         {
-            id: 10,
+            number: 10,
             width: 16,
             height: 16,
             id: "water-texture",
             data: null
         },
         {
-            id: 11,
+            number: 11,
             width: 16,
             height: 16,
             id: "fence-texture",
             data: null
         },
         {
-            id: 12,
+            number: 12,
             width: 16,
             height: 16,
             id: "sandstone-texture",
             data: null
         },
         {
-            id: 13,
+            number: 13,
             width: 16,
             height: 16,
             id: "cobblestone-texture",
             data: null
         },
         {
-            id: 14,
+            number: 14,
             width: 16,
             height: 16,
             id: "cobblestonebrick-texture",
             data: null
         },
         {
-            id: 15,
+            number: 15,
             width: 16,
             height: 16,
             id: "dirt-texture",
             data: null
         },
         {
-            id: 16,
+            number: 16,
             width: 16,
             height: 16,
             id: "cobblestonemossy-texture",
             data: null
         },
         {
-            id: 17,
+            number: 17,
             width: 16,
             height: 16,
             id: "cobblestonebrickmossy-texture",
             data: null
         },
         {
-            id: 18,
+            number: 18,
             width: 16,
             height: 16,
             id: "bamboo-texture",
             data: null
         },
         {
-            id: 19,
+            number: 19,
             width: 16,
             height: 16,
             id: "bambooplank-texture",
             data: null
         },
         {
-            id: 20,
+            number: 20,
             width: 16,
             height: 16,
             id: "magma-texture",
             data: null
         },
         {
-            id: 21,
+            number: 21,
             width: 16,
             height: 16,
             id: "volcanic-texture",
             data: null
         },
         {
-            id: 22,
+            number: 22,
             width: 16,
             height: 16,
             id: "star-texture",
@@ -326,73 +326,92 @@ let game = {
     ],
     projectileTextures: [
         {
+            number: 0,
             id: 'bullet-sprite',
             width: 27,
             height: 27,
             data: null
         },
         {
+            number: 1,
             id: 'laser-sprite',
             width: 27,
             height: 27,
             data: null
         },
         {
+            number: 2,
             id: 'rocket-sprite',
             width: 16,
             height: 23,
             data: null
         },
         {
+            number: 3,
             id: 'inboundrocket-sprite',
             width: 16,
             height: 23,
             data: null
         },
         {
+            number: 4,  
             id: 'orb-sprite',
             width: 27,
             height: 27,
             data: null
         },
         {
+            number: 5,
             id: 'boomerang-sprite',
             width: 27,
             height: 27,
             data: null
         },
         {
+            number: 6,
             id: 'shuriken-sprite',
             width: 27,
             height: 27,
             data: null
         },
         {
+            number: 7,
             id: 'waterorb-sprite',
             width: 27,
             height: 27,
             data: null
         },
         {
+            number: 8,
             id: 'eyeballprojectile-sprite',
             width: 27,
             height: 27,
             data: null
         },
         {
+            number: 9,
             id: 'fireball-sprite',
             width: 27,
             height: 27,
             data: null
         },
         {
+            number: 10,
             id: 'web-sprite',
             width: 27,
             height: 27,
             data: null
         },
         {
+            number: 11,
             id: 'laserpurple-sprite',
+            width: 27,
+            height: 27,
+            data: null
+        },
+        {
+            number: 12,
+            id: 'whirl-sprite',
             width: 27,
             height: 27,
             data: null
@@ -491,6 +510,7 @@ game.projectileMap = {
     fireball: game.projectileTextures[9],
     web: game.projectileTextures[10],
     laserpurple: game.projectileTextures[11],
+    whirl: game.projectileTextures[12]
 };
 
 // Main loop
@@ -1308,13 +1328,14 @@ function updateMonsterGrid() {
 
 // Check if a position is occupied by another monster
 
-function isMonsterAtPosition(x, y, excludeMonster = null) {
+function isMonsterAtPosition(x, y, excludeMonster = null, allowedTypes = null) {
     const gridKey = `${Math.floor(x)}_${Math.floor(y)}`;
     const nearby = game.monsterGrid[gridKey] || [];
     
     const checkRadius = 0.5;
     for (let monster of nearby) {
         if (monster === excludeMonster) continue;
+        if (allowedTypes && !allowedTypes.includes(monster.type)) continue;
         const distSq = (monster.x - x) ** 2 + (monster.y - y) ** 2;
         if (distSq < checkRadius * checkRadius) {
             return true;
@@ -1536,6 +1557,18 @@ function updateGameObjects() {
                         game.weaponSprite = document.getElementById('boomerangwep-sprite');
                         game.weaponsUnlocked.boomerang = true;
                     }
+                } else if (projectile.type == 'whirl') {
+                    //playSound('pickup-sound');
+                    const anubis = game.monsters.find(monster => monster.type === 'anubis');
+
+                    if (anubis && !anubis.isDead) {
+                        // Initialize pull properties if they don't exist
+                        if (!anubis.pullStartTime) {
+                            anubis.pullStartTime = Date.now();
+                            anubis.activePull = true;
+                            anubis.pullDuration = 500;
+                        }
+                    }
                 } else {
                     game.player.health -= projectile.damage; // All other projectile damage
                 }
@@ -1550,7 +1583,7 @@ function updateGameObjects() {
                         }
                     }
                 }
-                if (!(projectile.type === 'boomerang')) {
+                if (!(projectile.type === 'boomerang') && !(projectile.type === 'whirl')) {
                     playSound('injured-sound');
                 }
                 projectilesToRemove.add(i);
@@ -3377,7 +3410,7 @@ function updateGameObjects() {
 
                             if (timeSinceStart < gravityWellDuration) {
                                 const gravityWellRadius = 5;
-                                const pullStrength = 0.15;
+                                const pullStrength = 0.07;
 
                                 // Pull player
                                 const playerDx = monster.gravityWellX - game.player.x;
@@ -3401,7 +3434,7 @@ function updateGameObjects() {
 
                                 // Pull monsters
                                 for (const otherMonster of game.monsters) {
-                                    if (!otherMonster.isDead && otherMonster.type !== 'moon' && otherMonster.type !== 'sun' && otherMonster.type !== 'saturn' && otherMonster.id !== monster.id) {
+                                    if (!otherMonster.isDead && otherMonster.id !== monster.id) {
                                         const monsterDx = monster.gravityWellX - otherMonster.x;
                                         const monsterDy = monster.gravityWellY - otherMonster.y;
                                         const monsterDist = Math.sqrt(monsterDx * monsterDx + monsterDy * monsterDy);
@@ -3450,6 +3483,65 @@ function updateGameObjects() {
                                 game.activeGravityWell = null;
                             }
                         }
+                        if (distSq < 64 && isVisibleToPlayer(monster)) {
+                            if (!monster.lastShot || currentTime - monster.lastShot >= monster.attackCooldown) {
+                                const angle = radiansToDegrees(Math.atan2(dy, dx));
+                                game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'whirl', game.projectileMap['whirl'], 'monster', 0.2, 0));
+                                //playSound('shoot-sound');
+                                monster.lastShot = currentTime;
+                            }
+                        }
+                        // HANDLE ACTIVE PULL
+                        if (monster.activePull && monster.pullStartTime) {
+                            const timeSincePull = currentTime - monster.pullStartTime;
+
+                            if (timeSincePull < monster.pullDuration) {
+                                // Pull is still active
+                                const pullStrength = 0.15; // How hard to pull per frame
+                                const dx = monster.x - game.player.x;
+                                const dy = monster.y - game.player.y;
+                                const pullDistance = Math.sqrt(dx * dx + dy * dy);
+
+                                if (pullDistance > 0.25) {
+                                    const pullDx = (dx / pullDistance) * pullStrength;
+                                    const pullDy = (dy / pullDistance) * pullStrength;
+
+                                    const newX = game.player.x + pullDx;
+                                    const newY = game.player.y + pullDy;
+
+                                    // Only move if not hitting a wall
+                                    if (map[Math.floor(newY)] && map[Math.floor(newY)][Math.floor(newX)] !== 2) {
+                                        game.player.x = newX;
+                                    }
+                                    if (map[Math.floor(newY)] && map[Math.floor(newY)][Math.floor(newX)] !== 2) {
+                                        game.player.y = newY;
+                                    }
+                                }
+                            } else {
+                                // Pull duration elapsed - deactivate
+                                monster.activePull = false;
+                                monster.pullStartTime = null;
+                            }
+                        }
+                        // SPAWN MUMMY
+                        if (!monster.lastSpawn || currentTime - monster.lastSpawn >= monster.spawnCooldown) {
+                            monster.lastSpawn = currentTime;
+                            for (i = 0; i < (1 * spawnModifier); i++) {
+                                const validSpots = getOpenSpawnPositions(Math.floor(monster.x), Math.floor(monster.y), 9);
+                                if (validSpots.length == 0) continue;
+                                const spot = validSpots[Math.floor(Math.random() * validSpots.length)];
+                                game.monsterTotal++;
+                                const mummy = { ...window.MonsterData.mummy, id: `monster_${game.monsterTotal}`, x: spot.x, y: spot.y };
+                                const monsterTexture = {
+                                    id: mummy.skin,
+                                    width: mummy.width,
+                                    height: mummy.height
+                                };
+                                mummy.data = getTextureData(monsterTexture);
+                                game.monsters.push(mummy);
+                            }
+                            playSound('portal-sound');
+                        }
                         if (distSq > 0.25 && distSq < 400) {
                             const distance = Math.sqrt(distSq);
                             const invDist = 1 / distance;
@@ -3466,6 +3558,19 @@ function updateGameObjects() {
                                 monster.y = newY;
                             }
                         }
+                        if (distSq < 0.5 && (!monster.lastAttack || currentTime - monster.lastAttack >= monster.attackCooldown)) {
+                            // Attack the player
+                            game.player.health -= monster.damage;
+                            game.lastMonsterToHitPlayer = monster.type.charAt(0).toUpperCase() + monster.type.slice(1);
+                            monster.lastAttack = currentTime;
+                            // Play monster attack sound
+                            playSound('injured-sound');
+                            // Check if player died
+                            if (game.player.health <= 0) {
+                                playSound('death-sound');
+                                endGameDeath();
+                            }
+                        }
                     }
                     break;
                 case 'moon':
@@ -3479,15 +3584,15 @@ function updateGameObjects() {
                     const celestialX = celestialOBJ.x - monster.x;
                     const celestialY = celestialOBJ.y - monster.y;
                     const celestialdistSq = celestialX * celestialX + celestialY * celestialY;
-                    if (monster.type == 'moon' && celestialOBJ.health < 800 && monster.invulnerable) {
+                    if (monster.type == 'moon' && celestialOBJ.health < 1600 && monster.invulnerable) {
                         monster.invulnerable = false;
                         monster.speed = 0.06; 
                     }
-                    if (monster.type == 'sun' && celestialOBJ.health < 600 && monster.invulnerable) {
+                    if (monster.type == 'sun' && celestialOBJ.health < 1100 && monster.invulnerable) {
                         monster.invulnerable = false;
                         monster.speed = 0.06; 
                     }
-                    if (monster.type == 'saturn' && celestialOBJ.health < 400 && monster.invulnerable) {
+                    if (monster.type == 'saturn' && celestialOBJ.health < 600 && monster.invulnerable) {
                         monster.invulnerable = false;
                         monster.speed = 0.06; 
                     }
@@ -3513,14 +3618,14 @@ function updateGameObjects() {
                         const moveX = (tangentX * monster.speed) + (nx * radiusError * pullStrength);
                         const moveY = (tangentY * monster.speed) + (ny * radiusError * pullStrength);
 
-                        // Move with collision checks (same as your system)
+                        // Move with collision checks
                         const newX = monster.x + moveX;
-                        if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
+                        if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster, ['sun', 'moon', 'saturn'])) {
                             monster.x = newX;
                         }
 
                         const newY = monster.y + moveY;
-                        if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
+                        if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster, ['sun', 'moon', 'saturn'])) {
                             monster.y = newY;
                         }
                     } else {
@@ -3530,19 +3635,27 @@ function updateGameObjects() {
                         const dirY = dy * invDist * monster.speed;
                         // Try to move in X direction
                         const newX = monster.x + dirX;
-                        if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
+                        if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster, ['sun', 'moon', 'saturn'])) {
                             monster.x = newX;
                         }
                         // Try to move in Y direction
                         const newY = monster.y + dirY;
-                        if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
+                        if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster, ['sun', 'moon', 'saturn'])) {
                             monster.y = newY;
                         }
                     }
                     if (distSq < 0.5 && (!monster.lastAttack || currentTime - monster.lastAttack >= monster.attackCooldown)) {
                         // Attack the player
                         game.player.health -= monster.damage;
-                        game.lastMonsterToHitPlayer = monster.type.charAt(0).toUpperCase() + monster.type.slice(1);
+                        switch (monster.type) {
+                            case 'moon':
+                            case 'sun':
+                                game.lastMonsterToHitPlayer = 'The ' + monster.type.charAt(0).toUpperCase() + monster.type.slice(1);
+                                break
+                            case 'saturn':
+                                game.lastMonsterToHitPlayer = monster.type.charAt(0).toUpperCase() + monster.type.slice(1);
+                                break;
+                        }
                         monster.lastAttack = currentTime;
                         // Play monster attack sound
                         //playSound('squish-sound');

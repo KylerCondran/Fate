@@ -761,7 +761,7 @@ window.MonsterData = {
         type: 'anubis',
         skin: 'anubis-sprite',
         audio: 'anubis',
-        health: 1000,
+        health: 2000,
         speed: 0.02,
         isDead: false,
         width: 512,
@@ -770,7 +770,7 @@ window.MonsterData = {
         damage: 20,
         lastShot: 0,
         lastAttack: 0,
-        attackCooldown: 1000,
+        attackCooldown: 3000,
         spawnMoon: false,
         spawnSun: false,
         spawnSaturn: false,
@@ -779,7 +779,12 @@ window.MonsterData = {
         gravityWellX: 0,
         gravityWellY: 0,
         lastGravityWell: 0,
-        gravityWellDamageTime: 0
+        gravityWellDamageTime: 0,
+        pullStartTime: 0,
+        activePull: false,
+        pullDuration: 2000,
+        spawnCooldown: 10000,
+        lastSpawn: 0
     },
     mummy: {
         type: 'mummy',
