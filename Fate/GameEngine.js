@@ -391,8 +391,8 @@ let game = {
         {
             number: 9,
             id: 'fireball-sprite',
-            width: 27,
-            height: 27,
+            width: 26,
+            height: 34,
             data: null
         },
         {
@@ -419,35 +419,35 @@ let game = {
     ],
     backgrounds: [
         {
-            id: 0,
+            number: 0,
             width: 360,
             height: 60,
             id: "sunny",
             data: null
         },
         {
-            id: 1,
+            number: 1,
             width: 360,
             height: 60,
             id: "night",
             data: null
         },
         {
-            id: 2,
+            number: 2,
             width: 360,
             height: 60,
             id: "snowy",
             data: null
         },
         {
-            id: 3,
+            number: 3,
             width: 360,
             height: 60,
             id: "space",
             data: null
         },
         {
-            id: 4,
+            number: 4,
             width: 360,
             height: 88,
             id: "egypt",
@@ -3288,7 +3288,7 @@ function updateGameObjects() {
                             playSound('laser-sound');
                             monster.lastShot = currentTime;
                             var rndVal = Math.floor(Math.random() * 100) + 1;
-                            if (rndVal > 94) {
+                            if (rndVal > 89) {
                                 const validSpots = getOpenSpawnPositions(Math.floor(monster.x), Math.floor(monster.y), 9);
                                 const spot = validSpots[Math.floor(Math.random() * validSpots.length)];
                                 monster.x = spot.x;
@@ -3659,6 +3659,42 @@ function updateGameObjects() {
                         monster.lastAttack = currentTime;
                         // Play monster attack sound
                         //playSound('squish-sound');
+                        // Check if player died
+                        if (game.player.health <= 0) {
+                            playSound('death-sound');
+                            endGameDeath();
+                        }
+                    }
+                    break;
+                case 'mummy':
+                    if (distSq > 0.25 && distSq < 400 && isVisibleToPlayer(monster)) {
+                        const distance = Math.sqrt(distSq);
+                        const invDist = 1 / distance;
+                        const dirX = dx * invDist * monster.speed;
+                        const dirY = dy * invDist * monster.speed;
+                        // Try to move in X direction
+                        const newX = monster.x + dirX;
+                        if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
+                            monster.x = newX;
+                        }
+                        // Try to move in Y direction
+                        const newY = monster.y + dirY;
+                        if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
+                            monster.y = newY;
+                        }
+                    }
+                    if (distSq < 0.5 && (!monster.lastAttack || currentTime - monster.lastAttack >= monster.attackCooldown)) {
+                        // Attack the player
+                        game.player.health -= monster.damage;
+                        if (!game.playerFrozen) {
+                            game.playerFrozen = true;
+                            game.playerFrozenTime = Date.now();
+                            game.playerFrozenDuration = 500;
+                        }
+                        game.lastMonsterToHitPlayer = monster.type.charAt(0).toUpperCase() + monster.type.slice(1);
+                        monster.lastAttack = currentTime;
+                        // Play monster attack sound
+                        playSound('injured-sound');
                         // Check if player died
                         if (game.player.health <= 0) {
                             playSound('death-sound');
