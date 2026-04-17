@@ -1007,6 +1007,11 @@ function loadLevel(levelIdx) {
                     game.monsters.push(mummy);
                     game.monsterTotal++;
                     break;
+                case 79:
+                    const tutankhamun = { ...window.MonsterData.tutankhamun, id: `monster_${game.monsterTotal}`, x: j, y: i };
+                    game.monsters.push(tutankhamun);
+                    game.monsterTotal++;
+                    break;
                 default:
                     break;
             }

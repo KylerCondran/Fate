@@ -847,5 +847,19 @@ window.MonsterData = {
         lastAttack: 0,
         attackCooldown: 1000,
         invulnerable: true
+    },
+    tutankhamun: {
+        type: 'tutankhamun',
+        skin: 'tutankhamun-sprite',
+        audio: 'tutankhamun',
+        health: 250,
+        speed: 0.04,
+        isDead: false,
+        width: 512,
+        height: 512,
+        data: null,
+        damage: 20,
+        lastAttack: 0,
+        attackCooldown: 1000
     }
 };
