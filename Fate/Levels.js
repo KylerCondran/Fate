@@ -15,7 +15,7 @@ Level Legend:
 61 = wolf, 62 = astronaut, 63 = rover, 64 = turret, 65 = lander
 66 = lander2, 67 = goatchest, 68 = goatkey, 69 = dinosauregg, 70 = lizard
 71 = raptor, 72 = brontosaurus, 73 = stegosaurus, 74 = scarab, 75 = sphinx
-76 = battery, 77 = anubis, 78 = mummy, 79 = tutankhamun
+76 = battery, 77 = anubis, 78 = mummy, 79 = tutankhamun, 80 = satyr
 */
 window.LevelData = [
     {
@@ -750,7 +750,7 @@ window.LevelData = [
             [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
             [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
             [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
-            [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 2],
+            [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 80, 2],
             [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
         ],
         unlocked: false,

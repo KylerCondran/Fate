@@ -861,5 +861,19 @@ window.MonsterData = {
         damage: 20,
         lastAttack: 0,
         attackCooldown: 1000
+    },
+    satyr: {
+        type: 'satyr',
+        skin: 'satyr-sprite',
+        audio: 'satyr',
+        health: 250,
+        speed: 0.04,
+        isDead: false,
+        width: 512,
+        height: 512,
+        data: null,
+        damage: 20,
+        lastAttack: 0,
+        attackCooldown: 1000
     }
 };
