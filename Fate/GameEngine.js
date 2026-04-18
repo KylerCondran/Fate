@@ -95,6 +95,7 @@ let game = {
         rapidFire: false,
         randomizeEnemies: false
     },
+    developerMode: false,
     key: {
         up: {
             code: "ArrowUp",
@@ -415,6 +416,13 @@ let game = {
             width: 27,
             height: 27,
             data: null
+        },
+        {
+            number: 13,
+            id: 'force-sprite',
+            width: 32,
+            height: 32,
+            data: null
         }
     ],
     backgrounds: [
@@ -510,7 +518,8 @@ game.projectileMap = {
     fireball: game.projectileTextures[9],
     web: game.projectileTextures[10],
     laserpurple: game.projectileTextures[11],
-    whirl: game.projectileTextures[12]
+    whirl: game.projectileTextures[12],
+    force: game.projectileTextures[13]
 };
 
 // Main loop
@@ -586,7 +595,7 @@ function loadLevel(levelIdx) {
     game.pickupCollected = 0;
     game.checkpointTotal = 0;
     // Reset player health
-    if (game.cheats.godMode) {
+    if (game.cheats.godMode || game.developerMode) {
         game.player.health = 9999;
     } else {
         game.player.health = 100;
@@ -604,7 +613,7 @@ function loadLevel(levelIdx) {
         game.player.speed.movement = 0.08;
     }
     const emptyPositions = [];
-    const monsterValues = [3, 4, 5, 6, 7, 15, 16, 17, 18, 19, 21, 22, 23, 24, 25, 27, 28, 29, 31, 32, 33, 34, 35, 36, 37, 41, 45, 46, 47, 50, 52, 57, 59, 60, 61, 62, 64, 69, 70, 71, 72, 73, 74, 75, 77, 78];
+    const monsterValues = [3, 4, 5, 6, 7, 15, 16, 17, 18, 19, 21, 22, 23, 24, 25, 27, 28, 29, 31, 32, 33, 34, 35, 36, 37, 41, 45, 46, 47, 50, 52, 57, 59, 60, 61, 62, 64, 69, 70, 71, 72, 73, 74, 75, 77, 78, 79, 80, 81];
     for (let i = 0; i < mapy; i++) {
         for (let j = 0; j < mapx; j++) {
             var objectValue = map[i][j];
@@ -729,7 +738,7 @@ function loadLevel(levelIdx) {
                     game.monsterTotal++;
                     break;
                 case 20:
-                    game.sprites.push({ id: "portal-sprite", x: j, y: i, width: 1024, height: 1024, data: null, spriteScale: 1.5 });
+                    game.sprites.push({ id: "portal-sprite", x: j, y: i, width: 512, height: 512, data: null, spriteScale: 1.5 });
                     break
                 case 21:
                     const jackalope = { ...window.MonsterData.jackalope, id: `monster_${game.monsterTotal}`, x: j, y: i };
@@ -1017,6 +1026,11 @@ function loadLevel(levelIdx) {
                     game.monsters.push(satyr);
                     game.monsterTotal++;
                     break;
+                case 81:
+                    const frog = { ...window.MonsterData.frog, id: `monster_${game.monsterTotal}`, x: j, y: i };
+                    game.monsters.push(frog);
+                    game.monsterTotal++;
+                    break;
                 default:
                     break;
             }
@@ -1071,13 +1085,13 @@ function resetGameState() {
 // Apply Cheats From Cheat Menu After Game Completion
 
 function applyCheats() {
-    if (game.cheats.infiniteAmmo) {
+    if (game.cheats.infiniteAmmo || game.developerMode) {
         game.ammo = 9999;
         game.rocketammo = 9999;
         game.boomerangammo = 9999;
         game.laserbattery = 9999;
     }
-    if (game.cheats.allWeapons) {
+    if (game.cheats.allWeapons || game.developerMode) {
         game.weaponsUnlocked.pistol = true;
         game.weaponsUnlocked.machinegun = true;
         game.weaponsUnlocked.yetipistol = true;
@@ -1087,7 +1101,7 @@ function applyCheats() {
         game.weaponsUnlocked.lasershotgun = true;
         game.weaponsUnlocked.trident = true;
     }
-    if (game.cheats.unlockAllLevels) {
+    if (game.cheats.unlockAllLevels || game.developerMode) {
         for (let i = 0; i < game.levels.length; i++) {
             game.levels[i].unlocked = true;
         }
@@ -1326,7 +1340,7 @@ function showNotification(notification) {
 function updateMonsterGrid() {
     game.monsterGrid = {};
     for (let monster of game.monsters) {
-        if (!monster.isDead && monster.type != 'moby' && monster.type != 'seahorse' && monster.type != 'seahorsebaby' && monster.type != 'dinosauregg') {
+        if (!monster.isDead && monster.type != 'moby' && monster.type != 'seahorse' && monster.type != 'seahorsebaby' && monster.type != 'dinosauregg' && monster.type != 'portal' && monster.type != 'tutankhamun') {
             const gridKey = `${Math.floor(monster.x)}_${Math.floor(monster.y)}`;
             if (!game.monsterGrid[gridKey]) {
                 game.monsterGrid[gridKey] = [];
@@ -1522,6 +1536,8 @@ function updateGameObjects() {
                                     game.monsters.push(alien1);
                                     break;
                                 case 'seahorsebaby':
+                                case 'portal':
+                                case 'frog':
                                     break;
                                 case 'dinosauregg':
                                     game.monsterTotal++;
@@ -1586,6 +1602,18 @@ function updateGameObjects() {
                             anubis.pullStartTime = Date.now();
                             anubis.activePull = true;
                             anubis.pullDuration = 500;
+                        }
+                    }
+                } else if (projectile.type == 'force') {
+                    //playSound('pickup-sound');
+                    const tutankhamun = game.monsters.find(monster => monster.type === 'tutankhamun');
+
+                    if (tutankhamun && !tutankhamun.isDead) {
+                        // Initialize push properties if they don't exist
+                        if (!tutankhamun.pushStartTime) {
+                            tutankhamun.pushStartTime = Date.now();
+                            tutankhamun.activePush = true;
+                            tutankhamun.pushDuration = 500;
                         }
                     }
                 } else {
@@ -2000,7 +2028,7 @@ function updateGameObjects() {
                     }
                     if (monster.health < 800 && !monster.spawnPirahna) {
                         monster.spawnPirahna = true;
-                        for (i = 0; i < (3 * spawnModifier); i++) {                            
+                        for (let i = 0; i < (3 * spawnModifier); i++) {                            
                             const validSpots = getOpenSpawnPositions(Math.floor(monster.x), Math.floor(monster.y), 5);
                             if (validSpots.length == 0) continue;
                             const spot = validSpots[Math.floor(Math.random() * validSpots.length)];
@@ -2019,7 +2047,7 @@ function updateGameObjects() {
                     }
                     if (monster.health < 600 && !monster.spawnSquid) {
                         monster.spawnSquid = true;
-                        for (i = 0; i < (2 * spawnModifier); i++) {                           
+                        for (let i = 0; i < (2 * spawnModifier); i++) {                           
                             const validSpots = getOpenSpawnPositions(Math.floor(monster.x), Math.floor(monster.y), 5);
                             if (validSpots.length == 0) continue;
                             const spot = validSpots[Math.floor(Math.random() * validSpots.length)];
@@ -2038,7 +2066,7 @@ function updateGameObjects() {
                     }
                     if (monster.health < 400 && !monster.spawnShark) {
                         monster.spawnShark = true;
-                        for (i = 0; i < (1 * spawnModifier); i++) {
+                        for (let i = 0; i < (1 * spawnModifier); i++) {
                             const validSpots = getOpenSpawnPositions(Math.floor(monster.x), Math.floor(monster.y), 5);
                             if (validSpots.length == 0) continue;
                             const spot = validSpots[Math.floor(Math.random() * validSpots.length)];
@@ -2097,7 +2125,7 @@ function updateGameObjects() {
                     if ((!monster.lastSpawn || currentTime - monster.lastSpawn >= monster.spawnCooldown) && checkpointdistSq < 100 && checkpointdistSq > 50) {
                         monster.lastSpawn = currentTime;
                         var angle = radiansToDegrees(Math.atan2(dy, dx));
-                        for (i = 0; i < (1 * spawnModifier); i++) {
+                        for (let i = 0; i < (1 * spawnModifier); i++) {
                             game.monsterTotal++;
                             const startX = monster.x + Math.cos(degreeToRadians(angle)) * 1.5;
                             const startY = monster.y + Math.sin(degreeToRadians(angle)) * 1.5;
@@ -2233,7 +2261,7 @@ function updateGameObjects() {
                         }
                         if (!monster.lastSpawn || currentTime - monster.lastSpawn >= monster.spawnCooldown) {
                             monster.lastSpawn = currentTime;
-                            for (i = 0; i < (2 * spawnModifier); i++) {                      
+                            for (let i = 0; i < (2 * spawnModifier); i++) {                      
                                 const validSpots = getOpenSpawnPositions(Math.floor(monster.x), Math.floor(monster.y), 5);
                                 if (validSpots.length == 0) continue;
                                 const spot = validSpots[Math.floor(Math.random() * validSpots.length)];
@@ -2330,7 +2358,7 @@ function updateGameObjects() {
                                 var rndVal = Math.floor(Math.random() * 100) + 1;
                                 if (rndVal > 94) {
                                     monster.spawnEyeball = true;
-                                    for (i = 0; i < (1 * spawnModifier); i++) {
+                                    for (let i = 0; i < (1 * spawnModifier); i++) {
                                         const validSpots = getOpenSpawnPositions(Math.floor(game.player.x), Math.floor(game.player.y), 3);
                                         if (validSpots.length == 0) continue;
                                         const spot = validSpots[Math.floor(Math.random() * validSpots.length)];
@@ -2561,7 +2589,7 @@ function updateGameObjects() {
                 case 'lander':
                     if (!monster.lastSpawn || currentTime - monster.lastSpawn >= monster.spawnCooldown) {
                         monster.lastSpawn = currentTime;
-                        for (i = 0; i < (1 * spawnModifier); i++) {
+                        for (let i = 0; i < (1 * spawnModifier); i++) {
                             const validSpots = getOpenSpawnPositions(Math.floor(monster.x), Math.floor(monster.y), 3);
                             if (validSpots.length == 0) continue;
                             const spot = validSpots[Math.floor(Math.random() * validSpots.length)];
@@ -2717,7 +2745,7 @@ function updateGameObjects() {
                         if (enemydistSq < 64 && (!monster.lastShot || currentTime - monster.lastShot >= monster.attackCooldown)) {
                             // Attack the monster
                             var angle = radiansToDegrees(Math.atan2(enemyY, enemyX));
-                            for (i = 0; i < (1 * spawnModifier); i++) {
+                            for (let i = 0; i < (1 * spawnModifier); i++) {
                                 const startX = monster.x + Math.cos(degreeToRadians(angle)) * game.bulletStartDistance;
                                 const startY = monster.y + Math.sin(degreeToRadians(angle)) * game.bulletStartDistance;
                                 const seahorsebaby = { ...window.MonsterData.seahorsebaby, id: `monster_seahorsebaby`, x: startX, y: startY, spawnTime: Date.now() };
@@ -2869,7 +2897,7 @@ function updateGameObjects() {
                         } else {
                             if (!monster.spawnAstronaut) {
                                 monster.spawnAstronaut = true;
-                                for (i = 0; i < (2 * spawnModifier); i++) {
+                                for (let i = 0; i < (2 * spawnModifier); i++) {
                                     const validSpots = getOpenSpawnPositions(Math.floor(monster.x), Math.floor(monster.y), 3);
                                     if (validSpots.length == 0) continue;
                                     const spot = validSpots[Math.floor(Math.random() * validSpots.length)];
@@ -3363,7 +3391,7 @@ function updateGameObjects() {
                     if (distSq < 400 && isVisibleToPlayer(monster)) {                       
                         if (!monster.spawnMoon) {
                             monster.spawnMoon = true;
-                            for (i = 0; i < (1 * spawnModifier); i++) {
+                            for (let i = 0; i < (1 * spawnModifier); i++) {
                                 const validSpots = getOpenSpawnPositions(Math.floor(monster.x), Math.floor(monster.y), 5);
                                 if (validSpots.length == 0) continue;
                                 const spot = validSpots[Math.floor(Math.random() * validSpots.length)];
@@ -3381,7 +3409,7 @@ function updateGameObjects() {
                         }
                         if (!monster.spawnSun) {
                             monster.spawnSun = true;
-                            for (i = 0; i < (1 * spawnModifier); i++) {
+                            for (let i = 0; i < (1 * spawnModifier); i++) {
                                 const validSpots = getOpenSpawnPositions(Math.floor(monster.x), Math.floor(monster.y), 5);
                                 if (validSpots.length == 0) continue;
                                 const spot = validSpots[Math.floor(Math.random() * validSpots.length)];
@@ -3399,7 +3427,7 @@ function updateGameObjects() {
                         }
                         if (!monster.spawnSaturn) {
                             monster.spawnSaturn = true;
-                            for (i = 0; i < (1 * spawnModifier); i++) {
+                            for (let i = 0; i < (1 * spawnModifier); i++) {
                                 const validSpots = getOpenSpawnPositions(Math.floor(monster.x), Math.floor(monster.y), 5);
                                 if (validSpots.length == 0) continue;
                                 const spot = validSpots[Math.floor(Math.random() * validSpots.length)];
@@ -3536,10 +3564,10 @@ function updateGameObjects() {
                                     const newY = game.player.y + pullDy;
 
                                     // Only move if not hitting a wall
-                                    if (map[Math.floor(newY)] && map[Math.floor(newY)][Math.floor(newX)] !== 2) {
+                                    if (map[Math.floor(game.player.y)] && map[Math.floor(game.player.y)][Math.floor(newX)] !== 2) {
                                         game.player.x = newX;
                                     }
-                                    if (map[Math.floor(newY)] && map[Math.floor(newY)][Math.floor(newX)] !== 2) {
+                                    if (map[Math.floor(newY)] && map[Math.floor(newY)][Math.floor(game.player.x)] !== 2) {
                                         game.player.y = newY;
                                     }
                                 }
@@ -3552,7 +3580,7 @@ function updateGameObjects() {
                         // SPAWN MUMMY
                         if (!monster.lastSpawn || currentTime - monster.lastSpawn >= monster.spawnCooldown) {
                             monster.lastSpawn = currentTime;
-                            for (i = 0; i < (1 * spawnModifier); i++) {
+                            for (let i = 0; i < (1 * spawnModifier); i++) {
                                 const validSpots = getOpenSpawnPositions(Math.floor(monster.x), Math.floor(monster.y), 9);
                                 if (validSpots.length == 0) continue;
                                 const spot = validSpots[Math.floor(Math.random() * validSpots.length)];
@@ -3728,6 +3756,172 @@ function updateGameObjects() {
                         }
                     }
                     break;
+                case 'tutankhamun':
+                    if (monster.health < 1800 && !monster.spawnFrogPortal) {
+                        monster.spawnFrogPortal = true;
+                        for (let i = 0; i < (1 * spawnModifier); i++) {
+                            const validSpots = getOpenSpawnPositions(Math.floor(monster.x), Math.floor(monster.y), 5);
+                            if (validSpots.length == 0) continue;
+                            const spot = validSpots[Math.floor(Math.random() * validSpots.length)];
+                            const portal = { ...window.MonsterData.portal, id: `monster_${game.monsterTotal}`, x: spot.x, y: spot.y, spawnType: 'frog', spawnCooldown: 2000 };
+                            const monsterTexture = {
+                                id: portal.skin,
+                                width: portal.width,
+                                height: portal.height
+                            };
+                            portal.data = getTextureData(monsterTexture);
+                            game.monsterTotal++;
+                            game.monsters.push(portal);
+                        }
+                        playSound('portal-sound');
+                    }
+                    if (monster.health < 1600 && !monster.spawnMummyPortal) {
+                        monster.spawnMummyPortal = true;
+                        for (let i = 0; i < (1 * spawnModifier); i++) {
+                            const validSpots = getOpenSpawnPositions(Math.floor(monster.x), Math.floor(monster.y), 5);
+                            if (validSpots.length == 0) continue;
+                            const spot = validSpots[Math.floor(Math.random() * validSpots.length)];
+                            const portal = { ...window.MonsterData.portal, id: `monster_${game.monsterTotal}`, x: spot.x, y: spot.y, spawnType: 'mummy', spawnCooldown: 10000 };
+                            const monsterTexture = {
+                                id: portal.skin,
+                                width: portal.width,
+                                height: portal.height
+                            };
+                            portal.data = getTextureData(monsterTexture);
+                            game.monsterTotal++;
+                            game.monsters.push(portal);
+                        }
+                        playSound('portal-sound');
+                    }
+                    if (distSq < 64 && isVisibleToPlayer(monster)) {
+                        if (!monster.lastShot || currentTime - monster.lastShot >= monster.attackCooldown) {
+                            const angle = radiansToDegrees(Math.atan2(dy, dx));
+                            game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'force', game.projectileMap['force'], 'monster', 0.2, 0));
+                            //playSound('shoot-sound');
+                            monster.lastShot = currentTime;
+                        }
+                    }
+                    // HANDLE ACTIVE PUSH
+                    if (monster.activePush && monster.pushStartTime) {
+                        const timeSincePush = currentTime - monster.pushStartTime;
+
+                        if (timeSincePush < monster.pushDuration) {
+                            // Push is still active
+                            const pushStrength = 0.15; // How hard to push per frame
+                            const dx = monster.x - game.player.x;
+                            const dy = monster.y - game.player.y;
+                            const pushDistance = Math.sqrt(dx * dx + dy * dy);
+
+                            if (pushDistance > 0.25) {
+                                const pushDx = (dx / pushDistance) * pushStrength;
+                                const pushDy = (dy / pushDistance) * pushStrength;
+
+                                const newX = game.player.x - pushDx;
+                                const newY = game.player.y - pushDy;
+
+                                // Only move if not hitting a wall
+                                if (map[Math.floor(game.player.y)] && map[Math.floor(game.player.y)][Math.floor(newX)] !== 2) {
+                                    game.player.x = newX;
+                                }
+                                if (map[Math.floor(newY)] && map[Math.floor(newY)][Math.floor(game.player.x)] !== 2) {
+                                    game.player.y = newY;
+                                }
+                            }
+                        } else {
+                            // Push duration elapsed - deactivate
+                            monster.activePush = false;
+                            monster.pushStartTime = null;
+                        }
+                    }
+                    break;
+                case 'portal':
+                    // SPAWN FROG
+                    if (monster.spawnType == 'frog') {                      
+                        if (!monster.lastSpawn || currentTime - monster.lastSpawn >= monster.spawnCooldown) {
+                            monster.lastSpawn = currentTime;
+                            for (let i = 0; i < (1 * spawnModifier); i++) {
+                                const validSpots = getOpenSpawnPositions(Math.floor(monster.x), Math.floor(monster.y), 3);
+                                if (validSpots.length == 0) continue;
+                                const spot = validSpots[Math.floor(Math.random() * validSpots.length)];
+                                game.monsterTotal++;
+                                const frog = { ...window.MonsterData.frog, id: `monster_${game.monsterTotal}`, x: spot.x, y: spot.y };
+                                const monsterTexture = {
+                                    id: frog.skin,
+                                    width: frog.width,
+                                    height: frog.height
+                                };
+                                frog.data = getTextureData(monsterTexture);
+                                game.monsters.push(frog);
+                            }
+                        }
+                    }
+                    // SPAWN MUMMY
+                    if (monster.spawnType == 'mummy') {
+                        if (!monster.lastSpawn || currentTime - monster.lastSpawn >= monster.spawnCooldown) {
+                            monster.lastSpawn = currentTime;
+                            for (let i = 0; i < (1 * spawnModifier); i++) {
+                                const validSpots = getOpenSpawnPositions(Math.floor(monster.x), Math.floor(monster.y), 3);
+                                if (validSpots.length == 0) continue;
+                                const spot = validSpots[Math.floor(Math.random() * validSpots.length)];
+                                game.monsterTotal++;
+                                const mummy = { ...window.MonsterData.mummy, id: `monster_${game.monsterTotal}`, x: spot.x, y: spot.y };
+                                const monsterTexture = {
+                                    id: mummy.skin,
+                                    width: mummy.width,
+                                    height: mummy.height
+                                };
+                                mummy.data = getTextureData(monsterTexture);
+                                game.monsters.push(mummy);
+                            }
+                        }
+                    }
+                    break;
+                case 'frog':
+                    if (isVisibleToPlayer(monster)) {
+                        if (!monster.lastCharge || currentTime - monster.lastCharge >= monster.chargeCooldown) {
+                            const angle = radiansToDegrees(Math.atan2(dy, dx));
+                            monster.chargeAngle = angle;
+                            monster.isCharging = true;
+                            monster.lastCharge = currentTime;
+                        }
+                    }
+                    if (monster.isCharging) {
+                        // Charge the player using the predetermined charge angle
+                        const chargeSpeed = monster.speed * 2; // Charge faster than normal movement
+                        const chargeDx = Math.cos(degreeToRadians(monster.chargeAngle)) * chargeSpeed;
+                        const chargeDy = Math.sin(degreeToRadians(monster.chargeAngle)) * chargeSpeed;
+
+                        // Try to move in X direction with the charge angle
+                        const newX = monster.x + chargeDx;
+                        if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
+                            monster.x = newX;
+                        }
+
+                        // Try to move in Y direction with the charge angle
+                        const newY = monster.y + chargeDy;
+                        if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
+                            monster.y = newY;
+                        }
+
+                        // If the frog has reached a certain threshold charging time, stop charging
+                        if (currentTime - monster.lastCharge >= 500) {
+                            monster.isCharging = false;
+                        }
+                    }
+                    if (distSq < 0.5 && (!monster.lastAttack || currentTime - monster.lastAttack >= monster.attackCooldown)) {
+                        // Attack the player
+                        game.player.health -= monster.damage;
+                        game.lastMonsterToHitPlayer = monster.type.charAt(0).toUpperCase() + monster.type.slice(1);
+                        // Play monster attack sound
+                        playSound('injured-sound');
+                        monster.lastAttack = currentTime;
+                        // Check if player died
+                        if (game.player.health <= 0) {
+                            playSound('death-sound');
+                            endGameDeath();
+                        }
+                    }
+                    break;
                 default:
                     if (distSq > 0.25 && distSq < 100) {
                         const distance = Math.sqrt(distSq);
@@ -3772,7 +3966,7 @@ function movePlayer() {
     let mapWidth = map[0]?.length ?? 0; 
     const currentTime = Date.now();
     if (!game.laserrechargetick || currentTime - game.laserrechargetick >= 10000) {
-        if (game.laserbattery < 96 || game.cheats.infiniteAmmo) {
+        if (game.laserbattery < 96 || game.cheats.infiniteAmmo || game.developerMode) {
             game.laserbattery += 5;
         } else {
             game.laserbattery = 100;
