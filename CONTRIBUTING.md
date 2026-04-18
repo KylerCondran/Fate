@@ -43,10 +43,11 @@
 - zombies, apocalyptic city, barricades, cars, tanks
 - proper tree sprite
 - boss mode when you beat the game
-- more ammo dispursed around levels
+- more ammo dispursed around levels / enemies drop ammo
 - secret area flag
 - total monster count for each level
 - zones where movement speed is slowed
+- jurassic level has a pterodactyl that snatches the player and drops them in the nest
 
 # Weapon Ideas
 

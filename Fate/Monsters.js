@@ -861,9 +861,9 @@ window.MonsterData = {
         damage: 20,
         lastAttack: 0,
         attackCooldown: 1000,
-        shieldHealth: 50,
-        maxShieldHealth: 50,
-        shieldRechargeRate: 0.1,
+        shieldHealth: 250,
+        maxShieldHealth: 250,
+        shieldRechargeRate: 0.5,
         shieldRechargeCooldown: 5000
     },
     satyr: {

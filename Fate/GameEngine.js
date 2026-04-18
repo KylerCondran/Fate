@@ -4629,7 +4629,7 @@ function drawSpriteInWorld(sprite) {
         spriteWidth = Math.floor(game.projection.halfWidth / distance * spriteScale);
         const spriteY = game.projection.halfHeight - spriteHeight / 2;
         // Drawn Energy Shield if monster has one and is not dead
-        if (sprite.type && sprite.shieldHealth !== undefined && sprite.shieldHealth > 0 && distance < 10) {
+        if (sprite.type && sprite.shieldHealth !== undefined && sprite.shieldHealth > 0 && distance < 10 && spriteX >= 0 && spriteX <= game.projection.width) {
             drawEnergyShield(spriteX, spriteY + spriteHeight / 2, spriteWidth / 2, sprite.shieldHealth, sprite.maxShieldHealth);
         }
         drawSprite(spriteX, spriteWidth, spriteHeight, sprite);
@@ -4650,7 +4650,11 @@ function drawSpriteInWorld(sprite) {
             // Format monster name (capitalize)
             const monsterName = sprite.type.toUpperCase();
 
-            drawHealthBar(barX, barY, barWidth, barHeight, sprite.health, maxHealth, monsterName);
+            if (sprite.shieldHealth !== undefined) {
+                drawHealthBar(barX, barY, barWidth, barHeight, sprite.health, maxHealth, monsterName, sprite.shieldHealth, sprite.maxShieldHealth);
+            } else {
+                drawHealthBar(barX, barY, barWidth, barHeight, sprite.health, maxHealth, monsterName);
+            }            
         }
     }
 }
@@ -4916,7 +4920,7 @@ function drawHUD(ctx) {
 
 // Draw Health Bar
 
-function drawHealthBar(x, y, width, height, health, maxHealth, monsterName = '') {
+function drawHealthBar(x, y, width, height, health, maxHealth, monsterName = '', shieldHealth = 0, maxShieldHealth = 0) {
     // Draw red background (depleted health)
     for (let i = 0; i < width; i++) {
         for (let j = 0; j < height; j++) {
@@ -4928,6 +4932,15 @@ function drawHealthBar(x, y, width, height, health, maxHealth, monsterName = '')
     for (let i = 0; i < greenWidth; i++) {
         for (let j = 0; j < height; j++) {
             drawPixel(x + i, y + j, new Color(0, 200, 0, 255));
+        }
+    }
+    // Draw blue foreground (remaining shield)
+    if (maxShieldHealth > 0) {       
+        const blueWidth = Math.floor(width * Math.max(0, shieldHealth) / maxShieldHealth);
+        for (let i = 0; i < blueWidth; i++) {
+            for (let j = 0; j < height; j++) {
+                drawPixel(x + i, y + j, new Color(0, 0, 200, 255));
+            }
         }
     }
     // Black border
@@ -5004,20 +5017,22 @@ function drawMonsterName(x, y, name) {
     }
 }
 
+// Draw energy shield around monsters
+
 function drawEnergyShield(centerX, centerY, radius, shieldHealth, maxShieldHealth) {
     const time = performance.now() * 0.005;
 
     const healthRatio = shieldHealth / maxShieldHealth;
-    const alpha = Math.max(0.2, healthRatio);
+    const alpha = 0.5 + 0.5 * healthRatio;
 
     // Pulse (weaker shield = more unstable)
     const pulse = 1 + Math.sin(time * 3) * (0.05 + (1 - healthRatio) * 0.1);
     radius *= pulse;
 
     // Layered colors
-    const innerColor = new Color(180, 220, 255, 255 * alpha);
-    const midColor = new Color(0, 140, 255, 180 * alpha);
-    const outerColor = new Color(0, 80, 255, 80 * alpha);
+    const innerColor = new Color(200, 225, 235, 255 * alpha); 
+    const midColor = new Color(40, 150, 200, 255 * alpha); 
+    const outerColor = new Color(25, 70, 160, 255 * alpha); 
 
     // Outer glow (soft halo)
     for (let i = 0; i < 3; i++) {
@@ -5029,6 +5044,7 @@ function drawEnergyShield(centerX, centerY, radius, shieldHealth, maxShieldHealt
     drawCircle(centerX, centerY, radius * 0.92, innerColor);
 }
 
+// Draw circle with dynamic arc segments and wobble for energy shield effect
 
 function drawCircle(centerX, centerY, radius, color) {
     const time = performance.now() * 0.005;
