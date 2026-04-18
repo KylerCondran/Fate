@@ -754,8 +754,8 @@ window.LevelData = [
             [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
         ],
         unlocked: false,
-        floor: 5,
-        wall: 5,
+        floor: 20,
+        wall: 13,
         background: 3,
         startlocation: { x: 2, y: 2 },
         equippedweapon: 1,

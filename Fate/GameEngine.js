@@ -1431,6 +1431,15 @@ function updateGameObjects() {
                         } else if ((monster.type == 'moon' || monster.type == 'sun' || monster.type == 'saturn') && monster.invulnerable) {
                             projectilesToRemove.add(i);
                             break;
+                        } else if (monster.shieldHealth !== undefined && monster.shieldHealth > 0) {
+                            const remainingDamage = Math.max(0, projectile.damage - monster.shieldHealth);
+                            monster.shieldHealth -= projectile.damage;
+                            monster.lastShieldHit = Date.now();
+
+                            if (remainingDamage > 0) {
+                                monster.health -= remainingDamage; // Overflow damage to health
+                            }
+                            //playSound('shield-hit-sound');
                         } else if (projectile.type == 'laser') {
                             monster.health -= projectile.damage;
                         } else if (projectile.type == 'rocket') {
@@ -1630,6 +1639,13 @@ function updateGameObjects() {
             const currentTime = Date.now();
             var spawnModifier = 1;
             if (game.cheats.megaSpawns) spawnModifier = 3;
+
+            if (monster.shieldHealth !== undefined) {
+                // Recharge shield after cooldown
+                if (!monster.lastShieldHit || currentTime - monster.lastShieldHit >= monster.shieldRechargeCooldown) {
+                    monster.shieldHealth = Math.min(monster.maxShieldHealth, monster.shieldHealth + monster.shieldRechargeRate);
+                }
+            }
 
             switch (monster.type) {
                 case 'spider':
@@ -4611,6 +4627,11 @@ function drawSpriteInWorld(sprite) {
         const spriteScale = sprite.spriteScale || 1.0;
         spriteHeight = Math.floor(game.projection.halfHeight / distance * spriteScale);
         spriteWidth = Math.floor(game.projection.halfWidth / distance * spriteScale);
+        const spriteY = game.projection.halfHeight - spriteHeight / 2;
+        // Drawn Energy Shield if monster has one and is not dead
+        if (sprite.type && sprite.shieldHealth !== undefined && sprite.shieldHealth > 0) {
+            drawEnergyShield(spriteX, spriteY + spriteHeight / 2, spriteWidth / 2, sprite.shieldHealth, sprite.maxShieldHealth);
+        }
         drawSprite(spriteX, spriteWidth, spriteHeight, sprite);
     }
 
@@ -4980,6 +5001,31 @@ function drawMonsterName(x, y, name) {
             }
         }
         currentX += 5; // Move to next character position (4 pixels + 1 space)
+    }
+}
+
+// Draw an energy shield with radial burst glow
+
+function drawEnergyShield(centerX, centerY, radius, shieldHealth, maxShieldHealth) {
+    const alpha = Math.max(0.3, shieldHealth / maxShieldHealth); // Fade as shield weakens
+    const color = new Color(0, 100, 255, Math.floor(255 * alpha)); // Blue with alpha
+
+    // Draw concentric circles
+    const ringCount = 3;
+    for (let ring = 0; ring < ringCount; ring++) {
+        const ringRadius = radius * (0.6 + (ring * 0.15));
+        drawCircle(centerX, centerY, ringRadius, color);
+    }
+}
+
+// Draw a energy circle
+
+function drawCircle(centerX, centerY, radius, color) {
+    for (let angle = 0; angle < 360; angle += 5) {
+        const rad = degreeToRadians(angle);
+        const x = centerX + Math.cos(rad) * radius;
+        const y = centerY + Math.sin(rad) * radius;
+        drawPixel(Math.floor(x), Math.floor(y), color);
     }
 }
 

@@ -44,6 +44,9 @@
 - proper tree sprite
 - boss mode when you beat the game
 - more ammo dispursed around levels
+- secret area flag
+- total monster count for each level
+- zones where movement speed is slowed
 
 # Weapon Ideas
 
@@ -64,3 +67,4 @@
 - tanks invulnerable to bullets
 - scarab steals a random weapon, creates mimics of himself
 - wizard that randomly attacks you on a predetermined level, only active for 1 minute, killing him gives you a powerful weapon or drops a red portal to somewhere
+- projectile reflect
