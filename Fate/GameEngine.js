@@ -4629,7 +4629,7 @@ function drawSpriteInWorld(sprite) {
         spriteWidth = Math.floor(game.projection.halfWidth / distance * spriteScale);
         const spriteY = game.projection.halfHeight - spriteHeight / 2;
         // Drawn Energy Shield if monster has one and is not dead
-        if (sprite.type && sprite.shieldHealth !== undefined && sprite.shieldHealth > 0) {
+        if (sprite.type && sprite.shieldHealth !== undefined && sprite.shieldHealth > 0 && distance < 10) {
             drawEnergyShield(spriteX, spriteY + spriteHeight / 2, spriteWidth / 2, sprite.shieldHealth, sprite.maxShieldHealth);
         }
         drawSprite(spriteX, spriteWidth, spriteHeight, sprite);
@@ -5004,28 +5004,54 @@ function drawMonsterName(x, y, name) {
     }
 }
 
-// Draw an energy shield with radial burst glow
-
 function drawEnergyShield(centerX, centerY, radius, shieldHealth, maxShieldHealth) {
-    const alpha = Math.max(0.3, shieldHealth / maxShieldHealth); // Fade as shield weakens
-    const color = new Color(0, 100, 255, Math.floor(255 * alpha)); // Blue with alpha
+    const time = performance.now() * 0.005;
 
-    // Draw concentric circles
-    const ringCount = 3;
-    for (let ring = 0; ring < ringCount; ring++) {
-        const ringRadius = radius * (0.6 + (ring * 0.15));
-        drawCircle(centerX, centerY, ringRadius, color);
+    const healthRatio = shieldHealth / maxShieldHealth;
+    const alpha = Math.max(0.2, healthRatio);
+
+    // Pulse (weaker shield = more unstable)
+    const pulse = 1 + Math.sin(time * 3) * (0.05 + (1 - healthRatio) * 0.1);
+    radius *= pulse;
+
+    // Layered colors
+    const innerColor = new Color(180, 220, 255, 255 * alpha);
+    const midColor = new Color(0, 140, 255, 180 * alpha);
+    const outerColor = new Color(0, 80, 255, 80 * alpha);
+
+    // Outer glow (soft halo)
+    for (let i = 0; i < 3; i++) {
+        drawCircle(centerX, centerY, radius + i * 2, outerColor);
     }
+
+    // Main shield layers
+    drawCircle(centerX, centerY, radius * 0.98, midColor);
+    drawCircle(centerX, centerY, radius * 0.92, innerColor);
 }
 
-// Draw a energy circle
 
 function drawCircle(centerX, centerY, radius, color) {
-    for (let angle = 0; angle < 360; angle += 5) {
+    const time = performance.now() * 0.005;
+
+    for (let angle = 0; angle < 360; angle += 3) {
+
+        // --- rotating arc segments (skip some angles) ---
+        const segment = (angle + time * 20) % 60;
+        if (segment > 45) continue;
+
         const rad = degreeToRadians(angle);
-        const x = centerX + Math.cos(rad) * radius;
-        const y = centerY + Math.sin(rad) * radius;
-        drawPixel(Math.floor(x), Math.floor(y), color);
+
+        // --- wobble / energy distortion ---
+        const wobble = Math.sin(angle * 8 + time * 2) * 2;
+        const r = radius + wobble;
+
+        const x = centerX + Math.cos(rad) * r;
+        const y = centerY + Math.sin(rad) * r;
+
+        // --- thickness (draw small cluster instead of 1 pixel) ---
+        drawPixel(x, y, color);
+        drawPixel(x + 1, y, color);
+        drawPixel(x, y + 1, color);
     }
 }
 
