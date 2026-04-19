@@ -935,6 +935,6 @@ window.MonsterData = {
         lastAttack: 0,
         attackCooldown: 1000,
         lastSound: 0,
-        soundCooldown: 4000
+        soundCooldown: 3900
     }
 };

@@ -4022,7 +4022,26 @@ function updateGameObjects() {
                             monster.y = newY;
                         }
                         if (!monster.lastSound || currentTime - monster.lastSound >= monster.soundCooldown) {
-                            playSound('kamikaze-aaaa');
+                            const maxDistance = 50;
+                            const loudDistance = 10;
+
+                            let volume;
+
+                            if (distance <= loudDistance) {
+                                volume = 1;
+                            } else {
+                                let t = (distance - loudDistance) / (maxDistance - loudDistance);
+                                t = Math.min(t, 1);
+
+                                // sharp dropoff after 10
+                                volume = 0.9 * Math.pow(1 - t, 2.5);
+                            }
+
+                            if (volume > 0.01) {
+                                console.log(currentTime - monster.lastSound);
+                                playSound('kamikaze-aaaa', volume);
+                            }
+
                             monster.lastSound = currentTime;
                         }
                     }
@@ -4484,13 +4503,14 @@ function movePlayer() {
 // Play Audio
 
 const audioCache = {};
-function playSound(id) {
+function playSound(id, volume = 1) {
     if (!audioCache[id]) {
         audioCache[id] = document.getElementById(id);
     }
     const audio = audioCache[id];
     if (audio) {
         audio.currentTime = 0;
+        audio.volume = Math.max(0, Math.min(1, volume));
         audio.play();
     }
 }
