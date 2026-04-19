@@ -1432,7 +1432,7 @@ function updateGameObjects() {
                         const dx2 = monster.x - projectile.x;
                         const dy2 = monster.y - projectile.y;
                         const distanceSq2 = dx2 * dx2 + dy2 * dy2;
-                        if (distanceSq2 < game.explosionHitboxRadius && ((monster.type == 'moon' || monster.type == 'sun' || monster.type == 'saturn') && !monster.invulnerable) && monster.type != 'yeti') {
+                        if (distanceSq2 < game.explosionHitboxRadius && !monster.invulnerable && monster.type != 'yeti') {
                             monster.health -= projectile.damage;
                         }
                     }
@@ -1496,7 +1496,7 @@ function updateGameObjects() {
                                     const dx2 = m2.x - projectile.x;
                                     const dy2 = m2.y - projectile.y;
                                     const distanceSq2 = dx2 * dx2 + dy2 * dy2;
-                                    if (distanceSq2 < game.explosionHitboxRadius && ((m2.type == 'moon' || m2.type == 'sun' || m2.type == 'saturn') && !m2.invulnerable) && m2.type != 'yeti') {
+                                    if (distanceSq2 < game.explosionHitboxRadius && !m2.invulnerable && m2.type != 'yeti') {
                                         m2.health -= projectile.damage;
                                     }
                                 }
@@ -1708,7 +1708,7 @@ function updateGameObjects() {
                                 const dx2 = m2.x - monster.x;
                                 const dy2 = m2.y - monster.y;
                                 const distanceSq2 = dx2 * dx2 + dy2 * dy2;
-                                if (distanceSq2 < game.explosionHitboxRadius && ((m2.type == 'moon' || m2.type == 'sun' || m2.type == 'saturn') && !m2.invulnerable) && m2.type != 'yeti') {
+                                if (distanceSq2 < game.explosionHitboxRadius && !m2.invulnerable && m2.type != 'yeti') {
                                     m2.health -= monster.damage;
                                 }
                             }
@@ -4117,7 +4117,7 @@ function updateGameObjects() {
                                 const dx2 = m2.x - monster.x;
                                 const dy2 = m2.y - monster.y;
                                 const distanceSq2 = dx2 * dx2 + dy2 * dy2;
-                                if (distanceSq2 < game.explosionHitboxRadius && ((m2.type == 'moon' || m2.type == 'sun' || m2.type == 'saturn') && !m2.invulnerable) && m2.type != 'yeti') {
+                                if (distanceSq2 < game.explosionHitboxRadius && !m2.invulnerable && m2.type != 'yeti') {
                                     m2.health -= monster.damage;
                                 }
                             }
