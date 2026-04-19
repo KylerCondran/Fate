@@ -1031,6 +1031,11 @@ function loadLevel(levelIdx) {
                     game.monsters.push(frog);
                     game.monsterTotal++;
                     break;
+                case 82:
+                    const kamikaze = { ...window.MonsterData.kamikaze, id: `monster_${game.monsterTotal}`, x: j, y: i };
+                    game.monsters.push(kamikaze);
+                    game.monsterTotal++;
+                    break;
                 default:
                     break;
             }
@@ -1540,6 +1545,27 @@ function updateGameObjects() {
                                 case 'moon':
                                 case 'sun':
                                 case 'saturn':
+                                    break;
+                                case 'kamikaze':
+                                    const used = new Set();
+                                    const explosions = 3;
+                                    const radius = 0.5; // how tight the cluster is
+                                    let count = 0;
+                                    while (count < explosions) {
+                                        let offsetX, offsetY;
+                                        do {
+                                            offsetX = (Math.random() * 2 - 1) * radius;
+                                            offsetY = (Math.random() * 2 - 1) * radius;
+                                        } while (offsetX * offsetX + offsetY * offsetY > radius * radius);
+                                        const x = monster.x + offsetX;
+                                        const y = monster.y + offsetY;
+                                        const key = `${x},${y}`;
+                                        if (used.has(key)) continue; // skip duplicates
+                                        used.add(key);
+                                        game.sprites.push({ id: 'explosion-sprite', x: x, y: y, width: 512, height: 512, data: getTextureData({ id: 'explosion-sprite', width: 512, height: 512 }), spawnTime: Date.now(), cullTime: 200 }); 
+                                        count++;
+                                    }
+                                    playSound('explosion-sound');
                                     break;
                                 case 'frog':
                                 case 'lizard':
@@ -3971,6 +3997,58 @@ function updateGameObjects() {
                         // Play monster attack sound
                         playSound('injured-sound');
                         monster.lastAttack = currentTime;
+                        // Check if player died
+                        if (game.player.health <= 0) {
+                            playSound('death-sound');
+                            endGameDeath();
+                        }
+                    }
+                    break;
+                case 'kamikaze':
+                    if (distSq > 0.25 && isVisibleToPlayer(monster)) {
+                        const distance = Math.sqrt(distSq);
+                        const invDist = 1 / distance;
+                        const dirX = dx * invDist * monster.speed;
+                        const dirY = dy * invDist * monster.speed;
+                        // Try to move in X direction
+                        const newX = monster.x + dirX;
+                        if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
+                            monster.x = newX;
+                        }
+                        // Try to move in Y direction
+                        const newY = monster.y + dirY;
+                        if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
+                            monster.y = newY;
+                        }
+                    }
+                    if (distSq < 0.5 && (!monster.lastAttack || currentTime - monster.lastAttack >= monster.attackCooldown)) {
+                        // Attack the player
+                        game.player.health -= monster.damage;
+                        game.lastMonsterToHitPlayer = monster.type.charAt(0).toUpperCase() + monster.type.slice(1);
+                        monster.lastAttack = currentTime;
+                        monster.isDead = true;
+                        const used = new Set();
+                        const explosions = 3;
+                        const radius = 0.5; // how tight the cluster is
+                        let count = 0;
+                        while (count < explosions) {
+                            let offsetX, offsetY;
+                            do {
+                                offsetX = (Math.random() * 2 - 1) * radius;
+                                offsetY = (Math.random() * 2 - 1) * radius;
+                            } while (offsetX * offsetX + offsetY * offsetY > radius * radius);
+                            const x = monster.x + offsetX;
+                            const y = monster.y + offsetY;
+                            const key = `${x},${y}`;
+                            if (used.has(key)) continue; // skip duplicates
+                            used.add(key);
+                            game.sprites.push({ id: 'explosion-sprite', x: x, y: y, width: 512, height: 512, data: getTextureData({ id: 'explosion-sprite', width: 512, height: 512 }), spawnTime: Date.now(), cullTime: 200 });
+                            count++;
+                        }
+                        game.monsterDefeated++;
+                        playSound('explosion-sound');
+                        // Play monster attack sound
+                        playSound('injured-sound');
                         // Check if player died
                         if (game.player.health <= 0) {
                             playSound('death-sound');

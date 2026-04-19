@@ -920,5 +920,19 @@ window.MonsterData = {
         spawnCooldown: 2000,
         spawnType: '',
         lastSpawn: 0
+    },
+    kamikaze: {
+        type: 'kamikaze',
+        skin: 'kamikaze-sprite',
+        audio: 'kamikaze',
+        health: 100,
+        speed: 0.04,
+        isDead: false,
+        width: 512,
+        height: 512,
+        data: null,
+        damage: 40,
+        lastAttack: 0,
+        attackCooldown: 1000
     }
 };

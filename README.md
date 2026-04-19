@@ -49,82 +49,82 @@ git clone https://github.com/KylerCondran/Fate.git
 <ul>
 	<li>Jungle
 		<ul>
-			<li>Monsters: Lions, Tigers, Bears</li>
+			<li>Lions, Tigers, Bears</li>
 		</ul>
 	</li>
 	<li>Hell
 		<ul>
-			<li>Monsters: Skeletons, Imps, Demons</li>
+			<li>Skeletons, Imps, Demons</li>
 		</ul>
 	</li>
 	<li>Ocean
 		<ul>
-			<li>Monsters: Zeus, Piranhas, Squids, Sharks</li>
+			<li>Zeus, Piranhas, Squids, Sharks</li>
 		</ul>
 	</li>
 	<li>Arctic
 		<ul>
-			<li>Monsters: Yetis, Jackalopes</li>
+			<li>Yetis, Jackalopes</li>
 		</ul>
 	</li>
 	<li>Labyrinth
 		<ul>
-			<li>Monsters: Minotaurs</li>
+			<li>Minotaurs</li>
 		</ul>
 	</li>
 	<li>Heaven
 		<ul>
-			<li>Monsters: Crusaders, King</li>
+			<li>Crusaders, King</li>
 		</ul>
 	</li>
 	<li>Death Pit
 		<ul>
-			<li>Monsters: Demons</li>
+			<li>Demons</li>
 		</ul>
 	</li>
 	<li>Ninja Dojo
 		<ul>
-			<li>Monsters: Ninjas</li>
+			<li>Ninjas</li>
 		</ul>
 	</li>
 	<li>Army Base
 		<ul>
-			<li>Monsters: Soldiers, Tanks, Apaches, Fighter Jets</li>
+			<li>Soldiers, Tanks, Apaches, Fighter Jets</li>
 		</ul>
 	</li>
 	<li>Mothership
 		<ul>
-			<li>Monsters: Aliens, UFOS, Robots, Stasis Chambers</li>
+			<li>Aliens, UFOS, Robots, Stasis Chambers</li>
 		</ul>
 	</li>
 	<li>Forest
 		<ul>
-			<li>Monsters: Wolves, Werewolves</li>
+			<li>Wolves, Werewolves</li>
 		</ul>
 	</li>
 	<li>Prison
 		<ul>
-			<li>Monsters: ???</li>
+			<li>???</li>
 		</ul>
 	</li>
 	<li>Jurassic
 		<ul>
-			<li>Monsters: Raptors, Eggs, Lizards, Brontosaurus, Stegosaurus</li>
+			<li>Raptors, Eggs, Lizards, Brontosaurus, Stegosaurus</li>
 		</ul>
 	</li>
 	<li>Moon
 		<ul>
-			<li>Monsters: Rovers, Landers, Astronauts, UFOS, Turrets</li>
+			<li>Rovers, Landers, Astronauts, UFOS, Turrets</li>
 		</ul>
 	</li>
 	<li>Ancient Eqypt
 		<ul>
-			<li>Monsters: Scarabs, Sphinx, Anubis, Tutankhamun, Mummies</li>
+			<li>Scarabs, Sphinx, Anubis, Tutankhamun, Mummies, Frogs, Kamikaze</li>
 		</ul>
 	</li>
 	<li>Secret Levels
 		<ul>
-			<li>Monsters: ???</li>
+			<li>???</li>
 		</ul>
 	</li>
 </ul>
