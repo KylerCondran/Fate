@@ -1458,7 +1458,7 @@ function updateGameObjects() {
                             if (remainingDamage > 0) {
                                 monster.health -= remainingDamage; // Overflow damage to health
                             }
-                            //playSound('shield-hit-sound');
+                            playSound('forcefield-sound');
                         } else if (projectile.type == 'laser') {
                             monster.health -= projectile.damage;
                         } else if (projectile.type == 'rocket') {
