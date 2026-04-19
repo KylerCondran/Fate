@@ -613,7 +613,7 @@ function loadLevel(levelIdx) {
         game.player.speed.movement = 0.08;
     }
     const emptyPositions = [];
-    const monsterValues = [3, 4, 5, 6, 7, 15, 16, 17, 18, 19, 21, 22, 23, 24, 25, 27, 28, 29, 31, 32, 33, 34, 35, 36, 37, 41, 45, 46, 47, 50, 52, 57, 59, 60, 61, 62, 64, 69, 70, 71, 72, 73, 74, 75, 77, 78, 79, 80, 81];
+    const monsterValues = [3, 4, 5, 6, 7, 15, 16, 17, 18, 19, 21, 22, 23, 24, 25, 27, 28, 29, 31, 32, 33, 34, 35, 36, 37, 41, 45, 46, 47, 50, 52, 57, 59, 60, 61, 62, 64, 69, 70, 71, 72, 73, 74, 75, 77, 78, 79, 80, 81, 82];
     for (let i = 0; i < mapy; i++) {
         for (let j = 0; j < mapx; j++) {
             var objectValue = map[i][j];
@@ -1565,6 +1565,7 @@ function updateGameObjects() {
                                         game.sprites.push({ id: 'explosion-sprite', x: x, y: y, width: 512, height: 512, data: getTextureData({ id: 'explosion-sprite', width: 512, height: 512 }), spawnTime: Date.now(), cullTime: 200 }); 
                                         count++;
                                     }
+                                    stopSound('kamikaze-aaaa');
                                     playSound('explosion-sound');
                                     break;
                                 case 'frog':
@@ -4020,6 +4021,10 @@ function updateGameObjects() {
                         if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
                             monster.y = newY;
                         }
+                        if (!monster.lastSound || currentTime - monster.lastSound >= monster.soundCooldown) {
+                            playSound('kamikaze-aaaa');
+                            monster.lastSound = currentTime;
+                        }
                     }
                     if (distSq < 0.5 && (!monster.lastAttack || currentTime - monster.lastAttack >= monster.attackCooldown)) {
                         // Attack the player
@@ -4045,6 +4050,7 @@ function updateGameObjects() {
                             game.sprites.push({ id: 'explosion-sprite', x: x, y: y, width: 512, height: 512, data: getTextureData({ id: 'explosion-sprite', width: 512, height: 512 }), spawnTime: Date.now(), cullTime: 200 });
                             count++;
                         }
+                        stopSound('kamikaze-aaaa');
                         game.monsterDefeated++;
                         playSound('explosion-sound');
                         // Play monster attack sound
@@ -4486,6 +4492,16 @@ function playSound(id) {
     if (audio) {
         audio.currentTime = 0;
         audio.play();
+    }
+}
+
+// Stop Audio
+
+function stopSound(id) {
+    const audio = audioCache[id] || document.getElementById(id);
+    if (audio) {
+        audio.pause();
+        audio.currentTime = 0;
     }
 }
 
