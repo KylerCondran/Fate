@@ -1537,10 +1537,15 @@ function updateGameObjects() {
                                     break;
                                 case 'seahorsebaby':
                                 case 'portal':
-                                case 'frog':
                                 case 'moon':
                                 case 'sun':
                                 case 'saturn':
+                                    break;
+                                case 'frog':
+                                case 'lizard':
+                                case 'jackalope':
+                                case 'piranha':
+                                    game.sprites.push({ id: 'gib-sprite', x: monster.x, y: monster.y, width: 512, height: 512, data: getTextureData({ id: 'gib-sprite', width: 512, height: 512 }), spawnTime: Date.now(), cullTime: 200 });
                                     break;
                                 case 'dinosauregg':
                                     game.monsterTotal++;
@@ -1654,7 +1659,7 @@ function updateGameObjects() {
     game.projectiles = game.projectiles.filter((_, idx) => !projectilesToRemove.has(idx));
     // Remove expired explosion sprites
     game.sprites = game.sprites.filter(sprite => {
-        if (sprite.id === 'explosion-sprite' && sprite.spawnTime) {
+        if (sprite.cullTime && sprite.spawnTime) {
             const elapsed = Date.now() - sprite.spawnTime;
             return elapsed < sprite.cullTime;
         }
