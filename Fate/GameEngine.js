@@ -17,6 +17,7 @@ let game = {
     lastShot: 0,
     shootCooldown: 600,
     bulletHitboxRadius: 0.25,
+    explosionHitboxRadius: 5,
     bulletRange: 400,
     knifeRange: 1,
     bulletStartDistance: 0.5,
@@ -1426,6 +1427,26 @@ function updateGameObjects() {
                 const startY = projectile.y + Math.sin(degreeToRadians(angle)) * 0.25;
                 game.sprites.push({ id: 'explosion-sprite', x: startX, y: startY, width: 512, height: 512, data: getTextureData({ id: 'explosion-sprite', width: 512, height: 512 }), spawnTime: Date.now(), cullTime: 200 });
                 playSound('explosion-sound');
+                for (const monster of game.monsters) {
+                    if (!monster.isDead) {
+                        const dx2 = monster.x - projectile.x;
+                        const dy2 = monster.y - projectile.y;
+                        const distanceSq2 = dx2 * dx2 + dy2 * dy2;
+                        if (distanceSq2 < game.explosionHitboxRadius && (!(monster.type == 'moon' || monster.type == 'sun' || monster.type == 'saturn') && !monster.invulnerable) && monster.type != 'yeti') {
+                            monster.health -= projectile.damage;
+                        }
+                    }
+                }
+                const rocketSq = dx * dx + dy * dy;
+                if (rocketSq < game.explosionHitboxRadius) {
+                    game.lastMonsterToHitPlayer = 'Rocket Explosion';
+                    game.player.health -= 25;
+                    playSound('injured-sound');
+                    if (game.player.health <= 0) {
+                        playSound('death-sound');
+                        endGameDeath();
+                    }
+                }
             }
             projectilesToRemove.add(i);
             continue;
@@ -1470,6 +1491,16 @@ function updateGameObjects() {
                             game.sprites.push({ id: 'explosion-sprite', x: startX, y: startY, width: 512, height: 512, data: getTextureData({ id: 'explosion-sprite', width: 512, height: 512 }), spawnTime: Date.now(), cullTime: 200 });
                             playSound('explosion-sound');
                             monster.health -= projectile.damage;
+                            for (const m2 of game.monsters) {
+                                if (!m2.isDead && (m2.id != monster.id)) {
+                                    const dx2 = m2.x - projectile.x;
+                                    const dy2 = m2.y - projectile.y;
+                                    const distanceSq2 = dx2 * dx2 + dy2 * dy2;
+                                    if (distanceSq2 < game.explosionHitboxRadius && (!(m2.type == 'moon' || m2.type == 'sun' || m2.type == 'saturn') && !m2.invulnerable) && m2.type != 'yeti') {
+                                        m2.health -= projectile.damage;
+                                    }
+                                }
+                            }
                         } else if (projectile.type == 'orb') {
                             if (monster.type == 'imp' || monster.type == 'demon' || monster.type == 'skeleton') {
                                 monster.health -= 75;
@@ -1486,110 +1517,7 @@ function updateGameObjects() {
                         } else {
                             monster.health -= projectile.damage;
                         }
-                        if (monster.health <= 0) {
-                            monster.isDead = true;
-                            if (monster.type != 'moby' && monster.type != 'seahorse' && monster.type != 'seahorsebaby') {
-                                game.monsterDefeated++;
-                            }
-                            playSound(`${monster.audio}-death`);
-                            switch (monster.type) {
-                                case 'crusader':
-                                case 'king':
-                                    game.sprites.push({ id: 'tombstone-sprite', x: monster.x, y: monster.y, width: 256, height: 256, data: getTextureData({ id: 'tombstone-sprite', width: 256, height: 256 }) });
-                                    break;
-                                case 'alien':
-                                    game.sprites.push({ id: 'acid-sprite', x: monster.x, y: monster.y, width: 256, height: 256, data: getTextureData({ id: 'acid-sprite', width: 256, height: 256 }) });
-                                    game.levels[game.currentLevel].map[Math.floor(monster.y)][Math.floor(monster.x)] = 42;
-                                    break;
-                                case 'zeus':
-                                    game.sprites.push({ id: 'tridentpickup-sprite', x: Math.floor(monster.x), y: Math.floor(monster.y), width: 30, height: 80, data: getTextureData({ id: 'tridentpickup-sprite', width: 30, height: 80 }) });
-                                    game.pickupTotal++;
-                                    game.levels[game.currentLevel].map[Math.floor(monster.y)][Math.floor(monster.x)] = 58;
-                                    break;
-                                case 'cowking':
-                                    game.sprites.push({ id: 'key-sprite', x: Math.floor(monster.x), y: Math.floor(monster.y), width: 64, height: 64, data: getTextureData({ id: 'key-sprite', width: 64, height: 64 }) });
-                                    game.pickupTotal++;
-                                    game.levels[game.currentLevel].map[Math.floor(monster.y)][Math.floor(monster.x)] = 68;
-                                    break;
-                                case 'stasischamber':
-                                    game.sprites.push({ id: 'brokenstasischamber-sprite', x: monster.x, y: monster.y, width: 512, height: 512, data: getTextureData({ id: 'brokenstasischamber-sprite', width: 512, height: 512 }) });
-                                    playSound('glass-sound');
-                                    break;
-                                case 'tank':
-                                case 'apache':
-                                case 'robot':
-                                case 'fighterjet':
-                                case 'rover':
-                                    game.sprites.push({ id: 'burningdebris-sprite', x: monster.x, y: monster.y, width: 512, height: 512, data: getTextureData({ id: 'burningdebris-sprite', width: 512, height: 512 }) });
-                                    game.levels[game.currentLevel].map[Math.floor(monster.y)][Math.floor(monster.x)] = 44;
-                                    break;
-                                case 'turret':
-                                case 'lander':
-                                    game.sprites.push({ id: 'burningdebris-sprite', x: monster.x, y: monster.y, width: 512, height: 512, data: getTextureData({ id: 'burningdebris-sprite', width: 512, height: 512 }) });
-                                    break;
-                                case 'ufo':
-                                    game.sprites.push({ id: 'burningdebris-sprite', x: monster.x, y: monster.y, width: 512, height: 512, data: getTextureData({ id: 'burningdebris-sprite', width: 512, height: 512 }) });
-                                    game.levels[game.currentLevel].map[Math.floor(monster.y)][Math.floor(monster.x)] = 44;
-                                    game.monsterTotal++;
-                                    const alien1 = { ...window.MonsterData.alien1, id: `monster_${game.monsterTotal}`, x: monster.x, y: monster.y };
-                                    const monsterTexture = {
-                                        id: alien1.skin,
-                                        width: alien1.width,
-                                        height: alien1.height
-                                    };
-                                    alien1.data = getTextureData(monsterTexture);
-                                    game.monsters.push(alien1);
-                                    break;
-                                case 'seahorsebaby':
-                                case 'portal':
-                                case 'moon':
-                                case 'sun':
-                                case 'saturn':
-                                    break;
-                                case 'kamikaze':
-                                    const used = new Set();
-                                    const explosions = 3;
-                                    const radius = 0.5; // how tight the cluster is
-                                    let count = 0;
-                                    while (count < explosions) {
-                                        let offsetX, offsetY;
-                                        do {
-                                            offsetX = (Math.random() * 2 - 1) * radius;
-                                            offsetY = (Math.random() * 2 - 1) * radius;
-                                        } while (offsetX * offsetX + offsetY * offsetY > radius * radius);
-                                        const x = monster.x + offsetX;
-                                        const y = monster.y + offsetY;
-                                        const key = `${x},${y}`;
-                                        if (used.has(key)) continue; // skip duplicates
-                                        used.add(key);
-                                        game.sprites.push({ id: 'explosion-sprite', x: x, y: y, width: 512, height: 512, data: getTextureData({ id: 'explosion-sprite', width: 512, height: 512 }), spawnTime: Date.now(), cullTime: 200 }); 
-                                        count++;
-                                    }
-                                    stopSound('kamikaze-aaaa');
-                                    playSound('explosion-sound');
-                                    break;
-                                case 'frog':
-                                case 'lizard':
-                                case 'jackalope':
-                                case 'piranha':
-                                    game.sprites.push({ id: 'gib-sprite', x: monster.x, y: monster.y, width: 512, height: 512, data: getTextureData({ id: 'gib-sprite', width: 512, height: 512 }), spawnTime: Date.now(), cullTime: 200 });
-                                    break;
-                                case 'dinosauregg':
-                                    game.monsterTotal++;
-                                    const lizard = { ...window.MonsterData.lizard, id: `monster_${game.monsterTotal}`, x: monster.x, y: monster.y };
-                                    const lizardTexture = {
-                                        id: lizard.skin,
-                                        width: lizard.width,
-                                        height: lizard.height
-                                    };
-                                    lizard.data = getTextureData(lizardTexture);
-                                    game.monsters.push(lizard);
-                                    break;
-                                default:
-                                    game.sprites.push({ id: 'bones-sprite', x: monster.x, y: monster.y, width: 256, height: 256, data: getTextureData({ id: 'bones-sprite', width: 256, height: 256 }) });
-                                    break;
-                            }
-                        } else {
+                        if (monster.health > 0) {
                             var rnd = Math.floor(Math.random() * 3);
                             playSound(`${monster.audio}-pain-${rnd + 1}`);
                         }
@@ -1696,6 +1624,121 @@ function updateGameObjects() {
     // Update monster positions and check for attacks
     for (let monster of game.monsters) {
         if (!monster.isDead) {
+            if (monster.health <= 0) {
+                monster.isDead = true;
+                if (monster.type != 'moby' && monster.type != 'seahorse' && monster.type != 'seahorsebaby') {
+                    game.monsterDefeated++;
+                }
+                playSound(`${monster.audio}-death`);
+                switch (monster.type) {
+                    case 'crusader':
+                    case 'king':
+                        game.sprites.push({ id: 'tombstone-sprite', x: monster.x, y: monster.y, width: 256, height: 256, data: getTextureData({ id: 'tombstone-sprite', width: 256, height: 256 }) });
+                        break;
+                    case 'alien':
+                        game.sprites.push({ id: 'acid-sprite', x: monster.x, y: monster.y, width: 256, height: 256, data: getTextureData({ id: 'acid-sprite', width: 256, height: 256 }) });
+                        game.levels[game.currentLevel].map[Math.floor(monster.y)][Math.floor(monster.x)] = 42;
+                        break;
+                    case 'zeus':
+                        game.sprites.push({ id: 'tridentpickup-sprite', x: Math.floor(monster.x), y: Math.floor(monster.y), width: 30, height: 80, data: getTextureData({ id: 'tridentpickup-sprite', width: 30, height: 80 }) });
+                        game.pickupTotal++;
+                        game.levels[game.currentLevel].map[Math.floor(monster.y)][Math.floor(monster.x)] = 58;
+                        break;
+                    case 'cowking':
+                        game.sprites.push({ id: 'key-sprite', x: Math.floor(monster.x), y: Math.floor(monster.y), width: 64, height: 64, data: getTextureData({ id: 'key-sprite', width: 64, height: 64 }) });
+                        game.pickupTotal++;
+                        game.levels[game.currentLevel].map[Math.floor(monster.y)][Math.floor(monster.x)] = 68;
+                        break;
+                    case 'stasischamber':
+                        game.sprites.push({ id: 'brokenstasischamber-sprite', x: monster.x, y: monster.y, width: 512, height: 512, data: getTextureData({ id: 'brokenstasischamber-sprite', width: 512, height: 512 }) });
+                        playSound('glass-sound');
+                        break;
+                    case 'tank':
+                    case 'apache':
+                    case 'robot':
+                    case 'fighterjet':
+                    case 'rover':
+                        game.sprites.push({ id: 'burningdebris-sprite', x: monster.x, y: monster.y, width: 512, height: 512, data: getTextureData({ id: 'burningdebris-sprite', width: 512, height: 512 }) });
+                        game.levels[game.currentLevel].map[Math.floor(monster.y)][Math.floor(monster.x)] = 44;
+                        break;
+                    case 'turret':
+                    case 'lander':
+                        game.sprites.push({ id: 'burningdebris-sprite', x: monster.x, y: monster.y, width: 512, height: 512, data: getTextureData({ id: 'burningdebris-sprite', width: 512, height: 512 }) });
+                        break;
+                    case 'ufo':
+                        game.sprites.push({ id: 'burningdebris-sprite', x: monster.x, y: monster.y, width: 512, height: 512, data: getTextureData({ id: 'burningdebris-sprite', width: 512, height: 512 }) });
+                        game.levels[game.currentLevel].map[Math.floor(monster.y)][Math.floor(monster.x)] = 44;
+                        game.monsterTotal++;
+                        const alien1 = { ...window.MonsterData.alien1, id: `monster_${game.monsterTotal}`, x: monster.x, y: monster.y };
+                        const monsterTexture = {
+                            id: alien1.skin,
+                            width: alien1.width,
+                            height: alien1.height
+                        };
+                        alien1.data = getTextureData(monsterTexture);
+                        game.monsters.push(alien1);
+                        break;
+                    case 'seahorsebaby':
+                    case 'portal':
+                    case 'moon':
+                    case 'sun':
+                    case 'saturn':
+                        break;
+                    case 'kamikaze':
+                        const used = new Set();
+                        const explosions = 3;
+                        const radius = 0.5; // how tight the cluster is
+                        let count = 0;
+                        while (count < explosions) {
+                            let offsetX, offsetY;
+                            do {
+                                offsetX = (Math.random() * 2 - 1) * radius;
+                                offsetY = (Math.random() * 2 - 1) * radius;
+                            } while (offsetX * offsetX + offsetY * offsetY > radius * radius);
+                            const x = monster.x + offsetX;
+                            const y = monster.y + offsetY;
+                            const key = `${x},${y}`;
+                            if (used.has(key)) continue; // skip duplicates
+                            used.add(key);
+                            game.sprites.push({ id: 'explosion-sprite', x: x, y: y, width: 512, height: 512, data: getTextureData({ id: 'explosion-sprite', width: 512, height: 512 }), spawnTime: Date.now(), cullTime: 200 });
+                            count++;
+                        }
+                        for (const m2 of game.monsters) {
+                            if (!m2.isDead && (m2.id != monster.id)) {
+                                const dx2 = m2.x - monster.x;
+                                const dy2 = m2.y - monster.y;
+                                const distanceSq2 = dx2 * dx2 + dy2 * dy2;
+                                if (distanceSq2 < game.explosionHitboxRadius && (!(m2.type == 'moon' || m2.type == 'sun' || m2.type == 'saturn') && !m2.invulnerable) && m2.type != 'yeti') {
+                                    m2.health -= monster.damage;
+                                }
+                            }
+                        }
+                        stopSound('kamikaze-aaaa');
+                        playSound('explosion-sound');
+                        break;
+                    case 'frog':
+                    case 'lizard':
+                    case 'jackalope':
+                    case 'piranha':
+                        game.sprites.push({ id: 'gib-sprite', x: monster.x, y: monster.y, width: 512, height: 512, data: getTextureData({ id: 'gib-sprite', width: 512, height: 512 }), spawnTime: Date.now(), cullTime: 200 });
+                        break;
+                    case 'dinosauregg':
+                        game.monsterTotal++;
+                        const lizard = { ...window.MonsterData.lizard, id: `monster_${game.monsterTotal}`, x: monster.x, y: monster.y };
+                        const lizardTexture = {
+                            id: lizard.skin,
+                            width: lizard.width,
+                            height: lizard.height
+                        };
+                        lizard.data = getTextureData(lizardTexture);
+                        game.monsters.push(lizard);
+                        break;
+                    default:
+                        game.sprites.push({ id: 'bones-sprite', x: monster.x, y: monster.y, width: 256, height: 256, data: getTextureData({ id: 'bones-sprite', width: 256, height: 256 }) });
+                        break;
+                }
+                continue;
+            } 
             const dx = game.player.x - monster.x;
             const dy = game.player.y - monster.y;
             const distSq = dx * dx + dy * dy;
@@ -4068,6 +4111,16 @@ function updateGameObjects() {
                             used.add(key);
                             game.sprites.push({ id: 'explosion-sprite', x: x, y: y, width: 512, height: 512, data: getTextureData({ id: 'explosion-sprite', width: 512, height: 512 }), spawnTime: Date.now(), cullTime: 200 });
                             count++;
+                        }
+                        for (const m2 of game.monsters) {
+                            if (!m2.isDead && (m2.id != monster.id)) {
+                                const dx2 = m2.x - monster.x;
+                                const dy2 = m2.y - monster.y;
+                                const distanceSq2 = dx2 * dx2 + dy2 * dy2;
+                                if (distanceSq2 < game.explosionHitboxRadius && (!(m2.type == 'moon' || m2.type == 'sun' || m2.type == 'saturn') && !m2.invulnerable) && m2.type != 'yeti') {
+                                    m2.health -= monster.damage;
+                                }
+                            }
                         }
                         stopSound('kamikaze-aaaa');
                         game.monsterDefeated++;
