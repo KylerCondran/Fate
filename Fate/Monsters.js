@@ -853,7 +853,7 @@ window.MonsterData = {
         skin: 'tutankhamun-sprite',
         audio: 'tutankhamun',
         health: 2000,
-        speed: 0.04,
+        speed: 0.02,
         isDead: false,
         width: 512,
         height: 512,

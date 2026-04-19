@@ -1340,7 +1340,7 @@ function showNotification(notification) {
 function updateMonsterGrid() {
     game.monsterGrid = {};
     for (let monster of game.monsters) {
-        if (!monster.isDead && monster.type != 'moby' && monster.type != 'seahorse' && monster.type != 'seahorsebaby' && monster.type != 'dinosauregg' && monster.type != 'portal' && monster.type != 'tutankhamun') {
+        if (!monster.isDead && monster.type != 'moby' && monster.type != 'seahorse' && monster.type != 'seahorsebaby' && monster.type != 'dinosauregg' && monster.type != 'tutankhamun') {
             const gridKey = `${Math.floor(monster.x)}_${Math.floor(monster.y)}`;
             if (!game.monsterGrid[gridKey]) {
                 game.monsterGrid[gridKey] = [];
@@ -1538,6 +1538,9 @@ function updateGameObjects() {
                                 case 'seahorsebaby':
                                 case 'portal':
                                 case 'frog':
+                                case 'moon':
+                                case 'sun':
+                                case 'saturn':
                                     break;
                                 case 'dinosauregg':
                                     game.monsterTotal++;
@@ -1613,7 +1616,7 @@ function updateGameObjects() {
                         if (!tutankhamun.pushStartTime) {
                             tutankhamun.pushStartTime = Date.now();
                             tutankhamun.activePush = true;
-                            tutankhamun.pushDuration = 500;
+                            tutankhamun.pushDuration = 1000;
                         }
                     }
                 } else {
@@ -1630,7 +1633,7 @@ function updateGameObjects() {
                         }
                     }
                 }
-                if (!(projectile.type === 'boomerang') && !(projectile.type === 'whirl')) {
+                if (!(projectile.type === 'boomerang') && !(projectile.type === 'whirl') && !(projectile.type === 'force')) {
                     playSound('injured-sound');
                 }
                 projectilesToRemove.add(i);
@@ -3757,10 +3760,10 @@ function updateGameObjects() {
                     }
                     break;
                 case 'tutankhamun':
-                    if (monster.health < 1800 && !monster.spawnFrogPortal) {
+                    if (monster.health < 1500 && !monster.spawnFrogPortal) {
                         monster.spawnFrogPortal = true;
                         for (let i = 0; i < (1 * spawnModifier); i++) {
-                            const validSpots = getOpenSpawnPositions(Math.floor(monster.x), Math.floor(monster.y), 5);
+                            const validSpots = getOpenSpawnPositions(Math.floor(monster.x), Math.floor(monster.y), 9);
                             if (validSpots.length == 0) continue;
                             const spot = validSpots[Math.floor(Math.random() * validSpots.length)];
                             const portal = { ...window.MonsterData.portal, id: `monster_${game.monsterTotal}`, x: spot.x, y: spot.y, spawnType: 'frog', spawnCooldown: 2000 };
@@ -3772,16 +3775,18 @@ function updateGameObjects() {
                             portal.data = getTextureData(monsterTexture);
                             game.monsterTotal++;
                             game.monsters.push(portal);
+                            updateMonsterGrid();
                         }
+                        monster.shieldHealth = monster.maxShieldHealth;
                         playSound('portal-sound');
                     }
-                    if (monster.health < 1600 && !monster.spawnMummyPortal) {
+                    if (monster.health < 1000 && !monster.spawnMummyPortal) {
                         monster.spawnMummyPortal = true;
                         for (let i = 0; i < (1 * spawnModifier); i++) {
-                            const validSpots = getOpenSpawnPositions(Math.floor(monster.x), Math.floor(monster.y), 5);
+                            const validSpots = getOpenSpawnPositions(Math.floor(monster.x), Math.floor(monster.y), 9);
                             if (validSpots.length == 0) continue;
                             const spot = validSpots[Math.floor(Math.random() * validSpots.length)];
-                            const portal = { ...window.MonsterData.portal, id: `monster_${game.monsterTotal}`, x: spot.x, y: spot.y, spawnType: 'mummy', spawnCooldown: 10000 };
+                            const portal = { ...window.MonsterData.portal, id: `monster_${game.monsterTotal}`, x: spot.x, y: spot.y, spawnType: 'mummy', spawnCooldown: 8000 };
                             const monsterTexture = {
                                 id: portal.skin,
                                 width: portal.width,
@@ -3790,13 +3795,17 @@ function updateGameObjects() {
                             portal.data = getTextureData(monsterTexture);
                             game.monsterTotal++;
                             game.monsters.push(portal);
+                            updateMonsterGrid();
                         }
+                        monster.shieldHealth = monster.maxShieldHealth;
                         playSound('portal-sound');
                     }
                     if (distSq < 64 && isVisibleToPlayer(monster)) {
                         if (!monster.lastShot || currentTime - monster.lastShot >= monster.attackCooldown) {
                             const angle = radiansToDegrees(Math.atan2(dy, dx));
+                            game.projectiles.push(new Projectile(monster.x, monster.y, angle - 7, 'force', game.projectileMap['force'], 'monster', 0.2, 0));
                             game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'force', game.projectileMap['force'], 'monster', 0.2, 0));
+                            game.projectiles.push(new Projectile(monster.x, monster.y, angle + 7, 'force', game.projectileMap['force'], 'monster', 0.2, 0));
                             //playSound('shoot-sound');
                             monster.lastShot = currentTime;
                         }
@@ -3831,6 +3840,48 @@ function updateGameObjects() {
                             // Push duration elapsed - deactivate
                             monster.activePush = false;
                             monster.pushStartTime = null;
+                        }
+                    }
+                    if (distSq < 400 && isVisibleToPlayer(monster)) {
+                        const distance = Math.sqrt(distSq);
+                        const invDist = 1 / distance;
+                        const dirX = dx * invDist;
+                        const dirY = dy * invDist;
+                        if (distSq > 55) {
+                            // TOO FAR → move toward player
+                            moveX = dirX * monster.speed;
+                            moveY = dirY * monster.speed;
+                            // Try to move in X direction
+                            const newX = monster.x + moveX;
+                            if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
+                                monster.x = newX;
+                            }
+                            // Try to move in Y direction
+                            const newY = monster.y + moveY;
+                            if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
+                                monster.y = newY;
+                            }
+                        } else {
+                            // IN RANGE → strafe sideways
+                            const perpX = -dirY;
+                            const perpY = dirX;
+                            // Optional: switch left/right occasionally
+                            monster.strafeDir = monster.strafeDir ?? (Math.random() < 0.5 ? -1 : 1);
+                            if (Math.random() < 0.01) {
+                                monster.strafeDir *= -1;
+                            }
+                            moveX = perpX * monster.strafeDir * monster.speed;
+                            moveY = perpY * monster.strafeDir * monster.speed;
+                            // Try to move in X direction
+                            const newX = monster.x + moveX;
+                            if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
+                                monster.x = newX;
+                            }
+                            // Try to move in Y direction
+                            const newY = monster.y + moveY;
+                            if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
+                                monster.y = newY;
+                            }
                         }
                     }
                     break;
@@ -3893,13 +3944,13 @@ function updateGameObjects() {
 
                         // Try to move in X direction with the charge angle
                         const newX = monster.x + chargeDx;
-                        if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
+                        if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster, ['frog'])) {
                             monster.x = newX;
                         }
 
                         // Try to move in Y direction with the charge angle
                         const newY = monster.y + chargeDy;
-                        if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
+                        if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster, ['frog'])) {
                             monster.y = newY;
                         }
 
@@ -4823,7 +4874,7 @@ function drawSpriteInWorld(sprite) {
         spriteWidth = Math.floor(game.projection.halfWidth / distance * spriteScale);
         const spriteY = game.projection.halfHeight - spriteHeight / 2;
         // Drawn Energy Shield if monster has one and is not dead
-        if (sprite.type && sprite.shieldHealth !== undefined && sprite.shieldHealth > 0 && distance < 10 && spriteX >= 0 && spriteX <= game.projection.width) {
+        if (sprite.type && sprite.shieldHealth !== undefined && sprite.shieldHealth > 0 && distance < 15 && spriteX >= 0 && spriteX <= game.projection.width) {
             drawEnergyShield(spriteX, spriteY + spriteHeight / 2, spriteWidth / 2, sprite.shieldHealth, sprite.maxShieldHealth);
         }
         drawSprite(spriteX, spriteWidth, spriteHeight, sprite);
@@ -5224,9 +5275,9 @@ function drawEnergyShield(centerX, centerY, radius, shieldHealth, maxShieldHealt
     radius *= pulse;
 
     // Layered colors
-    const innerColor = new Color(200, 225, 235, 255 * alpha); 
-    const midColor = new Color(40, 150, 200, 255 * alpha); 
-    const outerColor = new Color(25, 70, 160, 255 * alpha); 
+    const innerColor = new Color(200, 225, 235, 255 * alpha);
+    const midColor = new Color(40, 150, 200, 255 * alpha);
+    const outerColor = new Color(25, 70, 160, 255 * alpha);
 
     // Outer glow (soft halo)
     for (let i = 0; i < 3; i++) {
