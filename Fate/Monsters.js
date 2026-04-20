@@ -936,5 +936,27 @@ window.MonsterData = {
         attackCooldown: 1000,
         lastSound: 0,
         soundCooldown: 3900
+    },
+    pterodactyl: {
+        type: 'pterodactyl',
+        skin: 'pterodactyl-sprite',
+        audio: 'pterodactyl',
+        health: 850,
+        speed: 0.06,
+        isDead: false,
+        width: 677,
+        height: 598,
+        data: null,
+        damage: 20,
+        lastAttack: 0,
+        attackCooldown: 1000,
+        lastWanderTime: 0,
+        wanderCooldown: 6000,
+        dirX: 0,
+        dirY: 0,
+        lastGrab: 0,
+        grabCooldown: 50000,
+        grabbed: false,
+        activeCheckpoint: 0
     }
 };

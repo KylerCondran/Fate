@@ -47,7 +47,6 @@
 - secret area flag
 - total monster count for each level
 - zones where movement speed is slowed
-- jurassic level has a pterodactyl that snatches the player and drops them in the nest
 
 # Weapon Ideas
 

@@ -1037,6 +1037,14 @@ function loadLevel(levelIdx) {
                     game.monsters.push(kamikaze);
                     game.monsterTotal++;
                     break;
+                case 83:
+                    const pterodactyl = { ...window.MonsterData.pterodactyl, id: `monster_${game.monsterTotal}`, x: j, y: i };
+                    game.monsters.push(pterodactyl);
+                    game.monsterTotal++;
+                    break;
+                case 84:
+                    game.sprites.push({ id: 'nest-sprite', x: j, y: i, width: 861, height: 455, data: null, spriteScale: 2.0 });
+                    break;
                 default:
                     break;
             }
@@ -1612,7 +1620,7 @@ function updateGameObjects() {
     }
     // Remove marked projectiles
     game.projectiles = game.projectiles.filter((_, idx) => !projectilesToRemove.has(idx));
-    // Remove expired explosion sprites
+    // Remove expired sprites with a culltime and spawn time
     game.sprites = game.sprites.filter(sprite => {
         if (sprite.cullTime && sprite.spawnTime) {
             const elapsed = Date.now() - sprite.spawnTime;
@@ -3106,7 +3114,7 @@ function updateGameObjects() {
                     } else if (distSq > 80) {
                         const closestEnemy = game.monsters.reduce((closest, enemy) => {
                             // Skip excluded enemy types and dead enemies
-                            if (enemy.type == 'raptor' || enemy.type == 'dinosauregg' || enemy.isDead) {
+                            if (enemy.type == 'raptor' || enemy.type == 'dinosauregg' || enemy.type == 'pterodactyl' || enemy.isDead) {
                                 return closest;
                             }
 
@@ -4131,6 +4139,128 @@ function updateGameObjects() {
                         if (game.player.health <= 0) {
                             playSound('death-sound');
                             endGameDeath();
+                        }
+                    }
+                    break;
+                case 'pterodactyl':
+                    if (!monster.grabbed) {
+                        if (distSq > 0.25 && distSq < 60 && (!monster.lastGrab || currentTime - monster.lastGrab >= monster.grabCooldown)) {
+                            const distance = Math.sqrt(distSq);
+                            const invDist = 1 / distance;
+                            const dirX = dx * invDist * monster.speed;
+                            const dirY = dy * invDist * monster.speed;
+                            // Try to move in X direction
+                            const newX = monster.x + dirX;
+                            if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
+                                monster.x = newX;
+                            }
+                            // Try to move in Y direction
+                            const newY = monster.y + dirY;
+                            if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
+                                monster.y = newY;
+                            }
+                            if (distSq < 0.5 && (!monster.lastGrab || currentTime - monster.lastGrab >= monster.grabCooldown)) {
+                                // Grab the player
+                                monster.lastGrab = currentTime;
+                                monster.grabbed = true;
+                                showNotification('A Pterodactyl has grabbed you!');
+                            }
+                        } else {
+                            // Pick a new random direction every wanderCooldown seconds
+                            if (!monster.lastWanderTime || currentTime - monster.lastWanderTime >= monster.wanderCooldown) {
+                                const angle = Math.random() * Math.PI * 2;
+                                monster.dirX = Math.cos(angle);
+                                monster.dirY = Math.sin(angle);
+
+                                monster.lastWanderTime = currentTime;
+                            }
+
+                            // Move using the stored random direction
+                            const dirX = monster.dirX * monster.speed;
+                            const dirY = monster.dirY * monster.speed;
+
+                            // Try to move in X direction
+                            const newX = monster.x + dirX;
+                            if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
+                                monster.x = newX;
+                            } else {
+                                // Hit a wall → pick a new direction immediately
+                                monster.lastWanderTime = 0;
+                            }
+
+                            // Try to move in Y direction
+                            const newY = monster.y + dirY;
+                            if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
+                                monster.y = newY;
+                            } else {
+                                // Hit a wall → pick a new direction immediately
+                                monster.lastWanderTime = 0;
+                            }
+                        }
+                    } else {
+                        // Checkpoint route movement code
+                        const checkpointOBJ = game.checkpoints.find(checkpoint => checkpoint.type == `checkpoint_${monster.activeCheckpoint}`);
+                        if (!checkpointOBJ || !Number.isFinite(checkpointOBJ.x) || !Number.isFinite(checkpointOBJ.y)) {
+                            break; // NaN safeguard
+                        }
+                        const checkpointX = checkpointOBJ.x - monster.x;
+                        const checkpointY = checkpointOBJ.y - monster.y;
+                        const checkpointdistSq = checkpointX * checkpointX + checkpointY * checkpointY;
+                        if (checkpointdistSq < 1) {
+                            monster.grabbed = false;
+                        } else { 
+                            const distance = Math.sqrt(checkpointdistSq);
+                            const invDist = 1 / distance;
+                            const dirX = checkpointX * invDist * monster.speed;
+                            const dirY = checkpointY * invDist * monster.speed;
+                            // Try to move in X direction
+                            const newX = monster.x + dirX;
+                            if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2) {
+                                monster.x = newX;
+                            }
+                            // Try to move in Y direction
+                            const newY = monster.y + dirY;
+                            if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2) {
+                                monster.y = newY;
+                            }
+                            // Drag Player
+                            const pullStrength = 0.15;     // How hard to pull per frame
+                            const followDistance = 0.5;    // How far behind the monster to stay
+
+                            // Vector from player to monster
+                            const mdx = monster.x - game.player.x;
+                            const mdy = monster.y - game.player.y;
+                            const dist = Math.sqrt(mdx * mdx + mdy * mdy) || 1;
+
+                            // Normalize direction
+                            const mdirX = mdx / dist;
+                            const mdirY = mdy / dist;
+
+                            // Target point slightly "behind" the monster (relative to player)
+                            const targetX = monster.x - mdirX * followDistance;
+                            const targetY = monster.y - mdirY * followDistance;
+
+                            // Pull toward that target instead of monster center
+                            const mx = targetX - game.player.x;
+                            const my = targetY - game.player.y;
+                            const pullDistance = Math.sqrt(mx * mx + my * my) || 1;
+
+                            // Optional smoothing (prevents snapping when close)
+                            const adjustedPullStrength = Math.min(pullStrength, pullDistance * 0.1);
+
+                            const pullDx = (mx / pullDistance) * adjustedPullStrength;
+                            const pullDy = (my / pullDistance) * adjustedPullStrength;
+
+                            const mnewX = game.player.x + pullDx;
+                            const mnewY = game.player.y + pullDy;
+
+                            // Collision checks
+                            if (map[Math.floor(game.player.y)] && map[Math.floor(game.player.y)][Math.floor(mnewX)] !== 2) {
+                                game.player.x = mnewX;
+                            }
+                            if (map[Math.floor(mnewY)] && map[Math.floor(mnewY)][Math.floor(game.player.x)] !== 2) {
+                                game.player.y = mnewY;
+                            }
                         }
                     }
                     break;
