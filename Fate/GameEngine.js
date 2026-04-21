@@ -605,6 +605,12 @@ function loadLevel(levelIdx) {
     if (game.weaponsUnlocked.trident) {
         game.tridentammo = true;
     }
+    // Recharge laser battery
+    if (game.cheats.infiniteAmmo || game.developerMode) {
+        game.laserbattery = 9999;
+    } else {
+        game.laserbattery = 100;
+    }
     let map = game.levels[levelIdx].map;
     let mapy = map.length;
     let mapx = map[0].length;

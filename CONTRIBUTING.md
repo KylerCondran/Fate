@@ -32,6 +32,7 @@
 - dead bones decay system (extend sprite cull system)
 - attach starting angle to levels.js
 - issue with sprite scaling
+- rocket doesnt injure player if it hits close up monster
 
 # Level Ideas
 
