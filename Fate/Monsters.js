@@ -958,5 +958,19 @@ window.MonsterData = {
         grabCooldown: 50000,
         grabbed: false,
         activeCheckpoint: 0
+    },
+    baphomet: {
+        type: 'baphomet',
+        skin: 'baphomet-sprite',
+        audio: 'baphomet',
+        health: 250,
+        speed: 0.04,
+        isDead: false,
+        width: 512,
+        height: 556,
+        data: null,
+        damage: 20,
+        lastAttack: 0,
+        attackCooldown: 1000
     }
 };

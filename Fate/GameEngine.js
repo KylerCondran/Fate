@@ -1051,6 +1051,11 @@ function loadLevel(levelIdx) {
                 case 84:
                     game.sprites.push({ id: 'nest-sprite', x: j, y: i, width: 861, height: 455, data: null, spriteScale: 2.0 });
                     break;
+                case 85:
+                    const baphomet = { ...window.MonsterData.baphomet, id: `monster_${game.monsterTotal}`, x: j, y: i };
+                    game.monsters.push(baphomet);
+                    game.monsterTotal++;
+                    break;
                 default:
                     break;
             }
