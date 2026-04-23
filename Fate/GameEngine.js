@@ -324,6 +324,13 @@ let game = {
             height: 16,
             id: "star-texture",
             data: null
+        },
+        {
+            number: 23,
+            width: 16,
+            height: 16,
+            id: "checkerboard-texture",
+            data: null
         }
     ],
     projectileTextures: [
@@ -620,7 +627,7 @@ function loadLevel(levelIdx) {
         game.player.speed.movement = 0.08;
     }
     const emptyPositions = [];
-    const monsterValues = [3, 4, 5, 6, 7, 15, 16, 17, 18, 19, 21, 22, 23, 24, 25, 27, 28, 29, 31, 32, 33, 34, 35, 36, 37, 41, 45, 46, 47, 50, 52, 57, 59, 60, 61, 62, 64, 69, 70, 71, 72, 73, 74, 75, 77, 78, 79, 80, 81, 82];
+    const monsterValues = [3, 4, 5, 6, 7, 15, 16, 17, 18, 19, 21, 22, 23, 24, 25, 27, 28, 29, 31, 32, 33, 34, 35, 36, 37, 41, 45, 46, 47, 50, 52, 57, 59, 60, 61, 62, 64, 69, 70, 71, 72, 73, 74, 75, 77, 78, 79, 80, 81, 82, 85];
     for (let i = 0; i < mapy; i++) {
         for (let j = 0; j < mapx; j++) {
             var objectValue = map[i][j];
@@ -1702,6 +1709,7 @@ function updateGameObjects() {
                     case 'moon':
                     case 'sun':
                     case 'saturn':
+                    case 'asteroid':
                         break;
                     case 'kamikaze':
                         const used = new Set();
@@ -2028,7 +2036,7 @@ function updateGameObjects() {
                                             const angle = radiansToDegrees(Math.atan2(dy, dx));
                                             monster.chargeAngle = angle;
                                             monster.isCharging = true;
-                                        } 
+                                        }
                                         monster.lastCharge = currentTime;
                                     }
                                 }
@@ -2125,7 +2133,7 @@ function updateGameObjects() {
                     }
                     if (monster.health < 800 && !monster.spawnPirahna) {
                         monster.spawnPirahna = true;
-                        for (let i = 0; i < (3 * spawnModifier); i++) {                            
+                        for (let i = 0; i < (3 * spawnModifier); i++) {
                             const validSpots = getOpenSpawnPositions(Math.floor(monster.x), Math.floor(monster.y), 5);
                             if (validSpots.length == 0) continue;
                             const spot = validSpots[Math.floor(Math.random() * validSpots.length)];
@@ -2144,7 +2152,7 @@ function updateGameObjects() {
                     }
                     if (monster.health < 600 && !monster.spawnSquid) {
                         monster.spawnSquid = true;
-                        for (let i = 0; i < (2 * spawnModifier); i++) {                           
+                        for (let i = 0; i < (2 * spawnModifier); i++) {
                             const validSpots = getOpenSpawnPositions(Math.floor(monster.x), Math.floor(monster.y), 5);
                             if (validSpots.length == 0) continue;
                             const spot = validSpots[Math.floor(Math.random() * validSpots.length)];
@@ -2358,7 +2366,7 @@ function updateGameObjects() {
                         }
                         if (!monster.lastSpawn || currentTime - monster.lastSpawn >= monster.spawnCooldown) {
                             monster.lastSpawn = currentTime;
-                            for (let i = 0; i < (2 * spawnModifier); i++) {                      
+                            for (let i = 0; i < (2 * spawnModifier); i++) {
                                 const validSpots = getOpenSpawnPositions(Math.floor(monster.x), Math.floor(monster.y), 5);
                                 if (validSpots.length == 0) continue;
                                 const spot = validSpots[Math.floor(Math.random() * validSpots.length)];
@@ -2671,8 +2679,8 @@ function updateGameObjects() {
                             game.lastMonsterToHitPlayer = monster.type.charAt(0).toUpperCase() + monster.type.slice(1);
                             // Play monster attack sound
                             playSound('injured-sound');
-                        }                       
-                        monster.lastAttack = currentTime;                  
+                        }
+                        monster.lastAttack = currentTime;
                         // Check if player died
                         if (game.player.health <= 0) {
                             playSound('death-sound');
@@ -3485,7 +3493,7 @@ function updateGameObjects() {
                     }
                     break;
                 case 'anubis':
-                    if (distSq < 400 && isVisibleToPlayer(monster)) {                       
+                    if (distSq < 400 && isVisibleToPlayer(monster)) {
                         if (!monster.spawnMoon) {
                             monster.spawnMoon = true;
                             for (let i = 0; i < (1 * spawnModifier); i++) {
@@ -3502,7 +3510,7 @@ function updateGameObjects() {
                                 game.monsterTotal++;
                                 game.monsters.push(moon);
                                 updateMonsterGrid();
-                            }                          
+                            }
                         }
                         if (!monster.spawnSun) {
                             monster.spawnSun = true;
@@ -3540,7 +3548,7 @@ function updateGameObjects() {
                                 updateMonsterGrid();
                                 playSound('portal-sound');
                             }
-                        }  
+                        }
                         // GRAVITY WELL MECHANIC
                         if (!monster.gravityWellActive) {
                             if (!monster.lastGravityWell || currentTime - monster.lastGravityWell >= 8000) {
@@ -3737,15 +3745,15 @@ function updateGameObjects() {
                     const celestialdistSq = celestialX * celestialX + celestialY * celestialY;
                     if (monster.type == 'moon' && celestialOBJ.health < 1600 && monster.invulnerable) {
                         monster.invulnerable = false;
-                        monster.speed = 0.06; 
+                        monster.speed = 0.06;
                     }
                     if (monster.type == 'sun' && celestialOBJ.health < 1100 && monster.invulnerable) {
                         monster.invulnerable = false;
-                        monster.speed = 0.06; 
+                        monster.speed = 0.06;
                     }
                     if (monster.type == 'saturn' && celestialOBJ.health < 600 && monster.invulnerable) {
                         monster.invulnerable = false;
-                        monster.speed = 0.06; 
+                        monster.speed = 0.06;
                     }
                     if (celestialdistSq > 0.01 && monster.invulnerable) {
                         const distance = Math.sqrt(celestialdistSq);
@@ -3981,7 +3989,7 @@ function updateGameObjects() {
                     break;
                 case 'portal':
                     // SPAWN FROG
-                    if (monster.spawnType == 'frog') {                      
+                    if (monster.spawnType == 'frog') {
                         if (!monster.lastSpawn || currentTime - monster.lastSpawn >= monster.spawnCooldown) {
                             monster.lastSpawn = currentTime;
                             for (let i = 0; i < (1 * spawnModifier); i++) {
@@ -4219,7 +4227,7 @@ function updateGameObjects() {
                         const checkpointdistSq = checkpointX * checkpointX + checkpointY * checkpointY;
                         if (checkpointdistSq < 1) {
                             monster.grabbed = false;
-                        } else { 
+                        } else {
                             const distance = Math.sqrt(checkpointdistSq);
                             const invDist = 1 / distance;
                             const dirX = checkpointX * invDist * monster.speed;
@@ -4272,6 +4280,117 @@ function updateGameObjects() {
                             if (map[Math.floor(mnewY)] && map[Math.floor(mnewY)][Math.floor(game.player.x)] !== 2) {
                                 game.player.y = mnewY;
                             }
+                        }
+                    }
+                    break;
+                case 'baphomet':
+                    if (distSq < 64 && isVisibleToPlayer(monster)) {
+                        if (!monster.lastSpawn || currentTime - monster.lastSpawn >= monster.spawnCooldown) {
+                            monster.lastSpawn = currentTime;
+                            for (let i = 0; i < (1 * spawnModifier); i++) {
+                                const validSpots = getOpenSpawnPositions(Math.floor(monster.x), Math.floor(monster.y), 3);
+                                if (validSpots.length == 0) continue;
+                                const spot = validSpots[Math.floor(Math.random() * validSpots.length)];
+                                const mx = game.player.x - spot.x;
+                                const my = game.player.y - spot.y;
+                                const angle = radiansToDegrees(Math.atan2(my, mx));
+                                const monsterDx = Math.cos(degreeToRadians(angle));
+                                const monsterDy = Math.sin(degreeToRadians(angle));
+                                const asteroid = { ...window.MonsterData.asteroid, id: `monster_${game.monsterTotal}`, x: spot.x, y: spot.y, dirX: monsterDx, dirY: monsterDy };
+                                const monsterTexture = {
+                                    id: asteroid.skin,
+                                    width: asteroid.width,
+                                    height: asteroid.height
+                                };
+                                asteroid.data = getTextureData(monsterTexture);
+                                game.monsterTotal++;
+                                game.monsters.push(asteroid);
+                                updateMonsterGrid();
+                            }
+                            playSound('fireball-sound');
+                        }
+                    }
+                    if (distSq < 400 && isVisibleToPlayer(monster)) {
+                        const distance = Math.sqrt(distSq);
+                        const invDist = 1 / distance;
+                        const dirX = dx * invDist;
+                        const dirY = dy * invDist;
+                        if (distSq > 45) {
+                            // TOO FAR → move toward player
+                            moveX = dirX * monster.speed;
+                            moveY = dirY * monster.speed;
+                            // Try to move in X direction
+                            const newX = monster.x + moveX;
+                            if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
+                                monster.x = newX;
+                            }
+                            // Try to move in Y direction
+                            const newY = monster.y + moveY;
+                            if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
+                                monster.y = newY;
+                            }
+                        } else {
+                            // IN RANGE → strafe sideways
+                            const perpX = -dirY;
+                            const perpY = dirX;
+                            // Optional: switch left/right occasionally
+                            monster.strafeDir = monster.strafeDir ?? (Math.random() < 0.5 ? -1 : 1);
+                            if (Math.random() < 0.005) {
+                                monster.strafeDir *= -1;
+                            }
+                            moveX = perpX * monster.strafeDir * monster.speed;
+                            moveY = perpY * monster.strafeDir * monster.speed;
+                            // Try to move in X direction
+                            const newX = monster.x + moveX;
+                            if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
+                                monster.x = newX;
+                            }
+                            // Try to move in Y direction
+                            const newY = monster.y + moveY;
+                            if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
+                                monster.y = newY;
+                            }
+                        }
+                    }
+                    break;
+                case 'asteroid':
+                    // Initialize direction ONCE (if not already set)
+                    if (monster.dirX === undefined || monster.dirY === undefined) {
+                        const angle = Math.random() * Math.PI * 2;
+                        monster.dirX = Math.cos(angle);
+                        monster.dirY = Math.sin(angle);
+                    }
+
+                    // Move using stored direction
+                    let nextX = monster.x + monster.dirX * monster.speed;
+                    let nextY = monster.y + monster.dirY * monster.speed;
+
+                    // Try to move in X direction
+                    if (map[Math.floor(monster.y)][Math.floor(nextX)] !== 2 && !isMonsterAtPosition(nextX, monster.y, monster)) {
+                        monster.x = nextX;
+                    } else {
+                        // Bounce on vertical wall → reflect X
+                        monster.dirX *= -1;
+                    }
+
+                    // Try to move in Y direction
+                    if (map[Math.floor(nextY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, nextY, monster)) {
+                        monster.y = nextY;
+                    } else {
+                        // Bounce on horizontal wall → reflect Y
+                        monster.dirY *= -1;
+                    }
+                    if (distSq < 0.5 && (!monster.lastAttack || currentTime - monster.lastAttack >= monster.attackCooldown)) {
+                        // Attack the player
+                        game.player.health -= monster.damage;
+                        game.lastMonsterToHitPlayer = monster.type.charAt(0).toUpperCase() + monster.type.slice(1);
+                        monster.lastAttack = currentTime;
+                        // Play monster attack sound
+                        playSound('injured-sound');
+                        // Check if player died
+                        if (game.player.health <= 0) {
+                            playSound('death-sound');
+                            endGameDeath();
                         }
                     }
                     break;

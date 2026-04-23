@@ -963,14 +963,33 @@ window.MonsterData = {
         type: 'baphomet',
         skin: 'baphomet-sprite',
         audio: 'baphomet',
-        health: 250,
-        speed: 0.04,
+        health: 2250,
+        speed: 0.01,
         isDead: false,
         width: 512,
         height: 556,
         data: null,
         damage: 20,
         lastAttack: 0,
-        attackCooldown: 1000
+        attackCooldown: 1000,
+        lastSpawn: 0,
+        spawnCooldown: 10000
+    },
+    asteroid: {
+        type: 'asteroid',
+        skin: 'asteroid-sprite',
+        audio: 'asteroid',
+        health: 250,
+        speed: 0.04,
+        isDead: false,
+        width: 512,
+        height: 512,
+        data: null,
+        damage: 20,
+        lastShot: 0,
+        lastAttack: 0,
+        attackCooldown: 1000,
+        dirX: 0,
+        dirY: 0
     }
 };
