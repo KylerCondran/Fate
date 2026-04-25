@@ -991,5 +991,22 @@ window.MonsterData = {
         attackCooldown: 1000,
         dirX: 0,
         dirY: 0
+    },
+    prisoner: {
+        type: 'prisoner',
+        skin: 'prisoner-sprite',
+        audio: 'prisoner',
+        health: 100,
+        speed: 0.02,
+        isDead: false,
+        width: 512,
+        height: 512,
+        data: null,
+        damage: 25,
+        lastAttack: 0,
+        attackCooldown: 1000,
+        hostile: false,
+        following: false,
+        announceAllegiance: false
     }
 };

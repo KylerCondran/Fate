@@ -43,6 +43,7 @@ let game = {
         lasershotgun: false,
         trident: false
     },
+    savedWeaponState: null,
     keysUnlocked: {
         cowkey: false,
         monkeykey: false,
@@ -626,6 +627,43 @@ function loadLevel(levelIdx) {
     } else {
         game.player.speed.movement = 0.08;
     }
+    if (game.levels[levelIdx].name == "Prison") {
+        // Save current weapon unlock state before applying restrictions
+        if (!game.savedWeaponState) {
+            game.savedWeaponState = {
+                pistol: game.weaponsUnlocked.pistol,
+                machinegun: game.weaponsUnlocked.machinegun,
+                yetipistol: game.weaponsUnlocked.yetipistol,
+                rocketlauncher: game.weaponsUnlocked.rocketlauncher,
+                scepter: game.weaponsUnlocked.scepter,
+                boomerang: game.weaponsUnlocked.boomerang,
+                lasershotgun: game.weaponsUnlocked.lasershotgun,
+                trident: game.weaponsUnlocked.trident
+            };
+        }
+        // Restrict weapon set for prison level
+        game.weaponsUnlocked.pistol = false;
+        game.weaponsUnlocked.machinegun = false;
+        game.weaponsUnlocked.yetipistol = false;
+        game.weaponsUnlocked.rocketlauncher = false;
+        game.weaponsUnlocked.scepter = false;
+        game.weaponsUnlocked.boomerang = false;
+        game.weaponsUnlocked.lasershotgun = false;
+        game.weaponsUnlocked.trident = false;
+    } else {
+        // Upon starting another level, restore weapon unlock state if it was previously saved (after leaving prison level)
+        if (game.savedWeaponState) {
+            game.weaponsUnlocked.pistol = game.savedWeaponState.pistol;
+            game.weaponsUnlocked.machinegun = game.savedWeaponState.machinegun;
+            game.weaponsUnlocked.yetipistol = game.savedWeaponState.yetipistol;
+            game.weaponsUnlocked.rocketlauncher = game.savedWeaponState.rocketlauncher;
+            game.weaponsUnlocked.scepter = game.savedWeaponState.scepter;
+            game.weaponsUnlocked.boomerang = game.savedWeaponState.boomerang;
+            game.weaponsUnlocked.lasershotgun = game.savedWeaponState.lasershotgun;
+            game.weaponsUnlocked.trident = game.savedWeaponState.trident;
+            game.savedWeaponState = null;
+        }
+    }
     const emptyPositions = [];
     const monsterValues = [3, 4, 5, 6, 7, 15, 16, 17, 18, 19, 21, 22, 23, 24, 25, 27, 28, 29, 31, 32, 33, 34, 35, 36, 37, 41, 45, 46, 47, 50, 52, 57, 59, 60, 61, 62, 64, 69, 70, 71, 72, 73, 74, 75, 77, 78, 79, 80, 81, 82, 85];
     for (let i = 0; i < mapy; i++) {
@@ -1062,6 +1100,13 @@ function loadLevel(levelIdx) {
                     const baphomet = { ...window.MonsterData.baphomet, id: `monster_${game.monsterTotal}`, x: j, y: i };
                     game.monsters.push(baphomet);
                     game.monsterTotal++;
+                    break;
+                case 86:
+                    let startHostile = false;
+                    var rndVal = Math.floor(Math.random() * 100) + 1;
+                    if (rndVal <= 20) { startHostile = true; }
+                    const prisoner = { ...window.MonsterData.prisoner, id: `monster_${game.monsterTotal}`, x: j, y: i, hostile: startHostile };
+                    game.monsters.push(prisoner);
                     break;
                 default:
                     break;
@@ -1543,6 +1588,9 @@ function updateGameObjects() {
                         } else {
                             monster.health -= projectile.damage;
                         }
+                        if (monster.type == 'prisoner' && !monster.hostile) {
+                            monster.hostile = true;
+                        }
                         if (monster.health > 0) {
                             var rnd = Math.floor(Math.random() * 3);
                             playSound(`${monster.audio}-pain-${rnd + 1}`);
@@ -1652,7 +1700,7 @@ function updateGameObjects() {
         if (!monster.isDead) {
             if (monster.health <= 0) {
                 monster.isDead = true;
-                if (monster.type != 'moby' && monster.type != 'seahorse' && monster.type != 'seahorsebaby') {
+                if (monster.type != 'moby' && monster.type != 'seahorse' && monster.type != 'seahorsebaby' && monster.type != 'prisoner') {
                     game.monsterDefeated++;
                 }
                 playSound(`${monster.audio}-death`);
@@ -4391,6 +4439,133 @@ function updateGameObjects() {
                         if (game.player.health <= 0) {
                             playSound('death-sound');
                             endGameDeath();
+                        }
+                    }
+                    break;
+                case 'prisoner':
+                    if (monster.hostile) {
+                        if (distSq > 0.25 && distSq < 100 && isVisibleToPlayer(monster)) {
+                            if (!monster.announceAllegiance) {
+                                //playSound('hostile-sound');
+                                monster.announceAllegiance = true;  
+                            }
+                            const distance = Math.sqrt(distSq);
+                            const invDist = 1 / distance;
+                            const dirX = dx * invDist * monster.speed;
+                            const dirY = dy * invDist * monster.speed;
+                            // Try to move in X direction
+                            const newX = monster.x + dirX;
+                            if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
+                                monster.x = newX;
+                            }
+                            // Try to move in Y direction
+                            const newY = monster.y + dirY;
+                            if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
+                                monster.y = newY;
+                            }
+                        }
+                        if (distSq < 0.5 && (!monster.lastAttack || currentTime - monster.lastAttack >= monster.attackCooldown)) {
+                            // Attack the player
+                            game.player.health -= monster.damage;
+                            game.lastMonsterToHitPlayer = monster.type.charAt(0).toUpperCase() + monster.type.slice(1);
+                            monster.lastAttack = currentTime;
+                            // Play monster attack sound
+                            playSound('injured-sound');
+                            // Check if player died
+                            if (game.player.health <= 0) {
+                                playSound('death-sound');
+                                endGameDeath();
+                            }
+                        }
+                    } else {
+                        if (monster.following) {
+                            if (!monster.announceAllegiance) {
+                                //playSound('friendly-sound');
+                                monster.announceAllegiance = true;
+                            }
+                            const PclosestEnemy = game.monsters.reduce((closest, enemy) => {
+                                // Skip excluded enemy types and dead enemies
+                                if (enemy.type == 'seahorse' || enemy.type == 'seahorsebaby' || enemy.type == 'moby' || (enemy.type == 'prisoner' && !enemy.hostile) || enemy.isDead) {
+                                    return closest;
+                                }
+
+                                // Calculate distance to this enemy
+                                const edx = enemy.x - monster.x;
+                                const edy = enemy.y - monster.y;
+                                const enemyDistSq = edx * edx + edy * edy;
+
+                                // Update closest if this enemy is closer
+                                if (!closest || enemyDistSq < closest.distanceSq) {
+                                    return { ...enemy, distanceSq: enemyDistSq };
+                                }
+                                return closest;
+                            }, null);
+                            if (!PclosestEnemy || !Number.isFinite(PclosestEnemy.x) || !Number.isFinite(PclosestEnemy.y)) {
+                                if (distSq > 2) {
+                                    const distance = Math.sqrt(distSq);
+                                    const invDist = 1 / distance;
+                                    const dirX = dx * invDist * monster.speed;
+                                    const dirY = dy * invDist * monster.speed;
+                                    // Try to move in X direction
+                                    const newX = monster.x + dirX;
+                                    if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
+                                        monster.x = newX;
+                                    }
+                                    // Try to move in Y direction
+                                    const newY = monster.y + dirY;
+                                    if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
+                                        monster.y = newY;
+                                    }
+                                }
+                                break; // NaN safeguard
+                            } else {
+                                const enemyX = PclosestEnemy.x - monster.x;
+                                const enemyY = PclosestEnemy.y - monster.y;
+                                const enemydistSq = enemyX * enemyX + enemyY * enemyY;
+                                if (enemydistSq > 0.25 && enemydistSq < 100 && isVisibleToPlayer(PclosestEnemy)) {
+                                    const distance = Math.sqrt(enemydistSq);
+                                    const invDist = 1 / distance;
+                                    const dirX = enemyX * invDist * monster.speed;
+                                    const dirY = enemyY * invDist * monster.speed;
+                                    // Try to move in X direction
+                                    const newX = monster.x + dirX;
+                                    if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
+                                        monster.x = newX;
+                                    }
+                                    // Try to move in Y direction
+                                    const newY = monster.y + dirY;
+                                    if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
+                                        monster.y = newY;
+                                    }
+                                    if (enemydistSq < 0.5 && (!monster.lastAttack || currentTime - monster.lastAttack >= monster.attackCooldown)) {
+                                        // Attack the monster
+                                        const angle = radiansToDegrees(Math.atan2(enemyY, enemyX));
+                                        let blankTexture;
+                                        game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'knife', blankTexture, 'player', 0.6, monster.damage));
+                                        playSound('knife-sound');
+                                        monster.lastAttack = currentTime;
+                                    }
+                                } else if (distSq > 2) {
+                                    const distance = Math.sqrt(distSq);
+                                    const invDist = 1 / distance;
+                                    const dirX = dx * invDist * monster.speed;
+                                    const dirY = dy * invDist * monster.speed;
+                                    // Try to move in X direction
+                                    const newX = monster.x + dirX;
+                                    if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
+                                        monster.x = newX;
+                                    }
+                                    // Try to move in Y direction
+                                    const newY = monster.y + dirY;
+                                    if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
+                                        monster.y = newY;
+                                    }
+                                }
+                            }
+                        } else {
+                            if (distSq < 1) {
+                                monster.following = true;
+                            }
                         }
                     }
                     break;
