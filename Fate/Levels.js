@@ -17,6 +17,7 @@ Level Legend:
 71 = raptor, 72 = brontosaurus, 73 = stegosaurus, 74 = scarab, 75 = sphinx
 76 = battery, 77 = anubis, 78 = mummy, 79 = tutankhamun, 80 = satyr
 81 = frog, 82 = kamikaze, 83 = pterodactyl, 84 = nest, 85 = baphomet
+86 = prisoner, 87 = guard1, 88 = guard2
 */
 window.LevelData = [
     {
@@ -435,7 +436,7 @@ window.LevelData = [
             [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
             [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
             [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
-            [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 2],
+            [2, 88, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 87, 2],
             [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
         ],
         unlocked: false,

@@ -1108,6 +1108,16 @@ function loadLevel(levelIdx) {
                     const prisoner = { ...window.MonsterData.prisoner, id: `monster_${game.monsterTotal}`, x: j, y: i, hostile: startHostile };
                     game.monsters.push(prisoner);
                     break;
+                case 87:
+                    const guard1 = { ...window.MonsterData.guard1, id: `monster_${game.monsterTotal}`, x: j, y: i };
+                    game.monsters.push(guard1);
+                    game.monsterTotal++;
+                    break;
+                case 88:
+                    const guard2 = { ...window.MonsterData.guard2, id: `monster_${game.monsterTotal}`, x: j, y: i };
+                    game.monsters.push(guard2);
+                    game.monsterTotal++;
+                    break;
                 default:
                     break;
             }
@@ -4566,6 +4576,46 @@ function updateGameObjects() {
                             if (distSq < 1) {
                                 monster.following = true;
                             }
+                        }
+                    }
+                    break;
+                case 'guard':
+                    if (distSq < 64 && isVisibleToPlayer(monster)) {
+                        if (monster.variant === 'guard2') {
+                            const delay = monster.shotsInBurst < 3 ? 500 : monster.attackCooldown;
+                            if (!monster.lastShot || currentTime - monster.lastShot >= delay) {
+                                const angle = radiansToDegrees(Math.atan2(dy, dx));
+                                game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'bullet', game.projectileMap['bullet'], 'monster', 0.2, monster.damage));
+                                playSound('shoot-sound');
+                                monster.lastShot = currentTime;
+                                monster.shotsInBurst++;
+                                if (monster.shotsInBurst > 3) {
+                                    monster.shotsInBurst = 1;
+                                }
+                            }
+                        } else {
+                            if (!monster.lastShot || currentTime - monster.lastShot >= monster.attackCooldown) {
+                                const angle = radiansToDegrees(Math.atan2(dy, dx));
+                                game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'bullet', game.projectileMap['bullet'], 'monster', 0.2, monster.damage));
+                                playSound('shoot-sound');
+                                monster.lastShot = currentTime;
+                            }
+                        }
+                    }
+                    if (distSq > 30 && distSq < 200 && isVisibleToPlayer(monster)) {
+                        const distance = Math.sqrt(distSq);
+                        const invDist = 1 / distance;
+                        const dirX = dx * invDist * monster.speed;
+                        const dirY = dy * invDist * monster.speed;
+                        // Try to move in X direction
+                        const newX = monster.x + dirX;
+                        if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
+                            monster.x = newX;
+                        }
+                        // Try to move in Y direction
+                        const newY = monster.y + dirY;
+                        if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
+                            monster.y = newY;
                         }
                     }
                     break;

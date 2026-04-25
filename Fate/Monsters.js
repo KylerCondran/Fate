@@ -1008,5 +1008,36 @@ window.MonsterData = {
         hostile: false,
         following: false,
         announceAllegiance: false
+    },
+    guard1: {
+        type: 'guard',
+        skin: 'guard1-sprite',
+        audio: 'guard1',
+        variant: 'guard1',
+        health: 100,
+        speed: 0.04,
+        isDead: false,
+        width: 512,
+        height: 512,
+        data: null,
+        damage: 25,
+        lastShot: 0,
+        attackCooldown: 2000
+    },
+    guard2: {
+        type: 'guard',
+        skin: 'guard2-sprite',
+        audio: 'guard2',
+        variant: 'guard2',
+        health: 100,
+        speed: 0.04,
+        isDead: false,
+        width: 512,
+        height: 512,
+        data: null,
+        damage: 25,
+        lastShot: 0,
+        attackCooldown: 3000,
+        shotsInBurst: 0,
     }
 };
