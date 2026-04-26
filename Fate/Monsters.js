@@ -1039,5 +1039,33 @@ window.MonsterData = {
         lastShot: 0,
         attackCooldown: 3000,
         shotsInBurst: 0,
+    },
+    sobek: {
+        type: 'sobek',
+        skin: 'sobek-sprite',
+        audio: 'sobek',
+        health: 250,
+        speed: 0.04,
+        isDead: false,
+        width: 512,
+        height: 512,
+        data: null,
+        damage: 20,
+        lastAttack: 0,
+        attackCooldown: 1000
+    },
+    crocodile: {
+        type: 'crocodile',
+        skin: 'crocodile-sprite',
+        audio: 'crocodile',
+        health: 250,
+        speed: 0.04,
+        isDead: false,
+        width: 512,
+        height: 512,
+        data: null,
+        damage: 20,
+        lastAttack: 0,
+        attackCooldown: 1000
     }
 };

@@ -665,7 +665,7 @@ function loadLevel(levelIdx) {
         }
     }
     const emptyPositions = [];
-    const monsterValues = [3, 4, 5, 6, 7, 15, 16, 17, 18, 19, 21, 22, 23, 24, 25, 27, 28, 29, 31, 32, 33, 34, 35, 36, 37, 41, 45, 46, 47, 50, 52, 57, 59, 60, 61, 62, 64, 69, 70, 71, 72, 73, 74, 75, 77, 78, 79, 80, 81, 82, 85];
+    const monsterValues = [3, 4, 5, 6, 7, 15, 16, 17, 18, 19, 21, 22, 23, 24, 25, 27, 28, 29, 31, 32, 33, 34, 35, 36, 37, 41, 45, 46, 47, 50, 52, 57, 59, 60, 61, 62, 64, 69, 70, 71, 72, 73, 74, 75, 77, 78, 79, 80, 81, 82, 85, 86, 87, 88, 89, 90];
     for (let i = 0; i < mapy; i++) {
         for (let j = 0; j < mapx; j++) {
             var objectValue = map[i][j];
@@ -1116,6 +1116,16 @@ function loadLevel(levelIdx) {
                 case 88:
                     const guard2 = { ...window.MonsterData.guard2, id: `monster_${game.monsterTotal}`, x: j, y: i };
                     game.monsters.push(guard2);
+                    game.monsterTotal++;
+                    break;
+                case 89:
+                    const sobek = { ...window.MonsterData.sobek, id: `monster_${game.monsterTotal}`, x: j, y: i };
+                    game.monsters.push(sobek);
+                    game.monsterTotal++;
+                    break;
+                case 90:
+                    const crocodile = { ...window.MonsterData.crocodile, id: `monster_${game.monsterTotal}`, x: j, y: i };
+                    game.monsters.push(crocodile);
                     game.monsterTotal++;
                     break;
                 default:

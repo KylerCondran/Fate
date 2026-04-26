@@ -33,6 +33,7 @@
 - attach starting angle to levels.js
 - issue with sprite scaling
 - rocket doesnt injure player if it hits close up monster
+- chests spam locked sound, need timeout, same with all pickups that dont clear immediately
 
 # Level Ideas
 

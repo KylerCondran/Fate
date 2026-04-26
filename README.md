@@ -104,7 +104,7 @@ git clone https://github.com/KylerCondran/Fate.git
 	</li>
 	<li>Prison
 		<ul>
-			<li>???</li>
+			<li>Prisoners, Guards</li>
 		</ul>
 	</li>
 	<li>Jurassic
@@ -119,7 +119,7 @@ git clone https://github.com/KylerCondran/Fate.git
 	</li>
 	<li>Ancient Eqypt
 		<ul>
-			<li>Scarabs, Sphinx, Anubis, Tutankhamun, Mummies, Frogs, Kamikaze</li>
+			<li>Scarabs, Sphinx, Anubis, Tutankhamun, Mummies, Frogs, Kamikaze, Sobek, Crocodiles</li>
 		</ul>
 	</li>
 	<li>Secret Levels
