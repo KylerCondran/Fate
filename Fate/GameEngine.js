@@ -1296,6 +1296,38 @@ function isVisibleToPlayer(monster) {
     return true;
 }
 
+// Check if sprite/monster is visible to another monster for draw calls
+
+function isVisibleToMonster(monster, target) {
+    const map = game.levels[game.currentLevel].map;
+    let x0 = monster.x;
+    let y0 = monster.y;
+    let x1 = target.x;
+    let y1 = target.y;
+    const dx = x1 - x0;
+    const dy = y1 - y0;
+    const steps = Math.max(Math.abs(dx), Math.abs(dy)) * 4; // Increase factor for precision
+
+    for (let step = 0; step < steps; step++) {
+        const t = step / steps;
+        const x = x0 + dx * t;
+        const y = y0 + dy * t;
+        const mapX = Math.floor(x);
+        const mapY = Math.floor(y);
+
+        // Stop if we hit a wall (2)
+        if (map[mapY] && map[mapY][mapX] === 2) {
+            return false;
+        }
+
+        // If we reach the monster
+        if (Math.floor(x) === Math.floor(x1) && Math.floor(y) === Math.floor(y1)) {
+            return true;
+        }
+    }
+    return true;
+}
+
 // Degrees to radians conversion
 
 function degreeToRadians(degree) {
@@ -1607,9 +1639,6 @@ function updateGameObjects() {
                             playSound('boomerang-sound');
                         } else {
                             monster.health -= projectile.damage;
-                        }
-                        if (monster.type == 'prisoner' && !monster.hostile) {
-                            monster.hostile = true;
                         }
                         if (monster.health > 0) {
                             var rnd = Math.floor(Math.random() * 3);
@@ -4542,7 +4571,7 @@ function updateGameObjects() {
                                 const enemyX = PclosestEnemy.x - monster.x;
                                 const enemyY = PclosestEnemy.y - monster.y;
                                 const enemydistSq = enemyX * enemyX + enemyY * enemyY;
-                                if (enemydistSq > 0.25 && enemydistSq < 100 && isVisibleToPlayer(PclosestEnemy)) {
+                                if (enemydistSq > 0.25 && enemydistSq < 200 && isVisibleToMonster(monster,PclosestEnemy)) {
                                     const distance = Math.sqrt(enemydistSq);
                                     const invDist = 1 / distance;
                                     const dirX = enemyX * invDist * monster.speed;
@@ -4561,7 +4590,9 @@ function updateGameObjects() {
                                         // Attack the monster
                                         const angle = radiansToDegrees(Math.atan2(enemyY, enemyX));
                                         let blankTexture;
-                                        game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'knife', blankTexture, 'player', 0.6, monster.damage));
+                                        const startX = monster.x + Math.cos(degreeToRadians(angle)) * game.bulletStartDistance;
+                                        const startY = monster.y + Math.sin(degreeToRadians(angle)) * game.bulletStartDistance;
+                                        game.projectiles.push(new Projectile(startX, startY, angle, 'knife', blankTexture, 'player', 0.2, monster.damage));
                                         playSound('knife-sound');
                                         monster.lastAttack = currentTime;
                                     }
@@ -4590,42 +4621,149 @@ function updateGameObjects() {
                     }
                     break;
                 case 'guard':
-                    if (distSq < 64 && isVisibleToPlayer(monster)) {
-                        if (monster.variant === 'guard2') {
-                            const delay = monster.shotsInBurst < 3 ? 500 : monster.attackCooldown;
-                            if (!monster.lastShot || currentTime - monster.lastShot >= delay) {
-                                const angle = radiansToDegrees(Math.atan2(dy, dx));
-                                game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'bullet', game.projectileMap['bullet'], 'monster', 0.2, monster.damage));
-                                playSound('shoot-sound');
-                                monster.lastShot = currentTime;
-                                monster.shotsInBurst++;
-                                if (monster.shotsInBurst > 3) {
-                                    monster.shotsInBurst = 1;
+                    const JclosestEnemy = game.monsters.reduce((closest, enemy) => {
+                        // Skip excluded enemy types and dead enemies
+                        if (enemy.type == 'seahorse' || enemy.type == 'seahorsebaby' || enemy.type == 'moby' || enemy.type == 'guard' || enemy.isDead) {
+                            return closest;
+                        }
+
+                        // Calculate distance to this enemy
+                        const edx = enemy.x - monster.x;
+                        const edy = enemy.y - monster.y;
+                        const enemyDistSq = edx * edx + edy * edy;
+
+                        // Update closest if this enemy is closer
+                        if (!closest || enemyDistSq < closest.distanceSq) {
+                            return { ...enemy, distanceSq: enemyDistSq };
+                        }
+                        return closest;
+                    }, null);
+                    if (!JclosestEnemy || !Number.isFinite(JclosestEnemy.x) || !Number.isFinite(JclosestEnemy.y)) {
+                        if (distSq < 64 && isVisibleToPlayer(monster)) {
+                            if (monster.variant === 'guard2') {
+                                const delay = monster.shotsInBurst < 3 ? 500 : monster.attackCooldown;
+                                if (!monster.lastShot || currentTime - monster.lastShot >= delay) {
+                                    const angle = radiansToDegrees(Math.atan2(dy, dx));
+                                    game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'bullet', game.projectileMap['bullet'], 'monster', 0.2, monster.damage));
+                                    playSound('shoot-sound');
+                                    monster.lastShot = currentTime;
+                                    monster.shotsInBurst++;
+                                    if (monster.shotsInBurst > 3) {
+                                        monster.shotsInBurst = 1;
+                                    }
+                                }
+                            } else {
+                                if (!monster.lastShot || currentTime - monster.lastShot >= monster.attackCooldown) {
+                                    const angle = radiansToDegrees(Math.atan2(dy, dx));
+                                    game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'bullet', game.projectileMap['bullet'], 'monster', 0.2, monster.damage));
+                                    playSound('shoot-sound');
+                                    monster.lastShot = currentTime;
                                 }
                             }
-                        } else {
-                            if (!monster.lastShot || currentTime - monster.lastShot >= monster.attackCooldown) {
-                                const angle = radiansToDegrees(Math.atan2(dy, dx));
-                                game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'bullet', game.projectileMap['bullet'], 'monster', 0.2, monster.damage));
-                                playSound('shoot-sound');
-                                monster.lastShot = currentTime;
+                        }
+                        if (distSq > 30 && distSq < 200 && isVisibleToPlayer(monster)) {
+                            const distance = Math.sqrt(distSq);
+                            const invDist = 1 / distance;
+                            const dirX = dx * invDist * monster.speed;
+                            const dirY = dy * invDist * monster.speed;
+                            // Try to move in X direction
+                            const newX = monster.x + dirX;
+                            if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
+                                monster.x = newX;
+                            }
+                            // Try to move in Y direction
+                            const newY = monster.y + dirY;
+                            if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
+                                monster.y = newY;
                             }
                         }
-                    }
-                    if (distSq > 30 && distSq < 200 && isVisibleToPlayer(monster)) {
-                        const distance = Math.sqrt(distSq);
-                        const invDist = 1 / distance;
-                        const dirX = dx * invDist * monster.speed;
-                        const dirY = dy * invDist * monster.speed;
-                        // Try to move in X direction
-                        const newX = monster.x + dirX;
-                        if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
-                            monster.x = newX;
-                        }
-                        // Try to move in Y direction
-                        const newY = monster.y + dirY;
-                        if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
-                            monster.y = newY;
+                        break; // NaN safeguard
+                    } else {
+                        const Jedx = JclosestEnemy.x - monster.x;
+                        const Jedy = JclosestEnemy.y - monster.y;
+                        const JenemyDistSq = Jedx * Jedx + Jedy * Jedy;
+                        if (distSq <= JenemyDistSq) {
+                            if (distSq < 64 && isVisibleToPlayer(monster)) {
+                                if (monster.variant === 'guard2') {
+                                    const delay = monster.shotsInBurst < 3 ? 500 : monster.attackCooldown;
+                                    if (!monster.lastShot || currentTime - monster.lastShot >= delay) {
+                                        const angle = radiansToDegrees(Math.atan2(dy, dx));
+                                        game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'bullet', game.projectileMap['bullet'], 'monster', 0.2, monster.damage));
+                                        playSound('shoot-sound');
+                                        monster.lastShot = currentTime;
+                                        monster.shotsInBurst++;
+                                        if (monster.shotsInBurst > 3) {
+                                            monster.shotsInBurst = 1;
+                                        }
+                                    }
+                                } else {
+                                    if (!monster.lastShot || currentTime - monster.lastShot >= monster.attackCooldown) {
+                                        const angle = radiansToDegrees(Math.atan2(dy, dx));
+                                        game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'bullet', game.projectileMap['bullet'], 'monster', 0.2, monster.damage));
+                                        playSound('shoot-sound');
+                                        monster.lastShot = currentTime;
+                                    }
+                                }
+                            }
+                            if (distSq > 30 && distSq < 200 && isVisibleToPlayer(monster)) {
+                                const distance = Math.sqrt(distSq);
+                                const invDist = 1 / distance;
+                                const dirX = dx * invDist * monster.speed;
+                                const dirY = dy * invDist * monster.speed;
+                                // Try to move in X direction
+                                const newX = monster.x + dirX;
+                                if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
+                                    monster.x = newX;
+                                }
+                                // Try to move in Y direction
+                                const newY = monster.y + dirY;
+                                if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
+                                    monster.y = newY;
+                                }
+                            }
+                        } else { 
+                            if (JenemyDistSq < 64 && isVisibleToMonster(monster, JclosestEnemy)) {
+                                if (monster.variant === 'guard2') {
+                                    const delay = monster.shotsInBurst < 3 ? 500 : monster.attackCooldown;
+                                    if (!monster.lastShot || currentTime - monster.lastShot >= delay) {
+                                        const angle = radiansToDegrees(Math.atan2(Jedy, Jedx));
+                                        const startX = monster.x + Math.cos(degreeToRadians(angle)) * game.bulletStartDistance;
+                                        const startY = monster.y + Math.sin(degreeToRadians(angle)) * game.bulletStartDistance;
+                                        game.projectiles.push(new Projectile(startX, startY, angle, 'bullet', game.projectileMap['bullet'], 'player', 0.2, monster.damage));
+                                        playSound('shoot-sound');
+                                        monster.lastShot = currentTime;
+                                        monster.shotsInBurst++;
+                                        if (monster.shotsInBurst > 3) {
+                                            monster.shotsInBurst = 1;
+                                        }
+                                    }
+                                } else {
+                                    if (!monster.lastShot || currentTime - monster.lastShot >= monster.attackCooldown) {
+                                        const angle = radiansToDegrees(Math.atan2(Jedy, Jedx));
+                                        const startX = monster.x + Math.cos(degreeToRadians(angle)) * game.bulletStartDistance;
+                                        const startY = monster.y + Math.sin(degreeToRadians(angle)) * game.bulletStartDistance;
+                                        game.projectiles.push(new Projectile(startX, startY, angle, 'bullet', game.projectileMap['bullet'], 'player', 0.2, monster.damage));
+                                        playSound('shoot-sound');
+                                        monster.lastShot = currentTime;
+                                    }
+                                }
+                            }
+                            if (JenemyDistSq > 30 && JenemyDistSq < 200 && isVisibleToMonster(monster, JclosestEnemy)) {
+                                const distance = Math.sqrt(JenemyDistSq);
+                                const invDist = 1 / distance;
+                                const dirX = dx * invDist * monster.speed;
+                                const dirY = dy * invDist * monster.speed;
+                                // Try to move in X direction
+                                const newX = monster.x + dirX;
+                                if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
+                                    monster.x = newX;
+                                }
+                                // Try to move in Y direction
+                                const newY = monster.y + dirY;
+                                if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
+                                    monster.y = newY;
+                                }
+                            }
                         }
                     }
                     break;

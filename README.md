@@ -109,7 +109,7 @@ git clone https://github.com/KylerCondran/Fate.git
 	</li>
 	<li>Jurassic
 		<ul>
-			<li>Raptors, Eggs, Lizards, Brontosaurus, Stegosaurus</li>
+			<li>Raptors, Eggs, Lizards, Brontosaurus, Stegosaurus, Pterodactyls</li>
 		</ul>
 	</li>
 	<li>Moon
