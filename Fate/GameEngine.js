@@ -663,8 +663,8 @@ function loadLevel(levelIdx) {
             game.weaponsUnlocked.boomerang = game.savedWeaponState.boomerang;
             game.weaponsUnlocked.lasershotgun = game.savedWeaponState.lasershotgun;
             game.weaponsUnlocked.trident = game.savedWeaponState.trident;
-            game.savedWeaponState = null;
             game.ammo = game.savedWeaponState.ammo;
+            game.savedWeaponState = null;      
         }
     }
     const emptyPositions = [];
