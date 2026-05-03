@@ -638,7 +638,8 @@ function loadLevel(levelIdx) {
                 scepter: game.weaponsUnlocked.scepter,
                 boomerang: game.weaponsUnlocked.boomerang,
                 lasershotgun: game.weaponsUnlocked.lasershotgun,
-                trident: game.weaponsUnlocked.trident
+                trident: game.weaponsUnlocked.trident,
+                ammo: game.ammo
             };
         }
         // Restrict weapon set for prison level
@@ -650,6 +651,7 @@ function loadLevel(levelIdx) {
         game.weaponsUnlocked.boomerang = false;
         game.weaponsUnlocked.lasershotgun = false;
         game.weaponsUnlocked.trident = false;
+        game.ammo = 0;
     } else {
         // Upon starting another level, restore weapon unlock state if it was previously saved (after leaving prison level)
         if (game.savedWeaponState) {
@@ -662,6 +664,7 @@ function loadLevel(levelIdx) {
             game.weaponsUnlocked.lasershotgun = game.savedWeaponState.lasershotgun;
             game.weaponsUnlocked.trident = game.savedWeaponState.trident;
             game.savedWeaponState = null;
+            game.ammo = game.savedWeaponState.ammo;
         }
     }
     const emptyPositions = [];
@@ -1104,7 +1107,7 @@ function loadLevel(levelIdx) {
                 case 86:
                     let startHostile = false;
                     var rndVal = Math.floor(Math.random() * 100) + 1;
-                    if (rndVal <= 20) { startHostile = true; }
+                    if (rndVal <= 25) { startHostile = true; }
                     const prisoner = { ...window.MonsterData.prisoner, id: `monster_${game.monsterTotal}`, x: j, y: i, hostile: startHostile };
                     game.monsters.push(prisoner);
                     break;
@@ -1839,6 +1842,20 @@ function updateGameObjects() {
                         }
                         stopSound('kamikaze-aaaa');
                         playSound('explosion-sound');
+                        break;
+                    case 'guard':
+                        game.sprites.push({ id: 'bones-sprite', x: monster.x, y: monster.y, width: 256, height: 256, data: getTextureData({ id: 'bones-sprite', width: 256, height: 256 }) });
+                        const validSpots = getOpenSpawnPositions(Math.floor(monster.x), Math.floor(monster.y), 3);
+                        if (validSpots.length == 0) continue;
+                        const spot = validSpots[Math.floor(Math.random() * validSpots.length)];
+                        if (monster.variant === 'guard2') {
+                            game.sprites.push({ id: "machinegunpickup-sprite", x: spot.x, y: spot.y, width: 49, height: 30, data: getTextureData({ id: 'machinegunpickup-sprite', width: 49, height: 30 }) });
+                            game.levels[game.currentLevel].map[spot.y][spot.x] = 10;
+                        } else {
+                            game.sprites.push({ id: "pistolpickup-sprite", x: spot.x, y: spot.y, width: 34, height: 19, data: getTextureData({ id: 'pistolpickup-sprite', width: 34, height: 19 }) });
+                            game.levels[game.currentLevel].map[spot.y][spot.x] = 9;
+                        }
+                        game.pickupTotal++;
                         break;
                     case 'frog':
                     case 'lizard':
@@ -4493,43 +4510,51 @@ function updateGameObjects() {
                     break;
                 case 'prisoner':
                     if (monster.hostile) {
-                        if (distSq > 0.25 && distSq < 100 && isVisibleToPlayer(monster)) {
-                            if (!monster.announceAllegiance) {
-                                //playSound('hostile-sound');
-                                monster.announceAllegiance = true;  
+                        if (monster.following) {
+                            if (distSq > 0.25 && distSq < 100 && isVisibleToPlayer(monster)) {
+                                if (!monster.announceAllegiance) {
+                                    var rnd = Math.floor(Math.random() * 2);
+                                    playSound(`prisoner-hostile-${rnd + 1}`);
+                                    monster.announceAllegiance = true;
+                                }
+                                const distance = Math.sqrt(distSq);
+                                const invDist = 1 / distance;
+                                const dirX = dx * invDist * monster.speed;
+                                const dirY = dy * invDist * monster.speed;
+                                // Try to move in X direction
+                                const newX = monster.x + dirX;
+                                if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
+                                    monster.x = newX;
+                                }
+                                // Try to move in Y direction
+                                const newY = monster.y + dirY;
+                                if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
+                                    monster.y = newY;
+                                }
                             }
-                            const distance = Math.sqrt(distSq);
-                            const invDist = 1 / distance;
-                            const dirX = dx * invDist * monster.speed;
-                            const dirY = dy * invDist * monster.speed;
-                            // Try to move in X direction
-                            const newX = monster.x + dirX;
-                            if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
-                                monster.x = newX;
+                            if (distSq < 0.5 && (!monster.lastAttack || currentTime - monster.lastAttack >= monster.attackCooldown)) {
+                                // Attack the player
+                                game.player.health -= monster.damage;
+                                game.lastMonsterToHitPlayer = monster.type.charAt(0).toUpperCase() + monster.type.slice(1);
+                                monster.lastAttack = currentTime;
+                                // Play monster attack sound
+                                playSound('injured-sound');
+                                // Check if player died
+                                if (game.player.health <= 0) {
+                                    playSound('death-sound');
+                                    endGameDeath();
+                                }
                             }
-                            // Try to move in Y direction
-                            const newY = monster.y + dirY;
-                            if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
-                                monster.y = newY;
-                            }
-                        }
-                        if (distSq < 0.5 && (!monster.lastAttack || currentTime - monster.lastAttack >= monster.attackCooldown)) {
-                            // Attack the player
-                            game.player.health -= monster.damage;
-                            game.lastMonsterToHitPlayer = monster.type.charAt(0).toUpperCase() + monster.type.slice(1);
-                            monster.lastAttack = currentTime;
-                            // Play monster attack sound
-                            playSound('injured-sound');
-                            // Check if player died
-                            if (game.player.health <= 0) {
-                                playSound('death-sound');
-                                endGameDeath();
+                        } else {
+                            if (distSq < 5) {
+                                monster.following = true;
                             }
                         }
                     } else {
                         if (monster.following) {
                             if (!monster.announceAllegiance) {
-                                //playSound('friendly-sound');
+                                var rnd = Math.floor(Math.random() * 2);
+                                playSound(`prisoner-friendly-${rnd + 1}`);
                                 monster.announceAllegiance = true;
                             }
                             const PclosestEnemy = game.monsters.reduce((closest, enemy) => {
@@ -4571,7 +4596,7 @@ function updateGameObjects() {
                                 const enemyX = PclosestEnemy.x - monster.x;
                                 const enemyY = PclosestEnemy.y - monster.y;
                                 const enemydistSq = enemyX * enemyX + enemyY * enemyY;
-                                if (enemydistSq > 0.25 && enemydistSq < 200 && isVisibleToMonster(monster,PclosestEnemy)) {
+                                if (enemydistSq > 0.25 && isVisibleToMonster(monster,PclosestEnemy)) {
                                     const distance = Math.sqrt(enemydistSq);
                                     const invDist = 1 / distance;
                                     const dirX = enemyX * invDist * monster.speed;
@@ -4614,7 +4639,7 @@ function updateGameObjects() {
                                 }
                             }
                         } else {
-                            if (distSq < 1) {
+                            if (distSq < 5) {
                                 monster.following = true;
                             }
                         }
@@ -4638,6 +4663,11 @@ function updateGameObjects() {
                         }
                         return closest;
                     }, null);
+                    if (distSq < 80 && !monster.aggroSoundPlayed && isVisibleToPlayer(monster)) {
+                        var rnd = Math.floor(Math.random() * 3);
+                        playSound(`guard-${rnd + 1}`);
+                        monster.aggroSoundPlayed = true;
+                    }
                     if (!JclosestEnemy || !Number.isFinite(JclosestEnemy.x) || !Number.isFinite(JclosestEnemy.y)) {
                         if (distSq < 64 && isVisibleToPlayer(monster)) {
                             if (monster.variant === 'guard2') {
@@ -4661,7 +4691,7 @@ function updateGameObjects() {
                                 }
                             }
                         }
-                        if (distSq > 30 && distSq < 200 && isVisibleToPlayer(monster)) {
+                        if (distSq > 30 && isVisibleToPlayer(monster)) {
                             const distance = Math.sqrt(distSq);
                             const invDist = 1 / distance;
                             const dirX = dx * invDist * monster.speed;
@@ -4705,7 +4735,7 @@ function updateGameObjects() {
                                     }
                                 }
                             }
-                            if (distSq > 30 && distSq < 200 && isVisibleToPlayer(monster)) {
+                            if (distSq > 30 && isVisibleToPlayer(monster)) {
                                 const distance = Math.sqrt(distSq);
                                 const invDist = 1 / distance;
                                 const dirX = dx * invDist * monster.speed;
@@ -4923,7 +4953,8 @@ function movePlayer() {
                 if (!game.weaponsUnlocked.pistol) {
                     showNotification('Weapon Unlocked: Pistol');
                 }
-                game.weaponsUnlocked.pistol = true;      
+                game.weaponsUnlocked.pistol = true;
+                game.ammo += 3;
                 game.pickupCollected++;
                 break;
             // Machinegun pickup
@@ -4934,6 +4965,7 @@ function movePlayer() {
                     showNotification('Weapon Unlocked: Machine Gun');
                 }
                 game.weaponsUnlocked.machinegun = true;
+                game.ammo += 5;
                 game.pickupCollected++;
                 break;
             // Yeti pistol pickup
@@ -4954,6 +4986,7 @@ function movePlayer() {
                     showNotification('Weapon Unlocked: Rocket Launcher');
                 }
                 game.weaponsUnlocked.rocketlauncher = true;
+                game.rocketammo += 2;
                 game.pickupCollected++;
                 break;
             // Rocket ammo pickup
@@ -5127,6 +5160,7 @@ function movePlayer() {
                 game.pickupCollected++;
                 game.keysUnlocked.goatkey = true;
                 break;
+            // Battery pickup
             case 76:
                 if (game.laserbattery <= 75) {
                     game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;

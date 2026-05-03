@@ -997,7 +997,7 @@ window.MonsterData = {
         skin: 'prisoner-sprite',
         audio: 'prisoner',
         health: 100,
-        speed: 0.02,
+        speed: 0.03,
         isDead: false,
         width: 512,
         height: 512,
@@ -1022,7 +1022,8 @@ window.MonsterData = {
         data: null,
         damage: 25,
         lastShot: 0,
-        attackCooldown: 2000
+        attackCooldown: 2000,
+        aggroSoundPlayed: false
     },
     guard2: {
         type: 'guard',
@@ -1039,6 +1040,7 @@ window.MonsterData = {
         lastShot: 0,
         attackCooldown: 3000,
         shotsInBurst: 0,
+        aggroSoundPlayed: false
     },
     sobek: {
         type: 'sobek',
