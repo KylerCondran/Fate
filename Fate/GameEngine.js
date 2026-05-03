@@ -709,6 +709,9 @@ function loadLevel(levelIdx) {
                         case "Ancient Egypt":
                             game.sprites.push({ id: "obelisk-sprite", x: j, y: i, width: 512, height: 512, data: null, spriteScale: 3.0 });
                             break;
+                        case "Prison":
+                            game.sprites.push({ id: "table-sprite", x: j, y: i, width: 512, height: 512, data: null, spriteScale: 2.0 });
+                            break;
                         default:
                             game.sprites.push({ id: "tree-sprite", x: j, y: i, width: 8, height: 16, data: null, spriteScale: 2.0 });
                             break;
