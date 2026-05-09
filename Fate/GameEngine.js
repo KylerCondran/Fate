@@ -1503,6 +1503,45 @@ function isMonsterAtPosition(x, y, excludeMonster = null, allowedTypes = null) {
     return false;
 }
 
+// Remove dead monsters from the game.monsters array
+
+function removeDeadMonsters() {
+    let writeIdx = 0;
+    for (let i = 0; i < game.monsters.length; i++) {
+        if (!game.monsters[i].isDead) {
+            game.monsters[writeIdx] = game.monsters[i];
+            writeIdx++;
+        }
+    }
+    game.monsters.length = writeIdx;
+}
+
+// Remove culled sprites from the game.sprites array
+
+function updateSpriteList() {
+    let writeIdx = 0;
+    const currentTime = Date.now();
+
+    for (let i = 0; i < game.sprites.length; i++) {
+        const sprite = game.sprites[i];
+        let keep = true;
+
+        if (sprite.cullTime && sprite.spawnTime) {
+            const elapsed = currentTime - sprite.spawnTime;
+            if (elapsed >= sprite.cullTime) {
+                keep = false;
+            }
+        }
+
+        if (keep) {
+            game.sprites[writeIdx] = sprite;
+            writeIdx++;
+        }
+    }
+
+    game.sprites.length = writeIdx;
+}
+
 // Find valid spawn positions for monsters
 
 function getOpenSpawnPositions(xVal, yVal, range) {
@@ -1742,13 +1781,7 @@ function updateGameObjects() {
     // Remove marked projectiles
     game.projectiles = game.projectiles.filter((_, idx) => !projectilesToRemove.has(idx));
     // Remove expired sprites with a culltime and spawn time
-    game.sprites = game.sprites.filter(sprite => {
-        if (sprite.cullTime && sprite.spawnTime) {
-            const elapsed = Date.now() - sprite.spawnTime;
-            return elapsed < sprite.cullTime;
-        }
-        return true;
-    });
+    updateSpriteList();
 
     // Update monster positions and check for attacks
     for (let monster of game.monsters) {
@@ -4225,7 +4258,6 @@ function updateGameObjects() {
                             }
 
                             if (volume > 0.01) {
-                                console.log(currentTime - monster.lastSound);
                                 playSound('kamikaze-aaaa', volume);
                             }
 
@@ -4834,6 +4866,9 @@ function updateGameObjects() {
             }
         }
     }
+
+    // Remove dead monsters from the array to free memory
+    removeDeadMonsters();
 }
 
 // Player Movement
@@ -5827,9 +5862,14 @@ function drawNotifications() {
     const currentTime = Date.now();
 
     // Remove expired notifications
-    game.notifications = game.notifications.filter(notif =>
-        currentTime - notif.startTime < notif.duration
-    );
+    let writeIdx = 0;
+    for (let i = 0; i < game.notifications.length; i++) {
+        if (currentTime - game.notifications[i].startTime < game.notifications[i].duration) {
+            game.notifications[writeIdx] = game.notifications[i];
+            writeIdx++;
+        }
+    }
+    game.notifications.length = writeIdx;
 
     // Save the current transform
     screenContext.save();
