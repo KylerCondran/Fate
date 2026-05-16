@@ -72,7 +72,6 @@
 # Issues / Bugs
 
 - issue with sprite scaling
-- rocket doesnt injure player if it hits close up monster
 - chests spam locked sound on pickup attempt, need timeout, same with all pickups that dont clear immediately
 - acid and burning debris continue to litter the ground when levels reattempted
 - asteroids can go negative map coordinates and cause a NaN error, need to fix that

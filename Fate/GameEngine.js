@@ -1669,6 +1669,16 @@ function updateGameObjects() {
                                     }
                                 }
                             }
+                            const rocketSq = dx * dx + dy * dy;
+                            if (rocketSq < game.explosionHitboxRadius) {
+                                game.lastMonsterToHitPlayer = 'Rocket Explosion';
+                                game.player.health -= 25;
+                                playSound('injured-sound');
+                                if (game.player.health <= 0) {
+                                    playSound('death-sound');
+                                    endGameDeath();
+                                }
+                            }
                         } else if (projectile.type == 'orb') {
                             if (monster.type == 'imp' || monster.type == 'demon' || monster.type == 'skeleton') {
                                 monster.health -= 75;
