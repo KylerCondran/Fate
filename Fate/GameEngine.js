@@ -2884,11 +2884,11 @@ function updateGameObjects() {
 
                         // Update closest if this enemy is closer
                         if (!closest || enemyDistSq < closest.distanceSq) {
-                            return { ...enemy, distanceSq: enemyDistSq };
+                            return { enemy: enemy, distanceSq: enemyDistSq };
                         }
                         return closest;
                     }, null);
-                    if (!MclosestEnemy || !Number.isFinite(MclosestEnemy.x) || !Number.isFinite(MclosestEnemy.y)) {
+                    if (!MclosestEnemy || !Number.isFinite(MclosestEnemy.enemy.x) || !Number.isFinite(MclosestEnemy.enemy.y)) {
                         if (distSq > 5) {
                             const distance = Math.sqrt(distSq);
                             const invDist = 1 / distance;
@@ -2907,10 +2907,10 @@ function updateGameObjects() {
                         }
                         break; // NaN safeguard
                     } else {
-                        const enemyX = MclosestEnemy.x - monster.x;
-                        const enemyY = MclosestEnemy.y - monster.y;
+                        const enemyX = MclosestEnemy.enemy.x - monster.x;
+                        const enemyY = MclosestEnemy.enemy.y - monster.y;
                         const enemydistSq = enemyX * enemyX + enemyY * enemyY;
-                        if (enemydistSq > 0.25 && enemydistSq < 100) {
+                        if (enemydistSq > 0.25 && enemydistSq < 100 && isVisibleToMonster(monster, MclosestEnemy.enemy)) {
                             const distance = Math.sqrt(enemydistSq);
                             const invDist = 1 / distance;
                             const dirX = enemyX * invDist * monster.speed;
@@ -2927,9 +2927,7 @@ function updateGameObjects() {
                             }
                             if (enemydistSq < 0.5 && (!monster.lastAttack || currentTime - monster.lastAttack >= monster.attackCooldown)) {
                                 // Attack the monster
-                                const angle = radiansToDegrees(Math.atan2(enemyY, enemyX));
-                                let blankTexture;
-                                game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'knife', blankTexture, 'player', 0.2, monster.damage));
+                                MclosestEnemy.enemy.health -= monster.damage;
                                 playSound('splash-sound');
                                 monster.lastAttack = currentTime;
                             }
@@ -3051,11 +3049,11 @@ function updateGameObjects() {
 
                         // Update closest if this enemy is closer
                         if (!closest || enemyDistSq < closest.distanceSq) {
-                            return { ...enemy, distanceSq: enemyDistSq };
+                            return { enemy:enemy, distanceSq: enemyDistSq };
                         }
                         return closest;
                     }, null);
-                    if (!SBclosestEnemy || !Number.isFinite(SBclosestEnemy.x) || !Number.isFinite(SBclosestEnemy.y)) {
+                    if (!SBclosestEnemy || !Number.isFinite(SBclosestEnemy.enemy.x) || !Number.isFinite(SBclosestEnemy.enemy.y)) {
                         if (distSq > 5) {
                             const distance = Math.sqrt(distSq);
                             const invDist = 1 / distance;
@@ -3074,8 +3072,8 @@ function updateGameObjects() {
                         }
                         break; // NaN safeguard
                     } else {
-                        const enemyX = SBclosestEnemy.x - monster.x;
-                        const enemyY = SBclosestEnemy.y - monster.y;
+                        const enemyX = SBclosestEnemy.enemy.x - monster.x;
+                        const enemyY = SBclosestEnemy.enemy.y - monster.y;
                         const enemydistSq = enemyX * enemyX + enemyY * enemyY;
                         if (enemydistSq > 0.25 && enemydistSq < 100) {
                             const distance = Math.sqrt(enemydistSq);
@@ -3094,9 +3092,7 @@ function updateGameObjects() {
                             }
                             if (enemydistSq < 0.5 && (!monster.lastAttack || currentTime - monster.lastAttack >= monster.attackCooldown)) {
                                 // Attack the monster
-                                const angle = radiansToDegrees(Math.atan2(enemyY, enemyX));
-                                let blankTexture;
-                                game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'knife', blankTexture, 'player', 0.2, monster.damage));
+                                SBclosestEnemy.enemy.health -= monster.damage;
                                 playSound('splash-sound');
                                 monster.lastAttack = currentTime;
                                 monster.isDead = true;
@@ -3294,12 +3290,12 @@ function updateGameObjects() {
 
                             // Update closest if this enemy is closer
                             if (!closest || enemyDistSq < closest.distanceSq) {
-                                return { ...enemy, distanceSq: enemyDistSq };
+                                return { enemy: enemy, distanceSq: enemyDistSq };
                             }
                             return closest;
                         }, null);
 
-                        if (!closestEnemy || !Number.isFinite(closestEnemy.x) || !Number.isFinite(closestEnemy.y)) {
+                        if (!closestEnemy || !Number.isFinite(closestEnemy.enemy.x) || !Number.isFinite(closestEnemy.enemy.y)) {
                             // Pick a new random direction every wanderCooldown seconds
                             if (!monster.lastWanderTime || currentTime - monster.lastWanderTime >= monster.wanderCooldown) {
                                 const angle = Math.random() * Math.PI * 2;
@@ -3332,8 +3328,8 @@ function updateGameObjects() {
                             }
                             break;
                         } else {
-                            const enemyX = closestEnemy.x - monster.x;
-                            const enemyY = closestEnemy.y - monster.y;
+                            const enemyX = closestEnemy.enemy.x - monster.x;
+                            const enemyY = closestEnemy.enemy.y - monster.y;
                             const enemydistSq = enemyX * enemyX + enemyY * enemyY;
                             if (enemydistSq > 0.25 && enemydistSq < 80) {
                                 const distance = Math.sqrt(enemydistSq);
@@ -3352,9 +3348,7 @@ function updateGameObjects() {
                                 }
                                 if (enemydistSq < 0.5 && (!monster.lastAttack || currentTime - monster.lastAttack >= monster.attackCooldown)) {
                                     // Attack the monster
-                                    const angle = radiansToDegrees(Math.atan2(enemyY, enemyX));
-                                    let blankTexture;
-                                    game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'knife', blankTexture, 'player', 0.6, monster.damage));
+                                    closestEnemy.enemy.health -= monster.damage;
                                     monster.lastAttack = currentTime;
                                 }
                             } else {
@@ -4605,11 +4599,11 @@ function updateGameObjects() {
 
                                 // Update closest if this enemy is closer
                                 if (!closest || enemyDistSq < closest.distanceSq) {
-                                    return { ...enemy, distanceSq: enemyDistSq };
+                                    return { enemy: enemy, distanceSq: enemyDistSq };
                                 }
                                 return closest;
                             }, null);
-                            if (!PclosestEnemy || !Number.isFinite(PclosestEnemy.x) || !Number.isFinite(PclosestEnemy.y)) {
+                            if (!PclosestEnemy || !Number.isFinite(PclosestEnemy.enemy.x) || !Number.isFinite(PclosestEnemy.enemy.y)) {
                                 if (distSq > 2) {
                                     const distance = Math.sqrt(distSq);
                                     const invDist = 1 / distance;
@@ -4628,10 +4622,10 @@ function updateGameObjects() {
                                 }
                                 break; // NaN safeguard
                             } else {
-                                const enemyX = PclosestEnemy.x - monster.x;
-                                const enemyY = PclosestEnemy.y - monster.y;
+                                const enemyX = PclosestEnemy.enemy.x - monster.x;
+                                const enemyY = PclosestEnemy.enemy.y - monster.y;
                                 const enemydistSq = enemyX * enemyX + enemyY * enemyY;
-                                if (enemydistSq > 0.25 && isVisibleToMonster(monster,PclosestEnemy)) {
+                                if (enemydistSq > 0.25 && isVisibleToMonster(monster,PclosestEnemy.enemy)) {
                                     const distance = Math.sqrt(enemydistSq);
                                     const invDist = 1 / distance;
                                     const dirX = enemyX * invDist * monster.speed;
@@ -4648,11 +4642,7 @@ function updateGameObjects() {
                                     }
                                     if (enemydistSq < 0.5 && (!monster.lastAttack || currentTime - monster.lastAttack >= monster.attackCooldown)) {
                                         // Attack the monster
-                                        const angle = radiansToDegrees(Math.atan2(enemyY, enemyX));
-                                        let blankTexture;
-                                        const startX = monster.x + Math.cos(degreeToRadians(angle)) * game.bulletStartDistance;
-                                        const startY = monster.y + Math.sin(degreeToRadians(angle)) * game.bulletStartDistance;
-                                        game.projectiles.push(new Projectile(startX, startY, angle, 'knife', blankTexture, 'player', 0.2, monster.damage));
+                                        PclosestEnemy.enemy.health -= monster.damage;
                                         playSound('knife-sound');
                                         monster.lastAttack = currentTime;
                                     }
