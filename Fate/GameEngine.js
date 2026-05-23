@@ -2700,9 +2700,10 @@ function updateGameObjects() {
                     const invDist = 1 / distance;
                     const dirX = dx * invDist * monster.speed;
                     const dirY = dy * invDist * monster.speed;
-                    if (monster.health < 165 && !monster.flee) {
+                    if (monster.health < 165 && !monster.flee && (monster.fleeTime == 0 || currentTime - monster.fleeTime > 8000)) {
                         monster.flee = true;
-                    } else if (monster.flee && monster.health > 375) {
+                        monster.fleeTime = currentTime;
+                    } else if ((monster.flee && monster.health > 375) || (monster.flee && distSq < 50 && currentTime - monster.fleeTime > 8000)) {
                         monster.flee = false;
                     }
                     if ((!monster.lastHeal || currentTime - monster.lastHeal >= monster.healCooldown) && monster.health <= 420) {
@@ -4056,6 +4057,26 @@ function updateGameObjects() {
                         monster.shieldHealth = monster.maxShieldHealth;
                         playSound('portal-sound');
                     }
+                    if (monster.health < 500 && !monster.spawnKamikazePortal) {
+                        monster.spawnKamikazePortal = true;
+                        for (let i = 0; i < (1 * spawnModifier); i++) {
+                            const validSpots = getOpenSpawnPositions(Math.floor(monster.x), Math.floor(monster.y), 9);
+                            if (validSpots.length == 0) continue;
+                            const spot = validSpots[Math.floor(Math.random() * validSpots.length)];
+                            const portal = { ...window.MonsterData.portal, id: `monster_${game.monsterTotal}`, x: spot.x, y: spot.y, spawnType: 'kamikaze', spawnCooldown: 4000 };
+                            const monsterTexture = {
+                                id: portal.skin,
+                                width: portal.width,
+                                height: portal.height
+                            };
+                            portal.data = getTextureData(monsterTexture);
+                            game.monsterTotal++;
+                            game.monsters.push(portal);
+                            updateMonsterGrid();
+                        }
+                        monster.shieldHealth = monster.maxShieldHealth;
+                        playSound('portal-sound');
+                    }
                     if (distSq < 64 && isVisibleToPlayer(monster)) {
                         if (!monster.lastShot || currentTime - monster.lastShot >= monster.attackCooldown) {
                             const angle = radiansToDegrees(Math.atan2(dy, dx));
@@ -4179,6 +4200,26 @@ function updateGameObjects() {
                                 };
                                 mummy.data = getTextureData(monsterTexture);
                                 game.monsters.push(mummy);
+                            }
+                        }
+                    }
+                    // SPAWN KAMIKAZE
+                    if (monster.spawnType == 'kamikaze') {
+                        if (!monster.lastSpawn || currentTime - monster.lastSpawn >= monster.spawnCooldown) {
+                            monster.lastSpawn = currentTime;
+                            for (let i = 0; i < (1 * spawnModifier); i++) {
+                                const validSpots = getOpenSpawnPositions(Math.floor(monster.x), Math.floor(monster.y), 3);
+                                if (validSpots.length == 0) continue;
+                                const spot = validSpots[Math.floor(Math.random() * validSpots.length)];
+                                game.monsterTotal++;
+                                const kamikaze = { ...window.MonsterData.kamikaze, id: `monster_${game.monsterTotal}`, x: spot.x, y: spot.y };
+                                const monsterTexture = {
+                                    id: kamikaze.skin,
+                                    width: kamikaze.width,
+                                    height: kamikaze.height
+                                };
+                                kamikaze.data = getTextureData(monsterTexture);
+                                game.monsters.push(kamikaze);
                             }
                         }
                     }

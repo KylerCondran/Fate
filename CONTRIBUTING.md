@@ -55,6 +55,7 @@
 - energy shield / physical shield that absorbs 1000 dmg
 - freeze gun
 - boomerang ammo if not caught and hits wall, spawns pickup on ground
+- rocket knockback?
 
 # Enemy Ideas
 
@@ -68,6 +69,13 @@
 - wizard that randomly attacks you on a predetermined level, only active for 1 minute, killing him gives you a powerful weapon or drops a red portal to somewhere
 - projectile reflect
 - gibbing animations for enemies, planets crumble, purple magic spawn animations
+- give astronauts some kind of ability
+- give scarab an ability
+- work on sobek boss fight mechanics
+- yetis should have melee knockback
+- acid and burning debris should have melee attack
+- baphomet black magic attacks
+- egyptian gods drop ankh on death
 
 # Issues / Bugs
 
@@ -75,3 +83,6 @@
 - chests spam locked sound on pickup attempt, need timeout, same with all pickups that dont clear immediately
 - acid and burning debris continue to litter the ground when levels reattempted
 - asteroids can go negative map coordinates and cause a NaN error, need to fix that
+- if monsters that drop acid or debris are killed long range in place, they wont spawn next level load because their coordinate number has changed
+- frogs all charge at same time
+- prisoner ai gets stuck on eachother

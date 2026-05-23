@@ -569,7 +569,8 @@ window.MonsterData = {
         attackCooldown: 1000,
         healCooldown: 10000,
         lastHeal: 0,
-        flee: false
+        flee: false,
+        fleeTime: 0
     },
     wolf: {
         type: 'wolf',
@@ -868,6 +869,7 @@ window.MonsterData = {
         shieldRechargeCooldown: 5000,
         spawnFrogPortal: false,
         spawnMummyPortal: false,
+        spawnKamikazePortal: false,
         pushStartTime: 0,
         activePush: false,
         pushDuration: 2000
