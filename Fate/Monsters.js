@@ -198,7 +198,8 @@ window.MonsterData = {
         rocketlastShot: 0,
         attackCooldown: 2000,
         rocketCooldown: 8000,
-        strafeDir: 1
+        strafeDir: 1,
+        lastSmokeTime: 0
     },
     robot: {
         type: 'robot',
@@ -212,7 +213,8 @@ window.MonsterData = {
         data: null,
         damage: 10,
         lastAttack: 0,
-        attackCooldown: 1000
+        attackCooldown: 1000,
+        lastSmokeTime: 0
     },
     ninja1: {
         type: 'ninja',
@@ -285,7 +287,8 @@ window.MonsterData = {
         attackCooldown: 2000,
         lastSpawn: 0,
         spawnCooldown: 22500,
-        activeCheckpoint: 0
+        activeCheckpoint: 0,
+        lastSmokeTime: 0
     },
     fighterjet: {
         type: 'fighterjet',
@@ -301,7 +304,8 @@ window.MonsterData = {
         rocketlastShot: 0,
         attackCooldown: 1000,
         rocketCooldown: 2000,
-        strafeDir: 1
+        strafeDir: 1,
+        lastSmokeTime: 0
     },
     tank: {
         type: 'tank',
@@ -317,7 +321,8 @@ window.MonsterData = {
         lastAttack: 0,
         attackCooldown: 10000,
         rocketlastShot: 0,
-        rocketCooldown: 5000
+        rocketCooldown: 5000,
+        lastSmokeTime: 0
     },
     piranha: {
         type: 'piranha',
@@ -613,7 +618,8 @@ window.MonsterData = {
         damage: 5,
         lastSpawn: 0,
         activeCheckpoint: 0,
-        spawnAstronaut: false
+        spawnAstronaut: false,
+        lastSmokeTime: 0
     },
     turret: {
         type: 'turret',

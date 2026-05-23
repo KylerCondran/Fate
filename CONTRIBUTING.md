@@ -68,7 +68,7 @@
 - scarab steals a random weapon, creates mimics of himself
 - wizard that randomly attacks you on a predetermined level, only active for 1 minute, killing him gives you a powerful weapon or drops a red portal to somewhere
 - projectile reflect
-- gibbing animations for enemies, planets crumble, purple magic spawn animations
+- animations for enemies, planets crumble, purple magic spawn animations
 - give astronauts some kind of ability
 - give scarab an ability
 - work on sobek boss fight mechanics
@@ -76,6 +76,8 @@
 - acid and burning debris should have melee attack
 - baphomet black magic attacks
 - egyptian gods drop ankh on death
+- crab ally
+- bats
 
 # Issues / Bugs
 

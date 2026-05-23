@@ -2043,7 +2043,7 @@ function updateGameObjects() {
                             if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
                                 monster.y = newY;
                             }
-                        } else if (distSq > 20) {
+                        } else {
                             // IN RANGE → strafe sideways
                             const perpX = -dirY;
                             const perpY = dirX;
@@ -2065,6 +2065,32 @@ function updateGameObjects() {
                                 monster.y = newY;
                             }
                         }
+                    }
+                    if (monster.health < 200 && (monster.lastSmokeTime == 0 || currentTime - monster.lastSmokeTime >= 50)) {
+                        var angle = radiansToDegrees(Math.atan2(dy, dx));
+                        const startX = monster.x + Math.cos(degreeToRadians(angle)) * -0.25;
+                        const startY = monster.y + Math.sin(degreeToRadians(angle)) * -0.25;                         
+                        var rnd = Math.floor(Math.random() * 4 + 1);
+                        if (rnd == 1) {
+                            game.sprites.push({ id: 'fire-sprite', x: startX, y: startY, width: 200, height: 200, data: getTextureData({ id: 'fire-sprite', width: 200, height: 200 }), spawnTime: Date.now(), cullTime: 300 });
+                        } else {
+                            game.sprites.push({ id: 'smoke2-sprite', x: startX, y: startY, width: 200, height: 200, data: getTextureData({ id: 'smoke2-sprite', width: 200, height: 200 }), spawnTime: Date.now(), cullTime: 400 });
+                        }                   
+                        monster.lastSmokeTime = currentTime;
+                    } else if (monster.health < 400 && (monster.lastSmokeTime == 0 || currentTime - monster.lastSmokeTime >= 50)) {
+                        var angle = radiansToDegrees(Math.atan2(dy, dx));
+                        const startX = monster.x + Math.cos(degreeToRadians(angle)) * -0.25;
+                        const startY = monster.y + Math.sin(degreeToRadians(angle)) * -0.25;
+                        var rnd = Math.floor(Math.random() * 2 + 1);
+                        switch (rnd) {
+                            case 1:
+                                game.sprites.push({ id: 'smoke-sprite', x: startX, y: startY, width: 200, height: 200, data: getTextureData({ id: 'smoke-sprite', width: 200, height: 200 }), spawnTime: Date.now(), cullTime: 400 });
+                                break;
+                            case 2:
+                                game.sprites.push({ id: 'smoke2-sprite', x: startX, y: startY, width: 200, height: 200, data: getTextureData({ id: 'smoke2-sprite', width: 200, height: 200 }), spawnTime: Date.now(), cullTime: 400 });
+                                break;
+                        }                    
+                        monster.lastSmokeTime = currentTime;
                     }
                     break;
                 case 'soldier':
@@ -2406,6 +2432,32 @@ function updateGameObjects() {
                         }
                         playSound('portal-sound');
                     }
+                    if (monster.health < 200 && (monster.lastSmokeTime == 0 || currentTime - monster.lastSmokeTime >= 50)) {
+                        var angle = radiansToDegrees(Math.atan2(dy, dx));
+                        const startX = monster.x + Math.cos(degreeToRadians(angle)) * -0.25;
+                        const startY = monster.y + Math.sin(degreeToRadians(angle)) * -0.25;
+                        var rnd = Math.floor(Math.random() * 4 + 1);
+                        if (rnd == 1) {
+                            game.sprites.push({ id: 'fire-sprite', x: startX, y: startY, width: 200, height: 200, data: getTextureData({ id: 'fire-sprite', width: 200, height: 200 }), spawnTime: Date.now(), cullTime: 300 });
+                        } else {
+                            game.sprites.push({ id: 'smoke2-sprite', x: startX, y: startY, width: 200, height: 200, data: getTextureData({ id: 'smoke2-sprite', width: 200, height: 200 }), spawnTime: Date.now(), cullTime: 400 });
+                        }
+                        monster.lastSmokeTime = currentTime;
+                    } else if (monster.health < 400 && (monster.lastSmokeTime == 0 || currentTime - monster.lastSmokeTime >= 50)) {
+                        var angle = radiansToDegrees(Math.atan2(dy, dx));
+                        const startX = monster.x + Math.cos(degreeToRadians(angle)) * -0.25;
+                        const startY = monster.y + Math.sin(degreeToRadians(angle)) * -0.25;
+                        var rnd = Math.floor(Math.random() * 2 + 1);
+                        switch (rnd) {
+                            case 1:
+                                game.sprites.push({ id: 'smoke-sprite', x: startX, y: startY, width: 200, height: 200, data: getTextureData({ id: 'smoke-sprite', width: 200, height: 200 }), spawnTime: Date.now(), cullTime: 400 });
+                                break;
+                            case 2:
+                                game.sprites.push({ id: 'smoke2-sprite', x: startX, y: startY, width: 200, height: 200, data: getTextureData({ id: 'smoke2-sprite', width: 200, height: 200 }), spawnTime: Date.now(), cullTime: 400 });
+                                break;
+                        }
+                        monster.lastSmokeTime = currentTime;
+                    }
                     break;
                 case 'fighterjet':
                     if (distSq < 64 && isVisibleToPlayer(monster)) {
@@ -2443,7 +2495,7 @@ function updateGameObjects() {
                             if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
                                 monster.y = newY;
                             }
-                        } else if (distSq > 10) {
+                        } else {
                             // IN RANGE → strafe sideways
                             const perpX = -dirY;
                             const perpY = dirX;
@@ -2467,6 +2519,32 @@ function updateGameObjects() {
                                 monster.y = newY;
                             }
                         }
+                    }
+                    if (monster.health < 200 && (monster.lastSmokeTime == 0 || currentTime - monster.lastSmokeTime >= 50)) {
+                        var angle = radiansToDegrees(Math.atan2(dy, dx));
+                        const startX = monster.x + Math.cos(degreeToRadians(angle)) * -0.25;
+                        const startY = monster.y + Math.sin(degreeToRadians(angle)) * -0.25;
+                        var rnd = Math.floor(Math.random() * 4 + 1);
+                        if (rnd == 1) {
+                            game.sprites.push({ id: 'fire-sprite', x: startX, y: startY, width: 200, height: 200, data: getTextureData({ id: 'fire-sprite', width: 200, height: 200 }), spawnTime: Date.now(), cullTime: 300 });
+                        } else {
+                            game.sprites.push({ id: 'smoke2-sprite', x: startX, y: startY, width: 200, height: 200, data: getTextureData({ id: 'smoke2-sprite', width: 200, height: 200 }), spawnTime: Date.now(), cullTime: 400 });
+                        }
+                        monster.lastSmokeTime = currentTime;
+                    } else if (monster.health < 400 && (monster.lastSmokeTime == 0 || currentTime - monster.lastSmokeTime >= 50)) {
+                        var angle = radiansToDegrees(Math.atan2(dy, dx));
+                        const startX = monster.x + Math.cos(degreeToRadians(angle)) * -0.25;
+                        const startY = monster.y + Math.sin(degreeToRadians(angle)) * -0.25;
+                        var rnd = Math.floor(Math.random() * 2 + 1);
+                        switch (rnd) {
+                            case 1:
+                                game.sprites.push({ id: 'smoke-sprite', x: startX, y: startY, width: 200, height: 200, data: getTextureData({ id: 'smoke-sprite', width: 200, height: 200 }), spawnTime: Date.now(), cullTime: 400 });
+                                break;
+                            case 2:
+                                game.sprites.push({ id: 'smoke2-sprite', x: startX, y: startY, width: 200, height: 200, data: getTextureData({ id: 'smoke2-sprite', width: 200, height: 200 }), spawnTime: Date.now(), cullTime: 400 });
+                                break;
+                        }
+                        monster.lastSmokeTime = currentTime;
                     }
                     break;
                 case 'tank':
@@ -2506,6 +2584,32 @@ function updateGameObjects() {
                             playSound('death-sound');
                             endGameDeath();
                         }
+                    }
+                    if (monster.health < 100 && (monster.lastSmokeTime == 0 || currentTime - monster.lastSmokeTime >= 50)) {
+                        var angle = radiansToDegrees(Math.atan2(dy, dx));
+                        const startX = monster.x + Math.cos(degreeToRadians(angle)) * -0.25;
+                        const startY = monster.y + Math.sin(degreeToRadians(angle)) * -0.25;
+                        var rnd = Math.floor(Math.random() * 4 + 1);
+                        if (rnd == 1) {
+                            game.sprites.push({ id: 'fire-sprite', x: startX, y: startY, width: 200, height: 200, data: getTextureData({ id: 'fire-sprite', width: 200, height: 200 }), spawnTime: Date.now(), cullTime: 300 });
+                        } else {
+                            game.sprites.push({ id: 'smoke2-sprite', x: startX, y: startY, width: 200, height: 200, data: getTextureData({ id: 'smoke2-sprite', width: 200, height: 200 }), spawnTime: Date.now(), cullTime: 400 });
+                        }
+                        monster.lastSmokeTime = currentTime;
+                    } else if (monster.health < 200 && (monster.lastSmokeTime == 0 || currentTime - monster.lastSmokeTime >= 50)) {
+                        var angle = radiansToDegrees(Math.atan2(dy, dx));
+                        const startX = monster.x + Math.cos(degreeToRadians(angle)) * -0.25;
+                        const startY = monster.y + Math.sin(degreeToRadians(angle)) * -0.25;
+                        var rnd = Math.floor(Math.random() * 2 + 1);
+                        switch (rnd) {
+                            case 1:
+                                game.sprites.push({ id: 'smoke-sprite', x: startX, y: startY, width: 200, height: 200, data: getTextureData({ id: 'smoke-sprite', width: 200, height: 200 }), spawnTime: Date.now(), cullTime: 400 });
+                                break;
+                            case 2:
+                                game.sprites.push({ id: 'smoke2-sprite', x: startX, y: startY, width: 200, height: 200, data: getTextureData({ id: 'smoke2-sprite', width: 200, height: 200 }), spawnTime: Date.now(), cullTime: 400 });
+                                break;
+                        }
+                        monster.lastSmokeTime = currentTime;
                     }
                     break;
                 case 'cowking':
@@ -2590,7 +2694,7 @@ function updateGameObjects() {
                             if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
                                 monster.y = newY;
                             }
-                        } else if (distSq > 10) {
+                        } else {
                             // IN RANGE → strafe sideways
                             const perpX = -dirY;
                             const perpY = dirX;
@@ -3177,6 +3281,32 @@ function updateGameObjects() {
                                 playSound('portal-sound');
                             }
                         }
+                    }
+                    if (monster.health < 100 && (monster.lastSmokeTime == 0 || currentTime - monster.lastSmokeTime >= 50)) {
+                        var angle = radiansToDegrees(Math.atan2(dy, dx));
+                        const startX = monster.x + Math.cos(degreeToRadians(angle)) * -0.25;
+                        const startY = monster.y + Math.sin(degreeToRadians(angle)) * -0.25;
+                        var rnd = Math.floor(Math.random() * 4 + 1);
+                        if (rnd == 1) {
+                            game.sprites.push({ id: 'fire-sprite', x: startX, y: startY, width: 200, height: 200, data: getTextureData({ id: 'fire-sprite', width: 200, height: 200 }), spawnTime: Date.now(), cullTime: 300 });
+                        } else {
+                            game.sprites.push({ id: 'smoke2-sprite', x: startX, y: startY, width: 200, height: 200, data: getTextureData({ id: 'smoke2-sprite', width: 200, height: 200 }), spawnTime: Date.now(), cullTime: 400 });
+                        }
+                        monster.lastSmokeTime = currentTime;
+                    } else if (monster.health < 200 && (monster.lastSmokeTime == 0 || currentTime - monster.lastSmokeTime >= 50)) {
+                        var angle = radiansToDegrees(Math.atan2(dy, dx));
+                        const startX = monster.x + Math.cos(degreeToRadians(angle)) * -0.25;
+                        const startY = monster.y + Math.sin(degreeToRadians(angle)) * -0.25;
+                        var rnd = Math.floor(Math.random() * 2 + 1);
+                        switch (rnd) {
+                            case 1:
+                                game.sprites.push({ id: 'smoke-sprite', x: startX, y: startY, width: 200, height: 200, data: getTextureData({ id: 'smoke-sprite', width: 200, height: 200 }), spawnTime: Date.now(), cullTime: 400 });
+                                break;
+                            case 2:
+                                game.sprites.push({ id: 'smoke2-sprite', x: startX, y: startY, width: 200, height: 200, data: getTextureData({ id: 'smoke2-sprite', width: 200, height: 200 }), spawnTime: Date.now(), cullTime: 400 });
+                                break;
+                        }
+                        monster.lastSmokeTime = currentTime;
                     }
                     break;
                 case 'turret':
@@ -4871,6 +5001,63 @@ function updateGameObjects() {
                                 }
                             }
                         }
+                    }
+                    break;
+                case 'robot':
+                    if (distSq > 0.25 && distSq < 100) {
+                        const distance = Math.sqrt(distSq);
+                        const invDist = 1 / distance;
+                        const dirX = dx * invDist * monster.speed;
+                        const dirY = dy * invDist * monster.speed;
+                        // Try to move in X direction
+                        const newX = monster.x + dirX;
+                        if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
+                            monster.x = newX;
+                        }
+                        // Try to move in Y direction
+                        const newY = monster.y + dirY;
+                        if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
+                            monster.y = newY;
+                        }
+                    }
+                    if (distSq < 0.5 && (!monster.lastAttack || currentTime - monster.lastAttack >= monster.attackCooldown)) {
+                        // Attack the player
+                        game.player.health -= monster.damage;
+                        game.lastMonsterToHitPlayer = monster.type.charAt(0).toUpperCase() + monster.type.slice(1);
+                        monster.lastAttack = currentTime;
+                        // Play monster attack sound
+                        playSound('injured-sound');
+                        // Check if player died
+                        if (game.player.health <= 0) {
+                            playSound('death-sound');
+                            endGameDeath();
+                        }
+                    }
+                    if (monster.health < 50 && (monster.lastSmokeTime == 0 || currentTime - monster.lastSmokeTime >= 50)) {
+                        var angle = radiansToDegrees(Math.atan2(dy, dx));
+                        const startX = monster.x + Math.cos(degreeToRadians(angle)) * -0.25;
+                        const startY = monster.y + Math.sin(degreeToRadians(angle)) * -0.25;
+                        var rnd = Math.floor(Math.random() * 4 + 1);
+                        if (rnd == 1) {
+                            game.sprites.push({ id: 'fire-sprite', x: startX, y: startY, width: 200, height: 200, data: getTextureData({ id: 'fire-sprite', width: 200, height: 200 }), spawnTime: Date.now(), cullTime: 300 });
+                        } else {
+                            game.sprites.push({ id: 'smoke2-sprite', x: startX, y: startY, width: 200, height: 200, data: getTextureData({ id: 'smoke2-sprite', width: 200, height: 200 }), spawnTime: Date.now(), cullTime: 400 });
+                        }
+                        monster.lastSmokeTime = currentTime;
+                    } else if (monster.health < 100 && (monster.lastSmokeTime == 0 || currentTime - monster.lastSmokeTime >= 50)) {
+                        var angle = radiansToDegrees(Math.atan2(dy, dx));
+                        const startX = monster.x + Math.cos(degreeToRadians(angle)) * -0.25;
+                        const startY = monster.y + Math.sin(degreeToRadians(angle)) * -0.25;
+                        var rnd = Math.floor(Math.random() * 2 + 1);
+                        switch (rnd) {
+                            case 1:
+                                game.sprites.push({ id: 'smoke-sprite', x: startX, y: startY, width: 200, height: 200, data: getTextureData({ id: 'smoke-sprite', width: 200, height: 200 }), spawnTime: Date.now(), cullTime: 400 });
+                                break;
+                            case 2:
+                                game.sprites.push({ id: 'smoke2-sprite', x: startX, y: startY, width: 200, height: 200, data: getTextureData({ id: 'smoke2-sprite', width: 200, height: 200 }), spawnTime: Date.now(), cullTime: 400 });
+                                break;
+                        }
+                        monster.lastSmokeTime = currentTime;
                     }
                     break;
                 default:
