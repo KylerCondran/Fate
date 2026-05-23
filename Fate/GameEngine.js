@@ -1636,6 +1636,14 @@ function updateGameObjects() {
                             } else {
                                 monster.health -= 75;
                             }
+                        } else if (monster.type == 'tank') {
+                            if (projectile.type == 'bullet' || projectile.type == 'knife' || projectile.type == 'boomerang') {
+                                playSound('ricochet-sound');
+                                projectilesToRemove.add(i);
+                                break;
+                            } else {
+                                monster.health -= projectile.damage;
+                            }
                         } else if ((monster.type == 'moon' || monster.type == 'sun' || monster.type == 'saturn') && monster.invulnerable) {
                             projectilesToRemove.add(i);
                             break;
@@ -1680,7 +1688,7 @@ function updateGameObjects() {
                                 }
                             }
                         } else if (projectile.type == 'orb') {
-                            if (monster.type == 'imp' || monster.type == 'demon' || monster.type == 'skeleton') {
+                            if (monster.type == 'imp' || monster.type == 'demon' || monster.type == 'skeleton' || monster.type == 'alien' || monster.type == 'werewolf' || monster.type == 'mummy' || monster.type == 'satyr' || monster.type == 'baphomet') {
                                 monster.health -= 75;
                             } else {
                                 monster.health -= projectile.damage;
@@ -2301,7 +2309,7 @@ function updateGameObjects() {
                             }
                         }
                     }
-                    if (distSq > 20 && distSq < 200) {
+                    if (distSq > 20) {
                         const distance = Math.sqrt(distSq);
                         const invDist = 1 / distance;
                         const dirX = dx * invDist * monster.speed;

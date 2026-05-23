@@ -64,7 +64,6 @@
 - ufo tractor beams?
 - spyro egg thief?
 - more enemies freeze player, teleport player, steal weapons, steal health, steal ammo
-- tanks invulnerable to bullets
 - scarab steals a random weapon, creates mimics of himself
 - wizard that randomly attacks you on a predetermined level, only active for 1 minute, killing him gives you a powerful weapon or drops a red portal to somewhere
 - projectile reflect
@@ -78,6 +77,7 @@
 - egyptian gods drop ankh on death
 - crab ally
 - bats
+- fling aliens on ufo explosion
 
 # Issues / Bugs
 
