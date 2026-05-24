@@ -493,6 +493,20 @@ window.MonsterData = {
         lastAttack: 0,
         attackCooldown: 1000
     },
+    explosivebarrel: {
+        type: 'explosivebarrel',
+        skin: 'explosivebarrel-sprite',
+        audio: 'explosivebarrel',
+        health: 10,
+        speed: 0.02,
+        isDead: false,
+        width: 512,
+        height: 512,
+        data: null,
+        damage: 150,
+        lastAttack: 0,
+        attackCooldown: 1000
+    },
     spider: {
         type: 'spider',
         skin: 'spider-sprite',

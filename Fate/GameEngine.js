@@ -668,7 +668,7 @@ function loadLevel(levelIdx) {
         }
     }
     const emptyPositions = [];
-    const monsterValues = [3, 4, 5, 6, 7, 15, 16, 17, 18, 19, 21, 22, 23, 24, 25, 27, 28, 29, 31, 32, 33, 34, 35, 36, 37, 41, 45, 46, 47, 50, 52, 57, 59, 60, 61, 62, 64, 69, 70, 71, 72, 73, 74, 75, 77, 78, 79, 80, 81, 82, 85, 86, 87, 88, 89, 90];
+    const monsterValues = [3, 4, 5, 6, 7, 15, 16, 17, 18, 19, 21, 22, 23, 24, 25, 27, 28, 29, 31, 32, 33, 34, 35, 36, 37, 41, 45, 46, 47, 50, 52, 57, 59, 60, 61, 62, 64, 69, 70, 71, 72, 73, 74, 75, 77, 78, 79, 80, 81, 82, 85, 86, 87, 88, 89, 90, 91];
     for (let i = 0; i < mapy; i++) {
         for (let j = 0; j < mapx; j++) {
             var objectValue = map[i][j];
@@ -1132,6 +1132,11 @@ function loadLevel(levelIdx) {
                 case 90:
                     const crocodile = { ...window.MonsterData.crocodile, id: `monster_${game.monsterTotal}`, x: j, y: i };
                     game.monsters.push(crocodile);
+                    game.monsterTotal++;
+                    break;
+                case 91:
+                    const explosivebarrel = { ...window.MonsterData.explosivebarrel, id: `monster_${game.monsterTotal}`, x: j, y: i, spriteScale: 2.0 };
+                    game.monsters.push(explosivebarrel);
                     game.monsterTotal++;
                     break;
                 default:
@@ -1733,6 +1738,16 @@ function updateGameObjects() {
                     const startY = game.player.y + Math.sin(degreeToRadians(game.player.angle)) * game.bulletStartDistance;
                     game.sprites.push({ id: 'explosion-sprite', x: startX, y: startY, width: 512, height: 512, data: getTextureData({ id: 'explosion-sprite', width: 512, height: 512 }), spawnTime: Date.now(), cullTime: 200 });
                     game.player.health -= projectile.damage; // rocket damage
+                    for (const m2 of game.monsters) {
+                        if (!m2.isDead) {
+                            const dx2 = m2.x - projectile.x;
+                            const dy2 = m2.y - projectile.y;
+                            const distanceSq2 = dx2 * dx2 + dy2 * dy2;
+                            if (distanceSq2 < game.explosionHitboxRadius && !m2.invulnerable && m2.type != 'yeti') {
+                                m2.health -= projectile.damage;
+                            }
+                        }
+                    }
                     playSound('explosion-sound');
                 } else if (projectile.type == 'boomerang') {
                     game.boomerangammo += 1; // Boomerang pickup
@@ -1832,6 +1847,50 @@ function updateGameObjects() {
                     case 'stasischamber':
                         game.sprites.push({ id: 'brokenstasischamber-sprite', x: monster.x, y: monster.y, width: 512, height: 512, data: getTextureData({ id: 'brokenstasischamber-sprite', width: 512, height: 512 }) });
                         playSound('glass-sound');
+                        break;
+                    case 'explosivebarrel':
+                        game.sprites.push({ id: 'explodedbarrel-sprite', x: monster.x, y: monster.y, width: 512, height: 512, data: getTextureData({ id: 'explodedbarrel-sprite', width: 512, height: 512 }), spriteScale: 2.0 });
+                        const barrelused = new Set();
+                        const barrelexplosions = 3;
+                        const explosionradius = 0.5; // how tight the cluster is
+                        let explosioncount = 0;
+                        while (explosioncount < barrelexplosions) {
+                            let offsetX, offsetY;
+                            do {
+                                offsetX = (Math.random() * 2 - 1) * explosionradius;
+                                offsetY = (Math.random() * 2 - 1) * explosionradius;
+                            } while (offsetX * offsetX + offsetY * offsetY > explosionradius * explosionradius);
+                            const x = monster.x + offsetX;
+                            const y = monster.y + offsetY;
+                            const key = `${x},${y}`;
+                            if (barrelused.has(key)) continue; // skip duplicates
+                            barrelused.add(key);
+                            game.sprites.push({ id: 'explosion-sprite', x: x, y: y, width: 512, height: 512, data: getTextureData({ id: 'explosion-sprite', width: 512, height: 512 }), spawnTime: Date.now(), cullTime: 200 });
+                            explosioncount++;
+                        }
+                        for (const m2 of game.monsters) {
+                            if (!m2.isDead && (m2.id != monster.id)) {
+                                const dx2 = m2.x - monster.x;
+                                const dy2 = m2.y - monster.y;
+                                const distanceSq2 = dx2 * dx2 + dy2 * dy2;
+                                if (distanceSq2 < game.explosionHitboxRadius && !m2.invulnerable && m2.type != 'yeti') {
+                                    m2.health -= monster.damage;
+                                }
+                            }
+                        }
+                        const dx = game.player.x - monster.x;
+                        const dy = game.player.y - monster.y;
+                        const distSq = dx * dx + dy * dy;
+                        if (distSq < game.explosionHitboxRadius) {
+                            game.lastMonsterToHitPlayer = 'Rocket Explosion';
+                            game.player.health -= 25;
+                            playSound('injured-sound');
+                            if (game.player.health <= 0) {
+                                playSound('death-sound');
+                                endGameDeath();
+                            }
+                        }
+                        playSound('explosion-sound');
                         break;
                     case 'tank':
                     case 'apache':
@@ -2963,6 +3022,7 @@ function updateGameObjects() {
                     break;
                 case 'dinosauregg':
                 case 'stasischamber':
+                case 'explosivebarrel':
                     break;
                 case 'lander':
                     if (!monster.lastSpawn || currentTime - monster.lastSpawn >= monster.spawnCooldown) {
@@ -6389,7 +6449,8 @@ function drawHealthBar(x, y, width, height, health, maxHealth, monsterName = '',
     // Draw monster name below health bar if provided
     if (monsterName) {
         if (monsterName == 'STASISCHAMBER') { monsterName = 'STASIS' }
-        if (monsterName == 'DINOSAUREGG') { monsterName = 'EGG' }      
+        if (monsterName == 'DINOSAUREGG') { monsterName = 'EGG' }  
+        if (monsterName == 'EXPLOSIVEBARREL') { monsterName = 'BARREL' }  
         const namePixels = monsterName.length * 4; // Approximate width (4 pixels per character)
         const nameX = Math.max(0, x + Math.floor((width - namePixels) / 2));
         const nameY = y - height;

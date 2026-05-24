@@ -37,7 +37,6 @@
 - army base has huge fight between factions, winning faction helps you in mothership level
 - warcraft level, human knights and orcs, ogre mage
 - army vs terminators
-- explosive barrels
 - medieval castle, knights, archers, catapults
 - zombies, apocalyptic city, barricades, cars, tanks
 - proper tree sprite
@@ -54,7 +53,6 @@
 - melee axe / katana
 - energy shield / physical shield that absorbs 1000 dmg
 - freeze gun
-- boomerang ammo if not caught and hits wall, spawns pickup on ground
 - rocket knockback?
 
 # Enemy Ideas
