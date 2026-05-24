@@ -1376,7 +1376,7 @@ function handleShooting(e) {
         if (((game.equippedWeapon == 2 || game.equippedWeapon == 3) && game.ammo <= 0) || (game.equippedWeapon == 5 && game.rocketammo <= 0)) {
             playSound('gunclick-sound');
             return;
-        } else if ((game.equippedWeapon == 7 && game.boomerangammo <= 0) || (game.equippedWeapon == 9 && !game.tridentammo)) {
+        } else if ((game.equippedWeapon == 7 && game.boomerangammo <= 0) || (game.equippedWeapon == 9 && !game.tridentammo && !game.developerMode && !game.cheats.infiniteAmmo)) {
             //boomerang fail throw / trident fail sound
             playSound('invalid-sound');
             return;
@@ -1429,7 +1429,7 @@ function handleShooting(e) {
                 break;
             case 9:
                 playSound('portal-sound');
-                if (!game.cheats.infiniteAmmo) game.tridentammo = false;
+                if (!game.cheats.infiniteAmmo && !game.developerMode) game.tridentammo = false;
                 var rndVal = Math.floor(Math.random() * 100) + 1;
                 if (rndVal > 50) {
                     const moby = { ...window.MonsterData.moby, id: `monster_moby`, x: startX, y: startY, spawnTime: Date.now() };
@@ -1858,7 +1858,6 @@ function updateGameObjects() {
                         alien1.data = getTextureData(monsterTexture);
                         game.monsters.push(alien1);
                         break;
-                    case 'seahorsebaby':
                     case 'portal':
                     case 'moon':
                     case 'sun':
@@ -1915,6 +1914,7 @@ function updateGameObjects() {
                     case 'lizard':
                     case 'jackalope':
                     case 'piranha':
+                    case 'seahorsebaby':
                         game.sprites.push({ id: 'gib-sprite', x: monster.x, y: monster.y, width: 512, height: 512, data: getTextureData({ id: 'gib-sprite', width: 512, height: 512 }), spawnTime: Date.now(), cullTime: 200 });
                         break;
                     case 'dinosauregg':
@@ -3092,11 +3092,11 @@ function updateGameObjects() {
 
                         // Update closest if this enemy is closer
                         if (!closest || enemyDistSq < closest.distanceSq) {
-                            return { ...enemy, distanceSq: enemyDistSq };
+                            return { enemy: enemy, distanceSq: enemyDistSq };
                         }
                         return closest;
                     }, null);
-                    if (!SclosestEnemy || !Number.isFinite(SclosestEnemy.x) || !Number.isFinite(SclosestEnemy.y)) {
+                    if (!SclosestEnemy || !Number.isFinite(SclosestEnemy.enemy.x) || !Number.isFinite(SclosestEnemy.enemy.y)) {
                         if (distSq > 5) {
                             const distance = Math.sqrt(distSq);
                             const invDist = 1 / distance;
@@ -3115,10 +3115,10 @@ function updateGameObjects() {
                         }
                         break; // NaN safeguard
                     } else {
-                        const enemyX = SclosestEnemy.x - monster.x;
-                        const enemyY = SclosestEnemy.y - monster.y;
+                        const enemyX = SclosestEnemy.enemy.x - monster.x;
+                        const enemyY = SclosestEnemy.enemy.y - monster.y;
                         const enemydistSq = enemyX * enemyX + enemyY * enemyY;
-                        if (enemydistSq < 64 && (!monster.lastShot || currentTime - monster.lastShot >= monster.attackCooldown)) {
+                        if (enemydistSq < 64 && (!monster.lastShot || currentTime - monster.lastShot >= monster.attackCooldown) && isVisibleToMonster(monster, SclosestEnemy.enemy)) {
                             // Attack the monster
                             var angle = radiansToDegrees(Math.atan2(enemyY, enemyX));
                             for (let i = 0; i < (1 * spawnModifier); i++) {
@@ -3157,6 +3157,7 @@ function updateGameObjects() {
                 case 'seahorsebaby':
                     if (currentTime - monster.spawnTime >= 10000) {
                         monster.isDead = true;
+                        game.sprites.push({ id: 'gib-sprite', x: monster.x, y: monster.y, width: 512, height: 512, data: getTextureData({ id: 'gib-sprite', width: 512, height: 512 }), spawnTime: Date.now(), cullTime: 200 });
                         break;
                     }
                     const SBclosestEnemy = game.monsters.reduce((closest, enemy) => {
@@ -3198,7 +3199,7 @@ function updateGameObjects() {
                         const enemyX = SBclosestEnemy.enemy.x - monster.x;
                         const enemyY = SBclosestEnemy.enemy.y - monster.y;
                         const enemydistSq = enemyX * enemyX + enemyY * enemyY;
-                        if (enemydistSq > 0.25 && enemydistSq < 100) {
+                        if (enemydistSq > 0.25 && enemydistSq < 100 && isVisibleToMonster(monster, SBclosestEnemy.enemy)) {
                             const distance = Math.sqrt(enemydistSq);
                             const invDist = 1 / distance;
                             const dirX = enemyX * invDist * monster.speed;
@@ -3219,6 +3220,7 @@ function updateGameObjects() {
                                 playSound('splash-sound');
                                 monster.lastAttack = currentTime;
                                 monster.isDead = true;
+                                game.sprites.push({ id: 'gib-sprite', x: monster.x, y: monster.y, width: 512, height: 512, data: getTextureData({ id: 'gib-sprite', width: 512, height: 512 }), spawnTime: Date.now(), cullTime: 200 });
                             }
                         } else if (distSq > 5) {
                             const distance = Math.sqrt(distSq);
@@ -6351,6 +6353,7 @@ function drawHUD(ctx) {
 // Draw Health Bar
 
 function drawHealthBar(x, y, width, height, health, maxHealth, monsterName = '', shieldHealth = 0, maxShieldHealth = 0) {
+    if (monsterName == 'SEAHORSEBABY') { return; }
     // Draw red background (depleted health)
     for (let i = 0; i < width; i++) {
         for (let j = 0; j < height; j++) {
@@ -6386,7 +6389,7 @@ function drawHealthBar(x, y, width, height, health, maxHealth, monsterName = '',
     // Draw monster name below health bar if provided
     if (monsterName) {
         if (monsterName == 'STASISCHAMBER') { monsterName = 'STASIS' }
-        if (monsterName == 'DINOSAUREGG') { monsterName = 'EGG' }
+        if (monsterName == 'DINOSAUREGG') { monsterName = 'EGG' }      
         const namePixels = monsterName.length * 4; // Approximate width (4 pixels per character)
         const nameX = Math.max(0, x + Math.floor((width - namePixels) / 2));
         const nameY = y - height;
