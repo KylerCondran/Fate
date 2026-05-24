@@ -1744,7 +1744,7 @@ function updateGameObjects() {
                             const dy2 = m2.y - projectile.y;
                             const distanceSq2 = dx2 * dx2 + dy2 * dy2;
                             if (distanceSq2 < game.explosionHitboxRadius && !m2.invulnerable && m2.type != 'yeti') {
-                                m2.health -= projectile.damage;
+                                m2.health -= 150;
                             }
                         }
                     }
@@ -1882,7 +1882,7 @@ function updateGameObjects() {
                         const dy = game.player.y - monster.y;
                         const distSq = dx * dx + dy * dy;
                         if (distSq < game.explosionHitboxRadius) {
-                            game.lastMonsterToHitPlayer = 'Rocket Explosion';
+                            game.lastMonsterToHitPlayer = 'Barrel Explosion';
                             game.player.health -= 25;
                             playSound('injured-sound');
                             if (game.player.health <= 0) {
@@ -1948,8 +1948,20 @@ function updateGameObjects() {
                                 const dy2 = m2.y - monster.y;
                                 const distanceSq2 = dx2 * dx2 + dy2 * dy2;
                                 if (distanceSq2 < game.explosionHitboxRadius && !m2.invulnerable && m2.type != 'yeti') {
-                                    m2.health -= monster.damage;
+                                    m2.health -= 150;
                                 }
+                            }
+                        }
+                        const kdx = game.player.x - monster.x;
+                        const kdy = game.player.y - monster.y;
+                        const kdistSq = kdx * kdx + kdy * kdy;
+                        if (kdistSq < game.explosionHitboxRadius) {
+                            game.lastMonsterToHitPlayer = 'Kamikaze Explosion';
+                            game.player.health -= monster.damage;
+                            playSound('injured-sound');
+                            if (game.player.health <= 0) {
+                                playSound('death-sound');
+                                endGameDeath();
                             }
                         }
                         stopSound('kamikaze-aaaa');
@@ -4512,7 +4524,7 @@ function updateGameObjects() {
                     if (distSq < 0.5 && (!monster.lastAttack || currentTime - monster.lastAttack >= monster.attackCooldown)) {
                         // Attack the player
                         game.player.health -= monster.damage;
-                        game.lastMonsterToHitPlayer = monster.type.charAt(0).toUpperCase() + monster.type.slice(1);
+                        game.lastMonsterToHitPlayer = 'Kamikaze Explosion';
                         monster.lastAttack = currentTime;
                         monster.isDead = true;
                         const used = new Set();
@@ -4539,7 +4551,7 @@ function updateGameObjects() {
                                 const dy2 = m2.y - monster.y;
                                 const distanceSq2 = dx2 * dx2 + dy2 * dy2;
                                 if (distanceSq2 < game.explosionHitboxRadius && !m2.invulnerable && m2.type != 'yeti') {
-                                    m2.health -= monster.damage;
+                                    m2.health -= 150;
                                 }
                             }
                         }

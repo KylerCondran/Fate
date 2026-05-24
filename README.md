@@ -114,7 +114,7 @@ git clone https://github.com/KylerCondran/Fate.git
 	</li>
 	<li>Moon
 		<ul>
-			<li>Rovers, Landers, Astronauts, UFOS, Turrets</li>
+			<li>Rovers, Landers, Astronauts, UFOS, Turrets, Explosive Barrels</li>
 		</ul>
 	</li>
 	<li>Ancient Eqypt
