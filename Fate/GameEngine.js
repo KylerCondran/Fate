@@ -2154,7 +2154,8 @@ function updateGameObjects() {
                             game.sprites.push({ id: 'fire-sprite', x: startX, y: startY, width: 200, height: 200, data: getTextureData({ id: 'fire-sprite', width: 200, height: 200 }), spawnTime: Date.now(), cullTime: 300 });
                         } else {
                             game.sprites.push({ id: 'smoke2-sprite', x: startX, y: startY, width: 200, height: 200, data: getTextureData({ id: 'smoke2-sprite', width: 200, height: 200 }), spawnTime: Date.now(), cullTime: 400 });
-                        }                   
+                        }               
+                        if (monster.speed != 0.02) { monster.speed = 0.02; }
                         monster.lastSmokeTime = currentTime;
                     } else if (monster.health < 400 && (monster.lastSmokeTime == 0 || currentTime - monster.lastSmokeTime >= 50)) {
                         var angle = radiansToDegrees(Math.atan2(dy, dx));
@@ -2169,6 +2170,7 @@ function updateGameObjects() {
                                 game.sprites.push({ id: 'smoke2-sprite', x: startX, y: startY, width: 200, height: 200, data: getTextureData({ id: 'smoke2-sprite', width: 200, height: 200 }), spawnTime: Date.now(), cullTime: 400 });
                                 break;
                         }                    
+                        if (monster.speed != 0.03) { monster.speed = 0.03; }
                         monster.lastSmokeTime = currentTime;
                     }
                     break;
@@ -2521,6 +2523,7 @@ function updateGameObjects() {
                         } else {
                             game.sprites.push({ id: 'smoke2-sprite', x: startX, y: startY, width: 200, height: 200, data: getTextureData({ id: 'smoke2-sprite', width: 200, height: 200 }), spawnTime: Date.now(), cullTime: 400 });
                         }
+                        if (monster.speed != 0.01) { monster.speed = 0.01; }
                         monster.lastSmokeTime = currentTime;
                     } else if (monster.health < 400 && (monster.lastSmokeTime == 0 || currentTime - monster.lastSmokeTime >= 50)) {
                         var angle = radiansToDegrees(Math.atan2(dy, dx));
@@ -2534,7 +2537,7 @@ function updateGameObjects() {
                             case 2:
                                 game.sprites.push({ id: 'smoke2-sprite', x: startX, y: startY, width: 200, height: 200, data: getTextureData({ id: 'smoke2-sprite', width: 200, height: 200 }), spawnTime: Date.now(), cullTime: 400 });
                                 break;
-                        }
+                        }                       
                         monster.lastSmokeTime = currentTime;
                     }
                     break;
@@ -2609,6 +2612,7 @@ function updateGameObjects() {
                         } else {
                             game.sprites.push({ id: 'smoke2-sprite', x: startX, y: startY, width: 200, height: 200, data: getTextureData({ id: 'smoke2-sprite', width: 200, height: 200 }), spawnTime: Date.now(), cullTime: 400 });
                         }
+                        if (monster.speed != 0.01) { monster.speed = 0.01; }
                         monster.lastSmokeTime = currentTime;
                     } else if (monster.health < 400 && (monster.lastSmokeTime == 0 || currentTime - monster.lastSmokeTime >= 50)) {
                         var angle = radiansToDegrees(Math.atan2(dy, dx));
@@ -2674,6 +2678,7 @@ function updateGameObjects() {
                         } else {
                             game.sprites.push({ id: 'smoke2-sprite', x: startX, y: startY, width: 200, height: 200, data: getTextureData({ id: 'smoke2-sprite', width: 200, height: 200 }), spawnTime: Date.now(), cullTime: 400 });
                         }
+                        if (monster.speed != 0.01) { monster.speed = 0.01; }
                         monster.lastSmokeTime = currentTime;
                     } else if (monster.health < 200 && (monster.lastSmokeTime == 0 || currentTime - monster.lastSmokeTime >= 50)) {
                         var angle = radiansToDegrees(Math.atan2(dy, dx));
@@ -3374,6 +3379,7 @@ function updateGameObjects() {
                         } else {
                             game.sprites.push({ id: 'smoke2-sprite', x: startX, y: startY, width: 200, height: 200, data: getTextureData({ id: 'smoke2-sprite', width: 200, height: 200 }), spawnTime: Date.now(), cullTime: 400 });
                         }
+                        if (monster.speed != 0.02) { monster.speed = 0.02; }
                         monster.lastSmokeTime = currentTime;
                     } else if (monster.health < 200 && (monster.lastSmokeTime == 0 || currentTime - monster.lastSmokeTime >= 50)) {
                         var angle = radiansToDegrees(Math.atan2(dy, dx));
@@ -3388,6 +3394,7 @@ function updateGameObjects() {
                                 game.sprites.push({ id: 'smoke2-sprite', x: startX, y: startY, width: 200, height: 200, data: getTextureData({ id: 'smoke2-sprite', width: 200, height: 200 }), spawnTime: Date.now(), cullTime: 400 });
                                 break;
                         }
+                        if (monster.speed != 0.03) { monster.speed = 0.03; }
                         monster.lastSmokeTime = currentTime;
                     }
                     break;
@@ -5125,6 +5132,7 @@ function updateGameObjects() {
                         } else {
                             game.sprites.push({ id: 'smoke2-sprite', x: startX, y: startY, width: 200, height: 200, data: getTextureData({ id: 'smoke2-sprite', width: 200, height: 200 }), spawnTime: Date.now(), cullTime: 400 });
                         }
+                        if (monster.speed != 0.02) { monster.speed = 0.02; }
                         monster.lastSmokeTime = currentTime;
                     } else if (monster.health < 100 && (monster.lastSmokeTime == 0 || currentTime - monster.lastSmokeTime >= 50)) {
                         var angle = radiansToDegrees(Math.atan2(dy, dx));
@@ -5139,6 +5147,7 @@ function updateGameObjects() {
                                 game.sprites.push({ id: 'smoke2-sprite', x: startX, y: startY, width: 200, height: 200, data: getTextureData({ id: 'smoke2-sprite', width: 200, height: 200 }), spawnTime: Date.now(), cullTime: 400 });
                                 break;
                         }
+                        if (monster.speed != 0.03) { monster.speed = 0.03; }
                         monster.lastSmokeTime = currentTime;
                     }
                     break;
@@ -6462,7 +6471,7 @@ function drawHealthBar(x, y, width, height, health, maxHealth, monsterName = '',
     if (monsterName) {
         if (monsterName == 'STASISCHAMBER') { monsterName = 'STASIS' }
         if (monsterName == 'DINOSAUREGG') { monsterName = 'EGG' }  
-        if (monsterName == 'EXPLOSIVEBARREL') { monsterName = 'BARREL' }  
+        if (monsterName == 'EXPLOSIVEBARREL') { monsterName = 'TNT' }  
         const namePixels = monsterName.length * 4; // Approximate width (4 pixels per character)
         const nameX = Math.max(0, x + Math.floor((width - namePixels) / 2));
         const nameY = y - height;
