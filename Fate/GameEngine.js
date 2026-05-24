@@ -5068,6 +5068,73 @@ function updateGameObjects() {
                         monster.lastSmokeTime = currentTime;
                     }
                     break;
+                case 'yeti':
+                    if (distSq > 0.25 && distSq < 100) {
+                        const distance = Math.sqrt(distSq);
+                        const invDist = 1 / distance;
+                        const dirX = dx * invDist * monster.speed;
+                        const dirY = dy * invDist * monster.speed;
+                        // Try to move in X direction
+                        const newX = monster.x + dirX;
+                        if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
+                            monster.x = newX;
+                        }
+                        // Try to move in Y direction
+                        const newY = monster.y + dirY;
+                        if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
+                            monster.y = newY;
+                        }
+                    }
+                    if (distSq < 0.5 && (!monster.lastAttack || currentTime - monster.lastAttack >= monster.attackCooldown)) {
+                        if (!monster.pushStartTime) {
+                            monster.pushStartTime = Date.now();
+                            monster.activePush = true;
+                        }
+                        // Attack the player
+                        game.player.health -= monster.damage;
+                        game.lastMonsterToHitPlayer = monster.type.charAt(0).toUpperCase() + monster.type.slice(1);
+                        monster.lastAttack = currentTime;
+                        // Play monster attack sound
+                        playSound('injured-sound');
+                        // Check if player died
+                        if (game.player.health <= 0) {
+                            playSound('death-sound');
+                            endGameDeath();
+                        }
+                    }
+                    // YETI KNOCKBACK
+                    if (monster.activePush && monster.pushStartTime) {
+                        const timeSincePush = currentTime - monster.pushStartTime;
+
+                        if (timeSincePush < monster.pushDuration) {
+                            // Push is still active
+                            const pushStrength = 0.08; // How hard to push per frame
+                            const dx = monster.x - game.player.x;
+                            const dy = monster.y - game.player.y;
+                            const pushDistance = Math.sqrt(dx * dx + dy * dy);
+
+                            if (pushDistance > 0.25) {
+                                const pushDx = (dx / pushDistance) * pushStrength;
+                                const pushDy = (dy / pushDistance) * pushStrength;
+
+                                const newX = game.player.x - pushDx;
+                                const newY = game.player.y - pushDy;
+
+                                // Only move if not hitting a wall
+                                if (map[Math.floor(game.player.y)] && map[Math.floor(game.player.y)][Math.floor(newX)] !== 2) {
+                                    game.player.x = newX;
+                                }
+                                if (map[Math.floor(newY)] && map[Math.floor(newY)][Math.floor(game.player.x)] !== 2) {
+                                    game.player.y = newY;
+                                }
+                            }
+                        } else {
+                            // Push duration elapsed - deactivate
+                            monster.activePush = false;
+                            monster.pushStartTime = null;
+                        }
+                    }
+                    break;
                 default:
                     if (distSq > 0.25 && distSq < 100) {
                         const distance = Math.sqrt(distSq);

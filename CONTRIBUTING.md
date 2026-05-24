@@ -71,7 +71,6 @@
 - give astronauts some kind of ability
 - give scarab an ability
 - work on sobek boss fight mechanics
-- yetis should have melee knockback
 - acid and burning debris should have melee attack
 - baphomet black magic attacks
 - egyptian gods drop ankh on death

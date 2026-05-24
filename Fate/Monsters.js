@@ -67,7 +67,10 @@ window.MonsterData = {
         data: null,
         damage: 10,
         lastAttack: 0,
-        attackCooldown: 1000
+        attackCooldown: 1000,
+        pushStartTime: 0,
+        activePush: false,
+        pushDuration: 500
     },
     crusader: {
         type: 'crusader',
