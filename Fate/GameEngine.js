@@ -1865,7 +1865,7 @@ function updateGameObjects() {
                             const key = `${x},${y}`;
                             if (barrelused.has(key)) continue; // skip duplicates
                             barrelused.add(key);
-                            game.sprites.push({ id: 'explosion-sprite', x: x, y: y, width: 512, height: 512, data: getTextureData({ id: 'explosion-sprite', width: 512, height: 512 }), spawnTime: Date.now(), cullTime: 200 });
+                            game.sprites.push({ id: 'explosion-sprite', x: x, y: y, width: 512, height: 512, data: getTextureData({ id: 'explosion-sprite', width: 512, height: 512 }), spawnTime: Date.now(), cullTime: 200, spriteScale: 2.0 });
                             explosioncount++;
                         }
                         for (const m2 of game.monsters) {
