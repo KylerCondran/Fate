@@ -70,7 +70,7 @@ let game = {
     },
     rayCasting: {
         incrementAngle: null,
-        precision: 16
+        precision: 32
     },
     player: {
         fov: 60,
