@@ -19,6 +19,7 @@ let game = {
     bulletHitboxRadius: 0.25,
     explosionHitboxRadius: 5,
     bulletRange: 400,
+    objectCullDistance: 2000,
     knifeRange: 1,
     bulletStartDistance: 0.5,
     activationDistance: 1.0,
@@ -69,7 +70,7 @@ let game = {
     },
     rayCasting: {
         incrementAngle: null,
-        precision: 64
+        precision: 16
     },
     player: {
         fov: 60,
@@ -2413,7 +2414,6 @@ function updateGameObjects() {
                             piranha.data = getTextureData(monsterTexture);
                             game.monsterTotal++;
                             game.monsters.push(piranha);
-                            updateMonsterGrid();
                         }
                         playSound('portal-sound');
                     }
@@ -2432,7 +2432,6 @@ function updateGameObjects() {
                             squid.data = getTextureData(monsterTexture);
                             game.monsterTotal++;
                             game.monsters.push(squid);
-                            updateMonsterGrid();
                         }
                         playSound('portal-sound');
                     }
@@ -2451,7 +2450,6 @@ function updateGameObjects() {
                             shark.data = getTextureData(monsterTexture);
                             game.monsterTotal++;
                             game.monsters.push(shark);
-                            updateMonsterGrid();
                         }
                         playSound('portal-sound');
                     }
@@ -2727,7 +2725,6 @@ function updateGameObjects() {
                                 cow.data = getTextureData(monsterTexture);
                                 game.monsterTotal++;
                                 game.monsters.push(cow);
-                                updateMonsterGrid();
                             }
                             playSound('portal-sound');
                         }
@@ -2824,7 +2821,6 @@ function updateGameObjects() {
                                         eyeball.data = getTextureData(monsterTexture);
                                         game.monsterTotal++;
                                         game.monsters.push(eyeball);
-                                        updateMonsterGrid();
                                     }
                                     playSound('portal-sound');
                                 }
@@ -3059,7 +3055,6 @@ function updateGameObjects() {
                             rover.data = getTextureData(monsterTexture);
                             game.monsterTotal++;
                             game.monsters.push(rover);
-                            updateMonsterGrid();
                         }
                         playSound('portal-sound');
                     }
@@ -3363,7 +3358,6 @@ function updateGameObjects() {
                                     astronaut.data = getTextureData(monsterTexture);
                                     game.monsterTotal++;
                                     game.monsters.push(astronaut);
-                                    updateMonsterGrid();
                                 }
                                 playSound('portal-sound');
                             }
@@ -3883,7 +3877,6 @@ function updateGameObjects() {
                                 moon.data = getTextureData(monsterTexture);
                                 game.monsterTotal++;
                                 game.monsters.push(moon);
-                                updateMonsterGrid();
                             }
                         }
                         if (!monster.spawnSun) {
@@ -3901,7 +3894,6 @@ function updateGameObjects() {
                                 sun.data = getTextureData(monsterTexture);
                                 game.monsterTotal++;
                                 game.monsters.push(sun);
-                                updateMonsterGrid();
                             }
                         }
                         if (!monster.spawnSaturn) {
@@ -3919,7 +3911,6 @@ function updateGameObjects() {
                                 saturn.data = getTextureData(monsterTexture);
                                 game.monsterTotal++;
                                 game.monsters.push(saturn);
-                                updateMonsterGrid();
                                 playSound('portal-sound');
                             }
                         }
@@ -4251,7 +4242,6 @@ function updateGameObjects() {
                             portal.data = getTextureData(monsterTexture);
                             game.monsterTotal++;
                             game.monsters.push(portal);
-                            updateMonsterGrid();
                         }
                         monster.shieldHealth = monster.maxShieldHealth;
                         playSound('portal-sound');
@@ -4271,7 +4261,6 @@ function updateGameObjects() {
                             portal.data = getTextureData(monsterTexture);
                             game.monsterTotal++;
                             game.monsters.push(portal);
-                            updateMonsterGrid();
                         }
                         monster.shieldHealth = monster.maxShieldHealth;
                         playSound('portal-sound');
@@ -4291,7 +4280,6 @@ function updateGameObjects() {
                             portal.data = getTextureData(monsterTexture);
                             game.monsterTotal++;
                             game.monsters.push(portal);
-                            updateMonsterGrid();
                         }
                         monster.shieldHealth = monster.maxShieldHealth;
                         playSound('portal-sound');
@@ -4718,7 +4706,6 @@ function updateGameObjects() {
                                 asteroid.data = getTextureData(monsterTexture);
                                 game.monsterTotal++;
                                 game.monsters.push(asteroid);
-                                updateMonsterGrid();
                             }
                             playSound('fireball-sound');
                         }
@@ -5882,7 +5869,10 @@ function loadSprites() {
 
 // Get texture data from an image element
 
+const textureCache = new Map();
 function getTextureData(texture) {
+    const key = texture.id;
+    if (textureCache.has(key)) return textureCache.get(key);
     let image = document.getElementById(texture.id);
     let canvas = document.createElement('canvas');
     canvas.width = texture.width;
@@ -5890,7 +5880,9 @@ function getTextureData(texture) {
     let canvasContext = canvas.getContext('2d');
     canvasContext.drawImage(image, 0, 0, texture.width, texture.height);
     let imageData = canvasContext.getImageData(0, 0, texture.width, texture.height).data;
-    return parseImageData(imageData);
+    const parsedData = parseImageData(imageData);
+    textureCache.set(key, parsedData);
+    return parsedData;
 }
 
 // Parse image data into an array of Color objects
@@ -6043,26 +6035,28 @@ function drawSprites() {
 
     // Collect all sprites with their distances
     for (let sprite of game.sprites) {
-        if (sprite.data) {
-            if (isVisibleToPlayer(sprite)) {
-                const distance = Math.sqrt(Math.pow(game.player.x - sprite.x, 2) + Math.pow(game.player.y - sprite.y, 2));
-                spritesToDraw.push({ sprite, distance, isMonster: false });
-            }
+        const distSq = (game.player.x - sprite.x) ** 2 + (game.player.y - sprite.y) ** 2;
+        if (distSq > game.objectCullDistance) continue;
+        if (sprite.data && isVisibleToPlayer(sprite)) {
+            const distance = Math.sqrt(Math.pow(game.player.x - sprite.x, 2) + Math.pow(game.player.y - sprite.y, 2));
+            spritesToDraw.push({ sprite, distance, isMonster: false });
         }
     }
 
     // Collect monsters with their distances
     for (let monster of game.monsters) {
-        if (!monster.isDead && monster.data) {
-            if (isVisibleToPlayer(monster)) {
-                const distance = Math.sqrt(Math.pow(game.player.x - monster.x, 2) + Math.pow(game.player.y - monster.y, 2));
-                spritesToDraw.push({ sprite: monster, distance, isMonster: true });
-            }
+        const distSq = (game.player.x - monster.x) ** 2 + (game.player.y - monster.y) ** 2;
+        if (distSq > game.objectCullDistance) continue;
+        if (!monster.isDead && monster.data && isVisibleToPlayer(monster)) {
+            const distance = Math.sqrt(Math.pow(game.player.x - monster.x, 2) + Math.pow(game.player.y - monster.y, 2));
+            spritesToDraw.push({ sprite: monster, distance, isMonster: true });
         }
     }
 
     // Collect projectiles with their distances
     for (let projectile of game.projectiles) {
+        const distSq = (game.player.x - projectile.x) ** 2 + (game.player.y - projectile.y) ** 2;
+        if (distSq > game.objectCullDistance) continue;
         const distance = Math.sqrt(Math.pow(game.player.x - projectile.x, 2) + Math.pow(game.player.y - projectile.y, 2));
         spritesToDraw.push({
             sprite: {
