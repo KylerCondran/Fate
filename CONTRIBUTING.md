@@ -54,6 +54,7 @@
 - energy shield / physical shield that absorbs 1000 dmg
 - freeze gun
 - rocket knockback?
+- replace pistol with yeti pistol when acquired
 
 # Enemy Ideas
 
@@ -73,8 +74,8 @@
 - baphomet black magic attacks
 - egyptian gods drop ankh on death
 - crab ally
-- bats
 - fling aliens on ufo explosion
+- enemies aggro if attacked
 
 # Issues / Bugs
 

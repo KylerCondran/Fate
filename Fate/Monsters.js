@@ -901,15 +901,17 @@ window.MonsterData = {
         type: 'satyr',
         skin: 'satyr-sprite',
         audio: 'satyr',
-        health: 250,
+        health: 750,
         speed: 0.04,
         isDead: false,
         width: 512,
         height: 512,
         data: null,
         damage: 20,
-        lastAttack: 0,
-        attackCooldown: 1000
+        lastShot: 0,
+        attackCooldown: 2000,
+        lastReanimate: 0,
+        reanimateCooldown: 8000
     },
     frog: {
         type: 'frog',
@@ -998,7 +1000,11 @@ window.MonsterData = {
         lastAttack: 0,
         attackCooldown: 1000,
         lastSpawn: 0,
-        spawnCooldown: 10000
+        spawnCooldown: 10000,
+        spawnBats: false,
+        spawnSkeletons: false,
+        spawnSatyrs: false,
+        asteroidCount: 0
     },
     asteroid: {
         type: 'asteroid',
@@ -1092,6 +1098,20 @@ window.MonsterData = {
         height: 512,
         data: null,
         damage: 20,
+        lastAttack: 0,
+        attackCooldown: 1000
+    },
+    bat: {
+        type: 'bat',
+        skin: 'bat-sprite',
+        audio: 'bat',
+        health: 25,
+        speed: 0.04,
+        isDead: false,
+        width: 512,
+        height: 512,
+        data: null,
+        damage: 5,
         lastAttack: 0,
         attackCooldown: 1000
     }

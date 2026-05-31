@@ -433,6 +433,13 @@ let game = {
             width: 32,
             height: 32,
             data: null
+        },
+        {
+            number: 14,
+            id: 'deathcoil-sprite',
+            width: 30,
+            height: 30,
+            data: null
         }
     ],
     backgrounds: [
@@ -529,7 +536,8 @@ game.projectileMap = {
     web: game.projectileTextures[10],
     laserpurple: game.projectileTextures[11],
     whirl: game.projectileTextures[12],
-    force: game.projectileTextures[13]
+    force: game.projectileTextures[13],
+    deathcoil: game.projectileTextures[14]
 };
 
 // Main loop
@@ -669,7 +677,7 @@ function loadLevel(levelIdx) {
         }
     }
     const emptyPositions = [];
-    const monsterValues = [3, 4, 5, 6, 7, 15, 16, 17, 18, 19, 21, 22, 23, 24, 25, 27, 28, 29, 31, 32, 33, 34, 35, 36, 37, 41, 45, 46, 47, 50, 52, 57, 59, 60, 61, 62, 64, 69, 70, 71, 72, 73, 74, 75, 77, 78, 79, 80, 81, 82, 85, 86, 87, 88, 89, 90, 91];
+    const monsterValues = [3, 4, 5, 6, 7, 15, 16, 17, 18, 19, 21, 22, 23, 24, 25, 27, 28, 29, 31, 32, 33, 34, 35, 36, 37, 41, 45, 46, 47, 50, 52, 57, 59, 60, 61, 62, 64, 69, 70, 71, 72, 73, 74, 75, 77, 78, 79, 80, 81, 82, 85, 86, 87, 88, 89, 90, 91, 92];
     for (let i = 0; i < mapy; i++) {
         for (let j = 0; j < mapx; j++) {
             var objectValue = map[i][j];
@@ -1138,6 +1146,11 @@ function loadLevel(levelIdx) {
                 case 91:
                     const explosivebarrel = { ...window.MonsterData.explosivebarrel, id: `monster_${game.monsterTotal}`, x: j, y: i, spriteScale: 2.0 };
                     game.monsters.push(explosivebarrel);
+                    game.monsterTotal++;
+                    break;
+                case 92:
+                    const bat = { ...window.MonsterData.bat, id: `monster_${game.monsterTotal}`, x: j, y: i };
+                    game.monsters.push(bat);
                     game.monsterTotal++;
                     break;
                 default:
@@ -1694,7 +1707,7 @@ function updateGameObjects() {
                                 }
                             }
                         } else if (projectile.type == 'orb') {
-                            if (monster.type == 'imp' || monster.type == 'demon' || monster.type == 'skeleton' || monster.type == 'alien' || monster.type == 'werewolf' || monster.type == 'mummy' || monster.type == 'satyr' || monster.type == 'baphomet') {
+                            if (monster.type == 'imp' || monster.type == 'demon' || monster.type == 'skeleton' || monster.type == 'alien' || monster.type == 'werewolf' || monster.type == 'mummy' || monster.type == 'satyr') {
                                 monster.health -= 75;
                             } else {
                                 monster.health -= projectile.damage;
@@ -1987,6 +2000,7 @@ function updateGameObjects() {
                     case 'jackalope':
                     case 'piranha':
                     case 'seahorsebaby':
+                    case 'bat':
                         game.sprites.push({ id: 'gib-sprite', x: monster.x, y: monster.y, width: 512, height: 512, data: getTextureData({ id: 'gib-sprite', width: 512, height: 512 }), spawnTime: Date.now(), cullTime: 200 });
                         break;
                     case 'dinosauregg':
@@ -2001,7 +2015,7 @@ function updateGameObjects() {
                         game.monsters.push(lizard);
                         break;
                     default:
-                        game.sprites.push({ id: 'bones-sprite', x: monster.x, y: monster.y, width: 256, height: 256, data: getTextureData({ id: 'bones-sprite', width: 256, height: 256 }) });
+                        game.sprites.push({ id: 'bones-sprite', x: monster.x, y: monster.y, width: 256, height: 256, data: getTextureData({ id: 'bones-sprite', width: 256, height: 256 }), spawnTime: Date.now() });
                         break;
                 }
                 continue;
@@ -2414,6 +2428,7 @@ function updateGameObjects() {
                             piranha.data = getTextureData(monsterTexture);
                             game.monsterTotal++;
                             game.monsters.push(piranha);
+                            updateMonsterGrid();
                         }
                         playSound('portal-sound');
                     }
@@ -2432,6 +2447,7 @@ function updateGameObjects() {
                             squid.data = getTextureData(monsterTexture);
                             game.monsterTotal++;
                             game.monsters.push(squid);
+                            updateMonsterGrid();
                         }
                         playSound('portal-sound');
                     }
@@ -2450,6 +2466,7 @@ function updateGameObjects() {
                             shark.data = getTextureData(monsterTexture);
                             game.monsterTotal++;
                             game.monsters.push(shark);
+                            updateMonsterGrid();
                         }
                         playSound('portal-sound');
                     }
@@ -2507,6 +2524,7 @@ function updateGameObjects() {
                             };
                             soldier.data = getTextureData(monsterTexture);
                             game.monsters.push(soldier);
+                            updateMonsterGrid();
                             angle += 30;
                         }
                         playSound('portal-sound');
@@ -2725,6 +2743,7 @@ function updateGameObjects() {
                                 cow.data = getTextureData(monsterTexture);
                                 game.monsterTotal++;
                                 game.monsters.push(cow);
+                                updateMonsterGrid();
                             }
                             playSound('portal-sound');
                         }
@@ -2821,6 +2840,7 @@ function updateGameObjects() {
                                         eyeball.data = getTextureData(monsterTexture);
                                         game.monsterTotal++;
                                         game.monsters.push(eyeball);
+                                        updateMonsterGrid();
                                     }
                                     playSound('portal-sound');
                                 }
@@ -3055,6 +3075,7 @@ function updateGameObjects() {
                             rover.data = getTextureData(monsterTexture);
                             game.monsterTotal++;
                             game.monsters.push(rover);
+                            updateMonsterGrid();
                         }
                         playSound('portal-sound');
                     }
@@ -3358,6 +3379,7 @@ function updateGameObjects() {
                                     astronaut.data = getTextureData(monsterTexture);
                                     game.monsterTotal++;
                                     game.monsters.push(astronaut);
+                                    updateMonsterGrid();
                                 }
                                 playSound('portal-sound');
                             }
@@ -4063,6 +4085,7 @@ function updateGameObjects() {
                                 };
                                 mummy.data = getTextureData(monsterTexture);
                                 game.monsters.push(mummy);
+                                updateMonsterGrid();
                             }
                             playSound('portal-sound');
                         }
@@ -4242,6 +4265,7 @@ function updateGameObjects() {
                             portal.data = getTextureData(monsterTexture);
                             game.monsterTotal++;
                             game.monsters.push(portal);
+                            updateMonsterGrid();
                         }
                         monster.shieldHealth = monster.maxShieldHealth;
                         playSound('portal-sound');
@@ -4261,6 +4285,7 @@ function updateGameObjects() {
                             portal.data = getTextureData(monsterTexture);
                             game.monsterTotal++;
                             game.monsters.push(portal);
+                            updateMonsterGrid();
                         }
                         monster.shieldHealth = monster.maxShieldHealth;
                         playSound('portal-sound');
@@ -4280,6 +4305,7 @@ function updateGameObjects() {
                             portal.data = getTextureData(monsterTexture);
                             game.monsterTotal++;
                             game.monsters.push(portal);
+                            updateMonsterGrid();
                         }
                         monster.shieldHealth = monster.maxShieldHealth;
                         playSound('portal-sound');
@@ -4387,6 +4413,7 @@ function updateGameObjects() {
                                 };
                                 frog.data = getTextureData(monsterTexture);
                                 game.monsters.push(frog);
+                                updateMonsterGrid();
                             }
                         }
                     }
@@ -4407,6 +4434,7 @@ function updateGameObjects() {
                                 };
                                 mummy.data = getTextureData(monsterTexture);
                                 game.monsters.push(mummy);
+                                updateMonsterGrid();
                             }
                         }
                     }
@@ -4427,6 +4455,7 @@ function updateGameObjects() {
                                 };
                                 kamikaze.data = getTextureData(monsterTexture);
                                 game.monsters.push(kamikaze);
+                                updateMonsterGrid();
                             }
                         }
                     }
@@ -4685,9 +4714,67 @@ function updateGameObjects() {
                     }
                     break;
                 case 'baphomet':
+                    if (monster.health < 1800 && !monster.spawnSkeletons) {
+                        monster.spawnSkeletons = true;
+                        for (let i = 0; i < (10 * spawnModifier); i++) {
+                            const validSpots = getOpenSpawnPositions(Math.floor(monster.x), Math.floor(monster.y), 9);
+                            if (validSpots.length == 0) continue;
+                            const spot = validSpots[Math.floor(Math.random() * validSpots.length)];
+                            const skeleton = { ...window.MonsterData.skeleton, id: `monster_${game.monsterTotal}`, x: spot.x, y: spot.y };
+                            const monsterTexture = {
+                                id: skeleton.skin,
+                                width: skeleton.width,
+                                height: skeleton.height
+                            };
+                            skeleton.data = getTextureData(monsterTexture);
+                            game.monsterTotal++;
+                            game.monsters.push(skeleton);
+                            updateMonsterGrid();
+                        }
+                        playSound('portal-sound');
+                    }
+                    if (monster.health < 1300 && !monster.spawnSatyrs) {
+                        monster.spawnSatyrs = true;
+                        for (let i = 0; i < (3 * spawnModifier); i++) {
+                            const validSpots = getOpenSpawnPositions(Math.floor(monster.x), Math.floor(monster.y), 9);
+                            if (validSpots.length == 0) continue;
+                            const spot = validSpots[Math.floor(Math.random() * validSpots.length)];
+                            const satyr = { ...window.MonsterData.satyr, id: `monster_${game.monsterTotal}`, x: spot.x, y: spot.y };
+                            const monsterTexture = {
+                                id: satyr.skin,
+                                width: satyr.width,
+                                height: satyr.height
+                            };
+                            satyr.data = getTextureData(monsterTexture);
+                            game.monsterTotal++;
+                            game.monsters.push(satyr);
+                            updateMonsterGrid();
+                        }
+                        playSound('portal-sound');
+                    }
+                    if (monster.health < 900 && !monster.spawnBats) {
+                        monster.spawnBats = true;
+                        for (let i = 0; i < (5 * spawnModifier); i++) {
+                            const validSpots = getOpenSpawnPositions(Math.floor(monster.x), Math.floor(monster.y), 9);
+                            if (validSpots.length == 0) continue;
+                            const spot = validSpots[Math.floor(Math.random() * validSpots.length)];
+                            const bat = { ...window.MonsterData.bat, id: `monster_${game.monsterTotal}`, x: spot.x, y: spot.y };
+                            const monsterTexture = {
+                                id: bat.skin,
+                                width: bat.width,
+                                height: bat.height
+                            };
+                            bat.data = getTextureData(monsterTexture);
+                            game.monsterTotal++;
+                            game.monsters.push(bat);
+                            updateMonsterGrid();
+                        }
+                        playSound('portal-sound');
+                    }
                     if (distSq < 64 && isVisibleToPlayer(monster)) {
-                        if (!monster.lastSpawn || currentTime - monster.lastSpawn >= monster.spawnCooldown) {
+                        if (!monster.lastSpawn || (currentTime - monster.lastSpawn >= monster.spawnCooldown && monster.asteroidCount < 9)) {
                             monster.lastSpawn = currentTime;
+                            monster.asteroidCount++;
                             for (let i = 0; i < (1 * spawnModifier); i++) {
                                 const validSpots = getOpenSpawnPositions(Math.floor(monster.x), Math.floor(monster.y), 3);
                                 if (validSpots.length == 0) continue;
@@ -4706,6 +4793,7 @@ function updateGameObjects() {
                                 asteroid.data = getTextureData(monsterTexture);
                                 game.monsterTotal++;
                                 game.monsters.push(asteroid);
+                                updateMonsterGrid();
                             }
                             playSound('fireball-sound');
                         }
@@ -5202,6 +5290,93 @@ function updateGameObjects() {
                             // Push duration elapsed - deactivate
                             monster.activePush = false;
                             monster.pushStartTime = null;
+                        }
+                    }
+                    break;
+                case 'satyr':
+                    if (distSq < 64 && isVisibleToPlayer(monster)) {
+                        if (!monster.lastShot || currentTime - monster.lastShot >= monster.attackCooldown) {
+                            const angle = radiansToDegrees(Math.atan2(dy, dx));
+                            game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'deathcoil', game.projectileMap['deathcoil'], 'monster', 0.05, monster.damage));
+                            playSound('deathcoil-sound');
+                            monster.lastShot = currentTime;
+                        }
+                    }
+                    if (!monster.lastReanimate || currentTime - monster.lastReanimate >= monster.reanimateCooldown) {
+                        const closestBones = game.sprites.reduce((closest, bones) => {
+                            // Skip excluded enemy types and dead enemies
+                            if (bones.id != 'bones-sprite') {
+                                return closest;
+                            }
+
+                            // Calculate distance to this enemy
+                            const edx = bones.x - monster.x;
+                            const edy = bones.y - monster.y;
+                            const bonesDistSq = edx * edx + edy * edy;
+
+                            // Update closest if this enemy is closer
+                            if (!closest || bonesDistSq < closest.distanceSq) {
+                                return { bones: bones, distanceSq: bonesDistSq };
+                            }
+                            return closest;
+                        }, null);
+                        if (!closestBones || !Number.isFinite(closestBones.bones.x) || !Number.isFinite(closestBones.bones.y)) {
+                            break; // NaN safeguard
+                        } else {
+                            if (closestBones.distanceSq < 0.5) {
+                                monster.lastReanimate = currentTime;
+                                closestBones.bones.cullTime = 1;
+                                var angle = radiansToDegrees(Math.atan2(dy, dx));
+                                const startX = monster.x + Math.cos(degreeToRadians(angle)) * 1.5;
+                                const startY = monster.y + Math.sin(degreeToRadians(angle)) * 1.5;
+                                const skeleton = { ...window.MonsterData.skeleton, id: `monster_${game.monsterTotal}`, x: startX, y: startY };
+                                const monsterTexture = {
+                                    id: skeleton.skin,
+                                    width: skeleton.width,
+                                    height: skeleton.height
+                                };
+                                skeleton.data = getTextureData(monsterTexture);
+                                game.monsterTotal++;
+                                game.monsters.push(skeleton);
+                                updateMonsterGrid();
+                                updateSpriteList();
+                                playSound('raiseskeleton-sound');
+                            } else {
+                                const bonesX = closestBones.bones.x - monster.x;
+                                const bonesY = closestBones.bones.y - monster.y;
+                                const bonesdistSq = bonesX * bonesX + bonesY * bonesY;
+                                if (bonesdistSq > 0.25 && isVisibleToMonster(monster, closestBones.bones)) {
+                                    const distance = Math.sqrt(bonesdistSq);
+                                    const invDist = 1 / distance;
+                                    const dirX = bonesX * invDist * monster.speed;
+                                    const dirY = bonesY * invDist * monster.speed;
+                                    // Try to move in X direction
+                                    const newX = monster.x + dirX;
+                                    if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
+                                        monster.x = newX;
+                                    }
+                                    // Try to move in Y direction
+                                    const newY = monster.y + dirY;
+                                    if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
+                                        monster.y = newY;
+                                    }
+                                } 
+                            }
+                        } 
+                    } else if (distSq > 30 && isVisibleToPlayer(monster)) {
+                        const distance = Math.sqrt(distSq);
+                        const invDist = 1 / distance;
+                        const dirX = dx * invDist * monster.speed;
+                        const dirY = dy * invDist * monster.speed;
+                        // Try to move in X direction
+                        const newX = monster.x + dirX;
+                        if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
+                            monster.x = newX;
+                        }
+                        // Try to move in Y direction
+                        const newY = monster.y + dirY;
+                        if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
+                            monster.y = newY;
                         }
                     }
                     break;

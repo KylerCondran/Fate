@@ -18,7 +18,7 @@ Level Legend:
 76 = battery, 77 = anubis, 78 = mummy, 79 = tutankhamun, 80 = satyr
 81 = frog, 82 = kamikaze, 83 = pterodactyl, 84 = nest, 85 = baphomet
 86 = prisoner, 87 = guard1, 88 = guard2, 89 = sobek, 90 = crocodile
-91 = explosivebarrel
+91 = explosivebarrel, 92 = bat
 */
 window.LevelData = [
     {
@@ -763,7 +763,7 @@ window.LevelData = [
             [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
             [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 85, 0, 0, 0, 0, 0, 0, 0, 0, 2],
             [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
-            [2, 80, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
+            [2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2],
             [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
         ],
         unlocked: false,
