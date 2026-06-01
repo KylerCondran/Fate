@@ -48,7 +48,8 @@ let game = {
     keysUnlocked: {
         cowkey: false,
         monkeykey: false,
-        goatkey: false
+        goatkey: false,
+        cellkey: false
     },
     screen: {
         width: window.innerWidth,
@@ -332,6 +333,13 @@ let game = {
             width: 16,
             height: 16,
             id: "checkerboard-texture",
+            data: null
+        },
+        {
+            number: 24,
+            width: 16,
+            height: 16,
+            id: "door-texture",
             data: null
         }
     ],
@@ -1153,6 +1161,11 @@ function loadLevel(levelIdx) {
                     game.monsters.push(bat);
                     game.monsterTotal++;
                     break;
+                case 93:
+                    //cell key
+                    game.sprites.push({ id: "key-sprite", x: j, y: i, width: 64, height: 64, data: null });
+                    game.pickupTotal++;
+                    break;
                 default:
                     break;
             }
@@ -1266,7 +1279,7 @@ function rayCasting() {
             rayX += rayCos;
             rayY += raySin;
             wall = currentMap[Math.floor(rayY)][Math.floor(rayX)];
-        } while (wall !== 2);
+        } while (wall !== 2 && wall !== 100);
 
         // Distance calculation with fish-eye fix
         const dx = rayX - playerX;
@@ -1277,12 +1290,20 @@ function rayCasting() {
         // Wall height calculation
         const wallHeight = Math.floor(projectionHalfHeight / distance);
 
+
+        let wallTexture;
+        // If Door Texture, use specific texture, otherwise use level wall texture
+        if (wall === 100) {
+            wallTexture = game.textures[24];
+        } else {
+            wallTexture = game.textures[game.levels[game.currentLevel].wall];
+        }
+
         // Draw calls
         drawBackground(rayCount, 0, projectionHalfHeight - wallHeight,
             game.backgrounds[game.levels[game.currentLevel].background]);
         drawTexture(rayCount, wallHeight,
-            Math.floor((texture.width * (rayX + rayY)) % texture.width),
-            game.textures[game.levels[game.currentLevel].wall]);
+            Math.floor((texture.width * (rayX + rayY)) % wallTexture.width), wallTexture);
         drawFloor(rayCount, wallHeight, rayAngle);
 
         rayAngle += angleIncrement;
@@ -1308,8 +1329,8 @@ function isVisibleToPlayer(monster) {
         const mapX = Math.floor(x);
         const mapY = Math.floor(y);
 
-        // Stop if we hit a wall (2)
-        if (map[mapY] && map[mapY][mapX] === 2) {
+        // Stop if we hit a wall (2) or a locked door (100)
+        if (map[mapY] && (map[mapY][mapX] === 2 || map[mapY][mapX] === 100)) {
             return false;
         }
 
@@ -1340,8 +1361,8 @@ function isVisibleToMonster(monster, target) {
         const mapX = Math.floor(x);
         const mapY = Math.floor(y);
 
-        // Stop if we hit a wall (2)
-        if (map[mapY] && map[mapY][mapX] === 2) {
+        // Stop if we hit a wall (2) or a locked door (100)
+        if (map[mapY] && (map[mapY][mapX] === 2 || map[mapY][mapX] === 100)) {
             return false;
         }
 
@@ -4885,42 +4906,121 @@ function updateGameObjects() {
                 case 'prisoner':
                     if (monster.hostile) {
                         if (monster.following) {
-                            if (distSq > 0.25 && distSq < 100 && isVisibleToPlayer(monster)) {
-                                if (!monster.announceAllegiance) {
-                                    var rnd = Math.floor(Math.random() * 2);
-                                    playSound(`prisoner-hostile-${rnd + 1}`);
-                                    monster.announceAllegiance = true;
-                                }
-                                const distance = Math.sqrt(distSq);
-                                const invDist = 1 / distance;
-                                const dirX = dx * invDist * monster.speed;
-                                const dirY = dy * invDist * monster.speed;
-                                // Try to move in X direction
-                                const newX = monster.x + dirX;
-                                if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
-                                    monster.x = newX;
-                                }
-                                // Try to move in Y direction
-                                const newY = monster.y + dirY;
-                                if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
-                                    monster.y = newY;
-                                }
+                            if (!monster.announceAllegiance) {
+                                var rnd = Math.floor(Math.random() * 2);
+                                playSound(`prisoner-hostile-${rnd + 1}`);
+                                monster.announceAllegiance = true;
                             }
-                            if (distSq < 0.5 && (!monster.lastAttack || currentTime - monster.lastAttack >= monster.attackCooldown)) {
-                                // Attack the player
-                                game.player.health -= monster.damage;
-                                game.lastMonsterToHitPlayer = monster.type.charAt(0).toUpperCase() + monster.type.slice(1);
-                                monster.lastAttack = currentTime;
-                                // Play monster attack sound
-                                playSound('injured-sound');
-                                // Check if player died
-                                if (game.player.health <= 0) {
-                                    playSound('death-sound');
-                                    endGameDeath();
+                            const RclosestEnemy = game.monsters.reduce((closest, enemy) => {
+                                // Skip excluded enemy types and dead enemies
+                                if (enemy.type == 'seahorse' || enemy.type == 'seahorsebaby' || enemy.type == 'moby' || enemy.type == 'guard' ||(enemy.type == 'prisoner' && enemy.hostile) || enemy.isDead) {
+                                    return closest;
+                                }
+
+                                // Calculate distance to this enemy
+                                const edx = enemy.x - monster.x;
+                                const edy = enemy.y - monster.y;
+                                const enemyDistSq = edx * edx + edy * edy;
+
+                                // Update closest if this enemy is closer
+                                if (!closest || enemyDistSq < closest.distanceSq) {
+                                    return { enemy: enemy, distanceSq: enemyDistSq };
+                                }
+                                return closest;
+                            }, null);
+                            if (!RclosestEnemy || !Number.isFinite(RclosestEnemy.enemy.x) || !Number.isFinite(RclosestEnemy.enemy.y)) {
+                                //move towards player if no enemies
+                                if (distSq > 0.25 && distSq < 100 && isVisibleToPlayer(monster)) {
+                                    const distance = Math.sqrt(distSq);
+                                    const invDist = 1 / distance;
+                                    const dirX = dx * invDist * monster.speed;
+                                    const dirY = dy * invDist * monster.speed;
+                                    // Try to move in X direction
+                                    const newX = monster.x + dirX;
+                                    if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
+                                        monster.x = newX;
+                                    }
+                                    // Try to move in Y direction
+                                    const newY = monster.y + dirY;
+                                    if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
+                                        monster.y = newY;
+                                    }
+                                }
+                                if (distSq < 0.5 && (!monster.lastAttack || currentTime - monster.lastAttack >= monster.attackCooldown)) {
+                                    // Attack the player
+                                    game.player.health -= monster.damage;
+                                    game.lastMonsterToHitPlayer = monster.type.charAt(0).toUpperCase() + monster.type.slice(1);
+                                    monster.lastAttack = currentTime;
+                                    // Play monster attack sound
+                                    playSound('injured-sound');
+                                    // Check if player died
+                                    if (game.player.health <= 0) {
+                                        playSound('death-sound');
+                                        endGameDeath();
+                                    }
+                                }
+                                break;
+                            } else {        
+                                const Redx = RclosestEnemy.enemy.x - monster.x;
+                                const Redy = RclosestEnemy.enemy.y - monster.y;
+                                const RenemyDistSq = Redx * Redx + Redy * Redy;
+                                if (distSq <= RenemyDistSq) {
+                                    if (distSq > 0.25 && distSq < 100 && isVisibleToPlayer(monster)) {
+                                        const distance = Math.sqrt(distSq);
+                                        const invDist = 1 / distance;
+                                        const dirX = dx * invDist * monster.speed;
+                                        const dirY = dy * invDist * monster.speed;
+                                        // Try to move in X direction
+                                        const newX = monster.x + dirX;
+                                        if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
+                                            monster.x = newX;
+                                        }
+                                        // Try to move in Y direction
+                                        const newY = monster.y + dirY;
+                                        if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
+                                            monster.y = newY;
+                                        }
+                                    }
+                                    if (distSq < 0.5 && (!monster.lastAttack || currentTime - monster.lastAttack >= monster.attackCooldown)) {
+                                        // Attack the player
+                                        game.player.health -= monster.damage;
+                                        game.lastMonsterToHitPlayer = monster.type.charAt(0).toUpperCase() + monster.type.slice(1);
+                                        monster.lastAttack = currentTime;
+                                        // Play monster attack sound
+                                        playSound('injured-sound');
+                                        // Check if player died
+                                        if (game.player.health <= 0) {
+                                            playSound('death-sound');
+                                            endGameDeath();
+                                        }
+                                    }
+                                } else {                                  
+                                    if (RenemyDistSq > 0.25 && isVisibleToMonster(monster, RclosestEnemy.enemy)) {
+                                        const distance = Math.sqrt(RenemyDistSq);
+                                        const invDist = 1 / distance;
+                                        const dirX = Redx * invDist * monster.speed;
+                                        const dirY = Redy * invDist * monster.speed;
+                                        // Try to move in X direction
+                                        const newX = monster.x + dirX;
+                                        if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
+                                            monster.x = newX;
+                                        }
+                                        // Try to move in Y direction
+                                        const newY = monster.y + dirY;
+                                        if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
+                                            monster.y = newY;
+                                        }
+                                        if (RenemyDistSq < 0.5 && (!monster.lastAttack || currentTime - monster.lastAttack >= monster.attackCooldown)) {
+                                            // Attack the monster
+                                            RclosestEnemy.enemy.health -= monster.damage;
+                                            playSound('knife-sound');
+                                            monster.lastAttack = currentTime;
+                                        }
+                                    }
                                 }
                             }
                         } else {
-                            if (distSq < 5) {
+                            if (isVisibleToPlayer(monster)) {
                                 monster.following = true;
                             }
                         }
@@ -5009,7 +5109,7 @@ function updateGameObjects() {
                                 }
                             }
                         } else {
-                            if (distSq < 5) {
+                            if (isVisibleToPlayer(monster)) {
                                 monster.following = true;
                             }
                         }
@@ -5447,10 +5547,10 @@ function movePlayer() {
         let mathfloorX = Math.floor(game.player.x);
         let mathfloorY = Math.floor(game.player.y);
         // Collision detection
-        if (checkY >= 0 && checkY < mapHeight && mathfloorX >= 0 && mathfloorX < mapWidth && map[checkY][mathfloorX] !== 2) {
+        if (checkY >= 0 && checkY < mapHeight && mathfloorX >= 0 && mathfloorX < mapWidth && map[checkY][mathfloorX] !== 2 && (map[mathfloorY][checkX] !== 100 || game.keysUnlocked.cellkey)) {
             game.player.y = newY;
         }
-        if (mathfloorY >= 0 && mathfloorY < mapHeight && checkX >= 0 && checkX < mapWidth && map[mathfloorY][checkX] !== 2) {
+        if (mathfloorY >= 0 && mathfloorY < mapHeight && checkX >= 0 && checkX < mapWidth && map[mathfloorY][checkX] !== 2 && (map[mathfloorY][checkX] !== 100 || game.keysUnlocked.cellkey)) {
             game.player.x = newX;
         }
     }
@@ -5464,10 +5564,10 @@ function movePlayer() {
         let mathfloorX = Math.floor(game.player.x);
         let mathfloorY = Math.floor(game.player.y);
         // Collision detection
-        if (checkY >= 0 && checkY < mapHeight && mathfloorX >= 0 && mathfloorX < mapWidth && map[checkY][mathfloorX] !== 2) {
+        if (checkY >= 0 && checkY < mapHeight && mathfloorX >= 0 && mathfloorX < mapWidth && map[checkY][mathfloorX] !== 2 && (map[mathfloorY][checkX] !== 100 || game.keysUnlocked.cellkey)) {
             game.player.y = newY;
         }
-        if (mathfloorY >= 0 && mathfloorY < mapHeight && checkX >= 0 && checkX < mapWidth && map[mathfloorY][checkX] !== 2) {
+        if (mathfloorY >= 0 && mathfloorY < mapHeight && checkX >= 0 && checkX < mapWidth && map[mathfloorY][checkX] !== 2 && (map[mathfloorY][checkX] !== 100 || game.keysUnlocked.cellkey)) {
             game.player.x = newX;
         }
     }
@@ -5496,10 +5596,10 @@ function movePlayer() {
         let mathfloorX = Math.floor(game.player.x);
         let mathfloorY = Math.floor(game.player.y);
         // Collision detection
-        if (checkY >= 0 && checkY < mapHeight && mathfloorX >= 0 && mathfloorX < mapWidth && map[checkY][mathfloorX] !== 2) {
+        if (checkY >= 0 && checkY < mapHeight && mathfloorX >= 0 && mathfloorX < mapWidth && map[checkY][mathfloorX] !== 2 && (map[mathfloorY][checkX] !== 100 || game.keysUnlocked.cellkey)) {
             game.player.y = newY;
         }
-        if (mathfloorY >= 0 && mathfloorY < mapHeight && checkX >= 0 && checkX < mapWidth && map[mathfloorY][checkX] !== 2) {
+        if (mathfloorY >= 0 && mathfloorY < mapHeight && checkX >= 0 && checkX < mapWidth && map[mathfloorY][checkX] !== 2 && (map[mathfloorY][checkX] !== 100 || game.keysUnlocked.cellkey)) {
             game.player.x = newX;
         }
     }
@@ -5515,10 +5615,10 @@ function movePlayer() {
         let mathfloorX = Math.floor(game.player.x);
         let mathfloorY = Math.floor(game.player.y);
         // Collision detection
-        if (checkY >= 0 && checkY < mapHeight && mathfloorX >= 0 && mathfloorX < mapWidth && map[checkY][mathfloorX] !== 2) {
+        if (checkY >= 0 && checkY < mapHeight && mathfloorX >= 0 && mathfloorX < mapWidth && map[checkY][mathfloorX] !== 2 && (map[mathfloorY][checkX] !== 100 || game.keysUnlocked.cellkey)) {
             game.player.y = newY;
         }
-        if (mathfloorY >= 0 && mathfloorY < mapHeight && checkX >= 0 && checkX < mapWidth && map[mathfloorY][checkX] !== 2) {
+        if (mathfloorY >= 0 && mathfloorY < mapHeight && checkX >= 0 && checkX < mapWidth && map[mathfloorY][checkX] !== 2 && (map[mathfloorY][checkX] !== 100 || game.keysUnlocked.cellkey)) {
             game.player.x = newX;
         }
     }
@@ -5753,6 +5853,37 @@ function movePlayer() {
                     itemPickup(Math.floor(game.player.y), Math.floor(game.player.x), 'pickup-sound');
                     game.pickupCollected++;
                     game.laserbattery += 25;
+                } else {
+                    playSound('invalid-sound');
+                }
+                break;
+            // Cell Key pickup
+            case 93:       
+                game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
+                itemPickup(Math.floor(game.player.y), Math.floor(game.player.x), 'pickup-sound');
+                if (!game.keysUnlocked.cellkey) {
+                    showNotification('Picked Up Cell Key');
+                }
+                game.pickupCollected++;
+                game.keysUnlocked.cellkey = true;
+                break;
+            // Locked Door
+            case 100:
+                if (game.keysUnlocked.cellkey) {
+                    game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x)] = 0;
+                    if (game.levels[game.currentLevel].map[Math.floor(game.player.y) + 1][Math.floor(game.player.x)] == 100) {
+                        game.levels[game.currentLevel].map[Math.floor(game.player.y) + 1][Math.floor(game.player.x)] = 0;
+                    }
+                    if (game.levels[game.currentLevel].map[Math.floor(game.player.y) - 1][Math.floor(game.player.x)] == 100) {
+                        game.levels[game.currentLevel].map[Math.floor(game.player.y) - 1][Math.floor(game.player.x)] = 0;
+                    }
+                    if (game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x) + 1] == 100) {
+                        game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x) + 1] = 0;
+                    }
+                    if (game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x) - 1] == 100) {
+                        game.levels[game.currentLevel].map[Math.floor(game.player.y)][Math.floor(game.player.x) - 1] = 0;
+                    }
+                    playSound('celldoor-sound');
                 } else {
                     playSound('invalid-sound');
                 }
@@ -6594,6 +6725,9 @@ function drawHUD(ctx) {
         }
         if (game.keysUnlocked.goatkey) {
             keyText += 'Goat ';
+        }
+        if (game.keysUnlocked.cellkey) {
+            keyText += 'Cell ';
         }
         return keyText;
     })();
