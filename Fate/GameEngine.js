@@ -4796,7 +4796,7 @@ function updateGameObjects() {
                         playSound('portal-sound');
                     }
                     if (distSq < 64 && isVisibleToPlayer(monster)) {
-                        if (!monster.lastSpawn || (currentTime - monster.lastSpawn >= monster.spawnCooldown && monster.asteroidCount < 9)) {
+                        if (!monster.lastSpawn || (currentTime - monster.lastSpawn >= monster.spawnCooldown && monster.asteroidCount < 8)) {
                             monster.lastSpawn = currentTime;
                             monster.asteroidCount++;
                             for (let i = 0; i < (1 * spawnModifier); i++) {
@@ -5404,6 +5404,10 @@ function updateGameObjects() {
                             playSound('deathcoil-sound');
                             monster.lastShot = currentTime;
                         }
+                    }
+                    if ((!monster.lastHeal || currentTime - monster.lastHeal >= monster.healCooldown) && monster.health <= 670) {
+                        monster.health += 80;
+                        monster.lastHeal = currentTime;
                     }
                     if (!monster.lastReanimate || currentTime - monster.lastReanimate >= monster.reanimateCooldown) {
                         const closestBones = game.sprites.reduce((closest, bones) => {

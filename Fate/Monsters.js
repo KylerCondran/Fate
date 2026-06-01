@@ -911,7 +911,9 @@ window.MonsterData = {
         lastShot: 0,
         attackCooldown: 2000,
         lastReanimate: 0,
-        reanimateCooldown: 8000
+        reanimateCooldown: 8000,
+        healCooldown: 10000,
+        lastHeal: 0
     },
     frog: {
         type: 'frog',
