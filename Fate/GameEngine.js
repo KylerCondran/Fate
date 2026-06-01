@@ -636,9 +636,6 @@ function loadLevel(levelIdx) {
     } else {
         game.laserbattery = 100;
     }
-    let map = game.levels[levelIdx].map;
-    let mapy = map.length;
-    let mapx = map[0].length;
     if (game.cheats.speedBoost) {
         game.player.speed.movement = 0.16;
     } else {
@@ -669,6 +666,8 @@ function loadLevel(levelIdx) {
         game.weaponsUnlocked.lasershotgun = false;
         game.weaponsUnlocked.trident = false;
         game.ammo = 0;
+        game.levels[levelIdx] = JSON.parse(JSON.stringify(window.LevelData[levelIdx]));
+        game.levels[levelIdx].unlocked = true;
     } else {
         // Upon starting another level, restore weapon unlock state if it was previously saved (after leaving prison level)
         if (game.savedWeaponState) {
@@ -683,7 +682,11 @@ function loadLevel(levelIdx) {
             game.ammo = game.savedWeaponState.ammo;
             game.savedWeaponState = null;      
         }
+        game.keysUnlocked.cellkey = false;
     }
+    let map = game.levels[levelIdx].map;
+    let mapy = map.length;
+    let mapx = map[0].length;
     const emptyPositions = [];
     const monsterValues = [3, 4, 5, 6, 7, 15, 16, 17, 18, 19, 21, 22, 23, 24, 25, 27, 28, 29, 31, 32, 33, 34, 35, 36, 37, 41, 45, 46, 47, 50, 52, 57, 59, 60, 61, 62, 64, 69, 70, 71, 72, 73, 74, 75, 77, 78, 79, 80, 81, 82, 85, 86, 87, 88, 89, 90, 91, 92];
     for (let i = 0; i < mapy; i++) {
