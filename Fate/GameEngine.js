@@ -1218,7 +1218,7 @@ function loadLevel(levelIdx) {
     } else {
         game.player.x = game.levels[levelIdx].startlocation.x;
         game.player.y = game.levels[levelIdx].startlocation.y;
-        game.player.angle = 0;
+        game.player.angle = game.levels[levelIdx].startAngle;
     }
     // Reload textures and sprites
     loadSprites();

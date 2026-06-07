@@ -30,7 +30,6 @@
 
 - upgrade assets, make matrix for missing artifacts
 - dead bones decay system (extend sprite cull system)
-- attach starting angle to levels.js
 
 # Level Ideas
 
