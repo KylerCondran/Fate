@@ -685,13 +685,14 @@ function loadLevel(levelIdx) {
         game.keysUnlocked.cellkey = false;
     }
     let map = game.levels[levelIdx].map;
-    let mapy = map.length;
-    let mapx = map[0].length;
+    let origmap = JSON.parse(JSON.stringify(window.LevelData[levelIdx].map));
+    let mapy = origmap.length;
+    let mapx = origmap[0].length;
     const emptyPositions = [];
     const monsterValues = [3, 4, 5, 6, 7, 15, 16, 17, 18, 19, 21, 22, 23, 24, 25, 27, 28, 29, 31, 32, 33, 34, 35, 36, 37, 41, 45, 46, 47, 50, 52, 57, 59, 60, 61, 62, 64, 69, 70, 71, 72, 73, 74, 75, 77, 78, 79, 80, 81, 82, 85, 86, 87, 88, 89, 90, 91, 92];
     for (let i = 0; i < mapy; i++) {
         for (let j = 0; j < mapx; j++) {
-            var objectValue = map[i][j];
+            var objectValue = origmap[i][j];
             if (game.cheats.randomizeEnemies && monsterValues.includes(objectValue)) {
                 objectValue = monsterValues[Math.floor(Math.random() * monsterValues.length)];
             }
@@ -763,32 +764,46 @@ function loadLevel(levelIdx) {
                     game.monsterTotal++;
                     break;
                 case 8:
-                    game.sprites.push({ id: "ammo-sprite", x: j, y: i, width: 100, height: 81, data: null });
-                    game.pickupTotal++;
+                    if (map[i][j] != 0) {
+                        game.sprites.push({ id: "ammo-sprite", x: j, y: i, width: 100, height: 81, data: null });
+                        game.pickupTotal++;
+                    }
                     break;
                 case 9:
-                    game.sprites.push({ id: "pistolpickup-sprite", x: j, y: i, width: 34, height: 19, data: null });
-                    game.pickupTotal++;
+                    if (map[i][j] != 0) {
+                        game.sprites.push({ id: "pistolpickup-sprite", x: j, y: i, width: 34, height: 19, data: null });
+                        game.pickupTotal++;
+                    }
                     break;
                 case 10:
-                    game.sprites.push({ id: "machinegunpickup-sprite", x: j, y: i, width: 49, height: 30, data: null });
-                    game.pickupTotal++;
+                    if (map[i][j] != 0) {
+                        game.sprites.push({ id: "machinegunpickup-sprite", x: j, y: i, width: 49, height: 30, data: null });
+                        game.pickupTotal++;
+                    }
                     break;
                 case 11:
-                    game.sprites.push({ id: "yetipistolpickup-sprite", x: j, y: i, width: 50, height: 33, data: null });
-                    game.pickupTotal++;
+                    if (map[i][j] != 0) {
+                        game.sprites.push({ id: "yetipistolpickup-sprite", x: j, y: i, width: 50, height: 33, data: null });
+                        game.pickupTotal++;
+                    }
                     break;
                 case 12:
-                    game.sprites.push({ id: "rocketlauncherpickup-sprite", x: j, y: i, width: 80, height: 17, data: null });
-                    game.pickupTotal++;
+                    if (map[i][j] != 0) {
+                        game.sprites.push({ id: "rocketlauncherpickup-sprite", x: j, y: i, width: 80, height: 17, data: null });
+                        game.pickupTotal++;
+                    }
                     break;
                 case 13:
-                    game.sprites.push({ id: "rocketammo-sprite", x: j, y: i, width: 35, height: 18, data: null });
-                    game.pickupTotal++;
+                    if (map[i][j] != 0) {
+                        game.sprites.push({ id: "rocketammo-sprite", x: j, y: i, width: 35, height: 18, data: null });
+                        game.pickupTotal++;
+                    }
                     break;
                 case 14:
-                    game.sprites.push({ id: "scepterpickup-sprite", x: j, y: i, width: 64, height: 64, data: null });
-                    game.pickupTotal++;
+                    if (map[i][j] != 0) {
+                        game.sprites.push({ id: "scepterpickup-sprite", x: j, y: i, width: 64, height: 64, data: null });
+                        game.pickupTotal++;
+                    }
                     break;
                 case 15:
                     const crusader = { ...window.MonsterData.crusader, id: `monster_${game.monsterTotal}`, x: j, y: i };
@@ -844,8 +859,10 @@ function loadLevel(levelIdx) {
                     game.monsterTotal++;
                     break;
                 case 26:
-                    game.sprites.push({ id: "boomerang-sprite", x: j, y: i, width: 27, height: 27, data: null });
-                    game.pickupTotal++;
+                    if (map[i][j] != 0) {
+                        game.sprites.push({ id: "boomerang-sprite", x: j, y: i, width: 27, height: 27, data: null });
+                        game.pickupTotal++;
+                    }
                     break;
                 case 27:
                     const ninja1 = { ...window.MonsterData.ninja1, id: `monster_${game.monsterTotal}`, x: j, y: i };
@@ -904,13 +921,17 @@ function loadLevel(levelIdx) {
                     break;
                 case 38:
                     //cow chest
-                    game.sprites.push({ id: "lockedchest-sprite", x: j, y: i, width: 512, height: 512, data: null });
-                    game.pickupTotal++;
+                    if (map[i][j] != 0) {                 
+                        game.sprites.push({ id: "lockedchest-sprite", x: j, y: i, width: 512, height: 512, data: null });
+                        game.pickupTotal++;
+                    }
                     break;
                 case 39:
                     //cow key
-                    game.sprites.push({ id: "key-sprite", x: j, y: i, width: 64, height: 64, data: null });
-                    game.pickupTotal++;
+                    if (map[i][j] != 0) {
+                        game.sprites.push({ id: "key-sprite", x: j, y: i, width: 64, height: 64, data: null });
+                        game.pickupTotal++;
+                    }
                     break;
                 case 40:
                     game.sprites.push({ id: "speedboost-sprite", x: j, y: i, width: 512, height: 512, data: null });
@@ -925,8 +946,10 @@ function loadLevel(levelIdx) {
                     game.sprites.push({ id: 'acid-sprite', x: j, y: i, width: 256, height: 256, data: null, spriteScale: 2.0 });
                     break;
                 case 43:
-                    game.sprites.push({ id: "lasershotgunpickup-sprite", x: j, y: i, width: 80, height: 29, data: null });
-                    game.pickupTotal++;
+                    if (map[i][j] != 0) {
+                        game.sprites.push({ id: "lasershotgunpickup-sprite", x: j, y: i, width: 80, height: 29, data: null });
+                        game.pickupTotal++;
+                    }
                     break;
                 case 44:
                     game.sprites.push({ id: 'burningdebris-sprite', x: j, y: i, width: 512, height: 512, data: null, spriteScale: 2.0 });
@@ -948,13 +971,17 @@ function loadLevel(levelIdx) {
                     break;
                 case 48:
                     //monkey chest
-                    game.sprites.push({ id: "lockedchest-sprite", x: j, y: i, width: 512, height: 512, data: null });
-                    game.pickupTotal++;
+                    if (map[i][j] != 0) {
+                        game.sprites.push({ id: "lockedchest-sprite", x: j, y: i, width: 512, height: 512, data: null });
+                        game.pickupTotal++;
+                    }
                     break;
                 case 49:
                     //monkey key
-                    game.sprites.push({ id: "key-sprite", x: j, y: i, width: 64, height: 64, data: null });
-                    game.pickupTotal++;
+                    if (map[i][j] != 0) {
+                        game.sprites.push({ id: "key-sprite", x: j, y: i, width: 64, height: 64, data: null });
+                        game.pickupTotal++;
+                    }
                     break;
                 case 50:
                     const eyeball = { ...window.MonsterData.eyeball, id: `monster_${game.monsterTotal}`, x: j, y: i };
@@ -992,8 +1019,10 @@ function loadLevel(levelIdx) {
                     game.monsterTotal++;
                     break;
                 case 58:
-                    game.sprites.push({ id: "tridentpickup-sprite", x: j, y: i, width: 30, height: 80, data: null });
-                    game.pickupTotal++;
+                    if (map[i][j] != 0) {
+                        game.sprites.push({ id: "tridentpickup-sprite", x: j, y: i, width: 30, height: 80, data: null });
+                        game.pickupTotal++;
+                    }
                     break;
                 case 59:
                     const hyena = { ...window.MonsterData.hyena, id: `monster_${game.monsterTotal}`, x: j, y: i };
@@ -1037,13 +1066,17 @@ function loadLevel(levelIdx) {
                     break;
                 case 67:
                     //goat chest
-                    game.sprites.push({ id: "lockedchest-sprite", x: j, y: i, width: 512, height: 512, data: null });
-                    game.pickupTotal++;
+                    if (map[i][j] != 0) {
+                        game.sprites.push({ id: "lockedchest-sprite", x: j, y: i, width: 512, height: 512, data: null });
+                        game.pickupTotal++;
+                    }
                     break;
                 case 68:
                     //goat key
-                    game.sprites.push({ id: "key-sprite", x: j, y: i, width: 64, height: 64, data: null });
-                    game.pickupTotal++;
+                    if (map[i][j] != 0) {
+                        game.sprites.push({ id: "key-sprite", x: j, y: i, width: 64, height: 64, data: null });
+                        game.pickupTotal++;
+                    }
                     break;
                 case 69:
                     const dinosauregg = { ...window.MonsterData.dinosauregg, id: `monster_${game.monsterTotal}`, x: j, y: i };

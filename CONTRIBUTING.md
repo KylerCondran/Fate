@@ -81,8 +81,7 @@
 
 - issue with sprite scaling
 - chests spam locked sound on pickup attempt, need timeout, same with all pickups that dont clear immediately
-- acid and burning debris continue to litter the ground when levels reattempted
 - asteroids can go negative map coordinates and cause a NaN error, need to fix that
-- if monsters that drop acid or debris are killed long range in place, they wont spawn next level load because their coordinate number has changed
 - frogs all charge at same time
 - prisoner ai gets stuck on eachother
+- arctic level background needs work
