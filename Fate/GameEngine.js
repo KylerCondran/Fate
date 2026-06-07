@@ -28,6 +28,9 @@ let game = {
     pickupTotal: 0,
     pickupCollected: 0,
     checkpointTotal: 0,
+    ammoSpentInLevel: 0,
+    rocketammoSpentInLevel: 0,
+    boomerangammoSpentInLevel: 0,
     lastMonsterToHitPlayer: 'Unknown',
     playerFrozen: false,
     playerFrozenTime: 0,
@@ -620,6 +623,9 @@ function loadLevel(levelIdx) {
     game.pickupTotal = 0;
     game.pickupCollected = 0;
     game.checkpointTotal = 0;
+    game.rocketammoSpentInLevel = 0;
+    game.boomerangammoSpentInLevel = 0;
+    game.ammoSpentInLevel = 0;
     // Reset player health
     if (game.cheats.godMode || game.developerMode) {
         game.player.health = 9999;
@@ -1481,6 +1487,7 @@ function handleShooting(e) {
             case 5:
                 playSound('rocketlaunch-sound');
                 game.rocketammo--;
+                game.rocketammoSpentInLevel++;
                 game.projectiles.push(new Projectile(startX, startY, game.player.angle, 'rocket', game.projectileMap['rocket'], 'player', 0.2, 150));
                 break;
             case 6:
@@ -1490,6 +1497,7 @@ function handleShooting(e) {
             case 7:
                 playSound('boomerang-sound');
                 game.boomerangammo--;
+                game.boomerangammoSpentInLevel++;
                 game.projectiles.push(new Projectile(startX, startY, game.player.angle, 'boomerang', game.projectileMap['boomerang'], 'player', 0.2, 250));
                 if (game.boomerangammo <= 0) {
                     game.weaponSprite = document.getElementById('blank-sprite');
@@ -1533,6 +1541,7 @@ function handleShooting(e) {
             default:
                 playSound('shoot-sound');
                 game.ammo--;
+                game.ammoSpentInLevel++;
                 game.projectiles.push(new Projectile(startX, startY, game.player.angle, 'bullet', game.projectileMap['bullet'], 'player', 0.2, 25));
                 break;
         }
@@ -1825,6 +1834,7 @@ function updateGameObjects() {
                     playSound('explosion-sound');
                 } else if (projectile.type == 'boomerang') {
                     game.boomerangammo += 1; // Boomerang pickup
+                    game.boomerangammoSpentInLevel--;
                     playSound('pickup-sound');
                     if (game.boomerangammo >= 1) {
                         game.weaponSprite = document.getElementById('boomerangwep-sprite');
@@ -7206,6 +7216,12 @@ function endGameDeath() {
     if (mainLoop) {
         clearInterval(mainLoop);
         mainLoop = null;
+    }
+    game.ammo += game.ammoSpentInLevel;
+    game.rocketammo += game.rocketammoSpentInLevel;
+    game.boomerangammo += game.boomerangammoSpentInLevel;
+    if (game.boomerangammo >= 1) {
+        game.weaponsUnlocked.boomerang = true;
     }
     window.removeEventListener('blur', pauseGame);
     createDeathScreen();

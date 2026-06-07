@@ -39,6 +39,7 @@
 - medieval castle, knights, archers, catapults
 - zombies, apocalyptic city, barricades, cars, tanks
 - proper tree sprite
+- arctic/night background needs work
 - boss mode when you beat the game
 - more ammo dispursed around levels / enemies drop ammo
 - secret area flag
@@ -83,4 +84,3 @@
 - asteroids can go negative map coordinates and cause a NaN error, need to fix that
 - frogs all charge at same time
 - prisoner ai gets stuck on eachother
-- arctic level background needs work
