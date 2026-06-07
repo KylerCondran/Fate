@@ -1722,6 +1722,28 @@ function updateGameObjects() {
                                 break;
                             } else {
                                 monster.health -= projectile.damage;
+                                if (projectile.type == 'rocket') {
+                                    for (const m2 of game.monsters) {
+                                        if (!m2.isDead && (m2.id != monster.id)) {
+                                            const dx2 = m2.x - projectile.x;
+                                            const dy2 = m2.y - projectile.y;
+                                            const distanceSq2 = dx2 * dx2 + dy2 * dy2;
+                                            if (distanceSq2 < game.explosionHitboxRadius && !m2.invulnerable && m2.type != 'yeti') {
+                                                m2.health -= projectile.damage;
+                                            }
+                                        }
+                                    }
+                                    const rocketSq = dx * dx + dy * dy;
+                                    if (rocketSq < game.explosionHitboxRadius) {
+                                        game.lastMonsterToHitPlayer = 'Rocket Explosion';
+                                        game.player.health -= 25;
+                                        playSound('injured-sound');
+                                        if (game.player.health <= 0) {
+                                            playSound('death-sound');
+                                            endGameDeath();
+                                        }
+                                    }
+                                }
                             }
                         } else if ((monster.type == 'moon' || monster.type == 'sun' || monster.type == 'saturn') && monster.invulnerable) {
                             projectilesToRemove.add(i);
