@@ -935,6 +935,7 @@ function loadLevel(levelIdx) {
                     break;
                 case 40:
                     game.sprites.push({ id: "speedboost-sprite", x: j, y: i, width: 512, height: 512, data: null });
+                    map[i][j] = 40;
                     game.pickupTotal++;
                     break;
                 case 41:
@@ -990,6 +991,7 @@ function loadLevel(levelIdx) {
                     break;
                 case 51:
                     game.sprites.push({ id: "medkit-sprite", x: j, y: i, width: 512, height: 512, data: null });
+                    map[i][j] = 51;
                     game.pickupTotal++;
                     break;
                 case 52:
@@ -1115,6 +1117,7 @@ function loadLevel(levelIdx) {
                     break;
                 case 76:
                     game.sprites.push({ id: "battery-sprite", x: j, y: i, width: 256, height: 256, data: null });
+                    map[i][j] = 76;
                     game.pickupTotal++;
                     break;
                 case 77:
