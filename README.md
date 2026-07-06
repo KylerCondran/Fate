@@ -8,7 +8,7 @@ Fate is a 3D FPS Game Engine built on pure JavaScript. Hunt And Shoot Monsters. 
   <a href="https://kylercondran.github.io/Fate/Fate/Fate.html">Play This Game</a>
 </p>
 
-<img src="https://repository-images.githubusercontent.com/981807393/4cb9db2b-ae98-4ab3-abb3-62a6e15d6368" title="Fate">
+<img src="https://repository-images.githubusercontent.com/981807393/0bd34977-4b8e-4f13-aca9-139bf3946456" title="Fate">
 
 <p align="center">
   <a href="https://github.com/KylerCondran/Fate/issues/new">Report bug</a>
