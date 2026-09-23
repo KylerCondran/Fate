@@ -706,7 +706,7 @@ function loadLevel(levelIdx) {
         game.keysUnlocked.cellkey = false;
         var rndVal = Math.floor(Math.random() * 100) + 1;
         if (!game.wizardState.killed && rndVal <= game.wizardState.spawnChance) {
-            game.wizardState.spawnDelay = 1000 * Math.floor(Math.random() * 45) + 1;
+            game.wizardState.spawnDelay = 1000 * (Math.floor(Math.random() * 45) + 1);
             game.wizardState.spawnInThisLevel = true;
             game.wizardState.activationTime = Date.now();
         } else {
