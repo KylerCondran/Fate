@@ -36,6 +36,13 @@ let game = {
     playerFrozenTime: 0,
     playerFrozenDuration: 0,
     activeGravityWell: null,
+    wizardState: {
+        killed: false,
+        spawnChance: 0,
+        spawnDelay: 0,
+        spawnInThisLevel: false,
+        activationTime: 0
+    },
     weaponsUnlocked: {
         knife: true,
         pistol: false,
@@ -451,6 +458,13 @@ let game = {
             width: 30,
             height: 30,
             data: null
+        },
+        {
+            number: 15,
+            id: 'magic-sprite',
+            width: 32,
+            height: 32,
+            data: null
         }
     ],
     backgrounds: [
@@ -548,7 +562,8 @@ game.projectileMap = {
     laserpurple: game.projectileTextures[11],
     whirl: game.projectileTextures[12],
     force: game.projectileTextures[13],
-    deathcoil: game.projectileTextures[14]
+    deathcoil: game.projectileTextures[14],
+    magic: game.projectileTextures[15]
 };
 
 // Main loop
@@ -689,6 +704,15 @@ function loadLevel(levelIdx) {
             game.savedWeaponState = null;      
         }
         game.keysUnlocked.cellkey = false;
+        var rndVal = Math.floor(Math.random() * 100) + 1;
+        if (!game.wizardState.killed && rndVal <= game.wizardState.spawnChance) {
+            game.wizardState.spawnDelay = 1000 * Math.floor(Math.random() * 45) + 1;
+            game.wizardState.spawnInThisLevel = true;
+            game.wizardState.activationTime = Date.now();
+        } else {
+            game.wizardState.spawnInThisLevel = false;
+            game.wizardState.spawnChance += 2;
+        }
     }
     let map = game.levels[levelIdx].map;
     let origmap = JSON.parse(JSON.stringify(window.LevelData[levelIdx].map));
@@ -1210,6 +1234,10 @@ function loadLevel(levelIdx) {
                     //cell key
                     game.sprites.push({ id: "key-sprite", x: j, y: i, width: 64, height: 64, data: null });
                     game.pickupTotal++;
+                    break;
+                case 94:
+                    const wizard = { ...window.MonsterData.wizard, id: `monster_${game.monsterTotal}`, x: j, y: i, spawnTime: Date.now() };
+                    game.monsters.push(wizard);
                     break;
                 default:
                     break;
@@ -1905,7 +1933,7 @@ function updateGameObjects() {
         if (!monster.isDead) {
             if (monster.health <= 0) {
                 monster.isDead = true;
-                if (monster.type != 'moby' && monster.type != 'seahorse' && monster.type != 'seahorsebaby' && monster.type != 'prisoner') {
+                if (monster.type != 'moby' && monster.type != 'seahorse' && monster.type != 'seahorsebaby' && monster.type != 'prisoner' && monster.type != 'wizard') {
                     game.monsterDefeated++;
                 }
                 playSound(`${monster.audio}-death`);
@@ -2072,6 +2100,10 @@ function updateGameObjects() {
                     case 'seahorsebaby':
                     case 'bat':
                         game.sprites.push({ id: 'gib-sprite', x: monster.x, y: monster.y, width: 512, height: 512, data: getTextureData({ id: 'gib-sprite', width: 512, height: 512 }), spawnTime: Date.now(), cullTime: 200 });
+                        break;
+                    case 'wizard':
+                        game.sprites.push({ id: 'bones-sprite', x: monster.x, y: monster.y, width: 256, height: 256, data: getTextureData({ id: 'bones-sprite', width: 256, height: 256 }), spawnTime: Date.now() });
+                        game.wizardState.killed = true;
                         break;
                     case 'dinosauregg':
                         game.monsterTotal++;
@@ -5533,6 +5565,76 @@ function updateGameObjects() {
                         }
                     }
                     break;
+                case 'wizard':
+                    if (currentTime - monster.spawnTime >= 20000) {
+                        monster.isDead = true;
+                        game.sprites.push({ id: 'enemyportal-sprite', x: monster.x, y: monster.y, width: 512, height: 512, data: getTextureData({ id: 'enemyportal-sprite', width: 512, height: 512 }), spawnTime: Date.now(), cullTime: 2000 });
+                        game.wizardState.spawnChance = 2;
+                        playSound('portal-sound');
+                        break;
+                    }
+                    if (distSq < 64 && isVisibleToPlayer(monster)) {
+                        if (!monster.lastShot || currentTime - monster.lastShot >= monster.attackCooldown) {
+                            const angle = radiansToDegrees(Math.atan2(dy, dx));
+                            var rndVal = Math.floor(Math.random() * 3) + 1;
+                            switch (rndVal) {
+                                case 1:
+                                    game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'magic', game.projectileMap['magic'], 'monster', 0.1, monster.damage));
+                                    break
+                                case 2:
+                                    game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'magic', game.projectileMap['deathcoil'], 'monster', 0.1, monster.damage));
+                                    break;
+                                case 3:
+                                    game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'magic', game.projectileMap['fireball'], 'monster', 0.1, monster.damage));
+                                    break;
+                            }
+                            playSound('magic-sound');
+                            monster.lastShot = currentTime;
+                        }
+                    }
+                    if (distSq < 400 && isVisibleToPlayer(monster)) {
+                        const distance = Math.sqrt(distSq);
+                        const invDist = 1 / distance;
+                        const dirX = dx * invDist;
+                        const dirY = dy * invDist;
+                        if (distSq > 45) {
+                            // TOO FAR → move toward player
+                            moveX = dirX * monster.speed;
+                            moveY = dirY * monster.speed;
+                            // Try to move in X direction
+                            const newX = monster.x + moveX;
+                            if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
+                                monster.x = newX;
+                            }
+                            // Try to move in Y direction
+                            const newY = monster.y + moveY;
+                            if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
+                                monster.y = newY;
+                            }
+                        } else {
+                            // IN RANGE → strafe sideways
+                            const perpX = -dirY;
+                            const perpY = dirX;
+                            // Optional: switch left/right occasionally
+                            monster.strafeDir = monster.strafeDir ?? (Math.random() < 0.5 ? -1 : 1);
+                            if (Math.random() < 0.005) {
+                                monster.strafeDir *= -1;
+                            }
+                            moveX = perpX * monster.strafeDir * monster.speed;
+                            moveY = perpY * monster.strafeDir * monster.speed;
+                            // Try to move in X direction
+                            const newX = monster.x + moveX;
+                            if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
+                                monster.x = newX;
+                            }
+                            // Try to move in Y direction
+                            const newY = monster.y + moveY;
+                            if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
+                                monster.y = newY;
+                            }
+                        }
+                    }
+                    break;
                 default:
                     if (distSq > 0.25 && distSq < 100) {
                         const distance = Math.sqrt(distSq);
@@ -5589,6 +5691,26 @@ function movePlayer() {
     }
     if (game.playerFrozen && currentTime - game.playerFrozenTime >= game.playerFrozenDuration) {
         game.playerFrozen = false;
+    }
+    if (!game.wizardState.killed && game.wizardState.spawnInThisLevel && currentTime - game.wizardState.activationTime >= game.wizardState.spawnDelay) {
+        const validSpots = getOpenSpawnPositions(Math.floor(game.player.x), Math.floor(game.player.y), 9);
+        if (validSpots.length != 0) {
+            game.wizardState.spawnInThisLevel = false;
+            game.wizardState.activationTime = 0;
+            game.wizardState.spawnDelay = 0;
+            game.wizardState.spawnChance = 2;
+            playSound('portal-sound');
+            const spot = validSpots[Math.floor(Math.random() * validSpots.length)];
+            const wizard = { ...window.MonsterData.wizard, id: `monster_${game.monsterTotal}`, x: spot.x, y: spot.y, spawnTime: Date.now() };
+            const monsterTexture = {
+                id: wizard.skin,
+                width: wizard.width,
+                height: wizard.height
+            };
+            wizard.data = getTextureData(monsterTexture);
+            game.monsters.push(wizard);
+            updateMonsterGrid();
+        }
     }
     if (game.key.up.active && !game.playerFrozen) {
         let playerCos = Math.cos(degreeToRadians(game.player.angle)) * game.player.speed.movement;

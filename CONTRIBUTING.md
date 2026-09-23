@@ -64,7 +64,7 @@
 - spyro egg thief?
 - more enemies freeze player, teleport player, steal weapons, steal health, steal ammo
 - scarab steals a random weapon, creates mimics of himself
-- wizard that randomly attacks you on a predetermined level, only active for 1 minute, killing him gives you a powerful weapon or drops a red portal to somewhere
+- killing the wizard spawns a portal which teleports to a secret room with lots of ammo and powerups
 - projectile reflect
 - animations for enemies, planets crumble, purple magic spawn animations
 - give astronauts some kind of ability

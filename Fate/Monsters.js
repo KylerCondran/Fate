@@ -1116,5 +1116,19 @@ window.MonsterData = {
         damage: 5,
         lastAttack: 0,
         attackCooldown: 1000
+    },
+    wizard: {
+        type: 'wizard',
+        skin: 'wizard-sprite',
+        audio: 'wizard',
+        health: 750,
+        speed: 0.02,
+        isDead: false,
+        width: 512,
+        height: 512,
+        data: null,
+        damage: 20,
+        lastShot: 0,
+        attackCooldown: 1500
     }
 };
