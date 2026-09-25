@@ -706,7 +706,7 @@ function loadLevel(levelIdx) {
         game.keysUnlocked.cellkey = false;
         var rndVal = Math.floor(Math.random() * 100) + 1;
         if (!game.wizardState.killed && rndVal <= game.wizardState.spawnChance) {
-            game.wizardState.spawnDelay = 1000 * (Math.floor(Math.random() * 45) + 1);
+            game.wizardState.spawnDelay = (1000 * (Math.floor(Math.random() * 25) + 1)) + 20000;
             game.wizardState.spawnInThisLevel = true;
             game.wizardState.activationTime = Date.now();
         } else {
@@ -1288,6 +1288,11 @@ function resetGameState() {
     game.playerFrozen = false;
     game.playerFrozenTime = 0;
     game.player.speed.movement = 0.08;
+    game.wizardState.killed = false;
+    game.wizardState.spawnInThisLevel = false;
+    game.wizardState.activationTime = 0;
+    game.wizardState.spawnDelay = 0;
+    game.wizardState.spawnChance = 0;
 }
 
 // Apply Cheats From Cheat Menu After Game Completion
