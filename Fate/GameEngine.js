@@ -1667,10 +1667,15 @@ function updateSpriteList() {
 
 function getOpenSpawnPositions(xVal, yVal, range) {
     const positions = [];
+    const map = game.levels[game.currentLevel].map;
+    const mapHeight = map.length;
+    const mapWidth = map[0]?.length ?? 0;
+
     // range should always be an odd number for this to work properly
     range -= 1;
-    lowerBound = -(range/2);
-    upperBound = (range/2);
+    const lowerBound = -(range / 2);
+    const upperBound = (range / 2);
+
     for (let dx = lowerBound; dx <= upperBound; dx++) {
         for (let dy = lowerBound; dy <= upperBound; dy++) {
             const x = xVal + dx;
@@ -1679,7 +1684,8 @@ function getOpenSpawnPositions(xVal, yVal, range) {
             // Skip center exact tile
             if (dx == 0 && dy == 0) continue;
 
-            if ((game.levels[game.currentLevel].map[y] && game.levels[game.currentLevel].map[y][x] != 2) && !isMonsterAtPosition(x, y)) {
+            // Check ALL bounds: x in range, y in range, not a wall, no monster
+            if (x >= 0 && x < mapWidth && y >= 0 && y < mapHeight && map[y][x] !== 2 && !isMonsterAtPosition(x, y)) {
                 positions.push({ x, y });
             }
         }

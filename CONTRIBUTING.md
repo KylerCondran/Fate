@@ -84,3 +84,4 @@
 - asteroids can go negative map coordinates and cause a NaN error, need to fix that
 - frogs all charge at same time
 - prisoner ai gets stuck on eachother
+- summoned allies can injure yetis
