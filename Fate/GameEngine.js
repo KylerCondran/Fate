@@ -20,6 +20,8 @@ let game = {
     explosionHitboxRadius: 5,
     bulletRange: 400,
     objectCullDistance: 2000,
+    notificationTimeout: 3000,
+    lastNotificationTime: 0,
     knifeRange: 1,
     bulletStartDistance: 0.5,
     activationDistance: 1.0,
@@ -1584,11 +1586,15 @@ function handleShooting(e) {
 // Display game notifications
 
 function showNotification(notification) {
-    game.notifications.push({
-        text: `${notification}`,
-        startTime: Date.now(),
-        duration: 3000
-    });
+    const currentTime = Date.now();
+    if (currentTime - game.lastNotificationTime >= game.notificationTimeout) {
+        game.lastNotificationTime = currentTime;
+        game.notifications.push({
+            text: `${notification}`,
+            startTime: Date.now(),
+            duration: 3000
+        });
+    }
 }
 
 // Build spatial grid of monsters for collision detection
@@ -5912,6 +5918,7 @@ function movePlayer() {
                     game.levels[15].unlocked = true;
                     game.keysUnlocked.cowkey = false;
                 } else {
+                    showNotification('Requires: Cow Key');
                     playSound('locked-sound');
                 }                
                 break;
@@ -5973,6 +5980,7 @@ function movePlayer() {
                     game.levels[16].unlocked = true;
                     game.keysUnlocked.monkeykey = false;
                 } else {
+                    showNotification('Requires: Monkey Key');
                     playSound('locked-sound');
                 }
                 break;
@@ -6019,6 +6027,7 @@ function movePlayer() {
                     game.levels[17].unlocked = true;
                     game.keysUnlocked.goatkey = false;
                 } else {
+                    showNotification('Requires: Goat Key');
                     playSound('locked-sound');
                 }
                 break;

@@ -80,7 +80,6 @@
 # Issues / Bugs
 
 - issue with sprite scaling
-- chests spam locked sound on pickup attempt, need timeout, same with all pickups that dont clear immediately
 - asteroids can go negative map coordinates and cause a NaN error, need to fix that
 - frogs all charge at same time
 - prisoner ai gets stuck on eachother
