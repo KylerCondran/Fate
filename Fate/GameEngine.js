@@ -7323,10 +7323,9 @@ function pauseGame(event) {
 // End game screens for win and loss, then return to start screen
 
 function endGame() {
-    if (mainLoop) {
-        clearInterval(mainLoop);
-        mainLoop = null;
-    }
+    if (!mainLoop) return;
+    clearInterval(mainLoop);
+    mainLoop = null;
     window.removeEventListener('blur', pauseGame);
     createWinScreen();
     if (game.currentLevel != game.levels.length - 4 && game.currentLevel != game.levels.length - 3 && game.currentLevel != game.levels.length - 2 && game.currentLevel != game.levels.length - 1) {
@@ -7355,10 +7354,9 @@ function endGame() {
 }
 
 function endGameDeath() {
-    if (mainLoop) {
-        clearInterval(mainLoop);
-        mainLoop = null;
-    }
+    if (!mainLoop) return;
+    clearInterval(mainLoop);
+    mainLoop = null;
     game.ammo += game.ammoSpentInLevel;
     game.rocketammo += game.rocketammoSpentInLevel;
     game.boomerangammo += game.boomerangammoSpentInLevel;
