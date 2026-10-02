@@ -620,7 +620,12 @@ window.MonsterData = {
         data: null,
         damage: 10,
         lastAttack: 0,
-        attackCooldown: 1000
+        attackCooldown: 1000,
+        chargeCooldown: 11000,
+        lastCharge: 0,
+        chargeAngle: null,
+        isCharging: false,
+        lastSmokeTime: 0
     },
     rover: {
         type: 'rover',

@@ -67,7 +67,6 @@
 - killing the wizard spawns a portal which teleports to a secret room with lots of ammo and powerups
 - projectile reflect
 - animations for enemies, planets crumble, purple magic spawn animations
-- give astronauts some kind of ability
 - give scarab an ability
 - work on sobek boss fight mechanics
 - acid and burning debris should have melee attack
@@ -84,3 +83,5 @@
 - frogs all charge at same time
 - prisoner ai gets stuck on eachother
 - summoned allies can injure yetis
+- rockets dont explode on yetis
+- cell key stays upon death

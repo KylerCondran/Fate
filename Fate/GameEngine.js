@@ -5652,6 +5652,87 @@ function updateGameObjects() {
                         }
                     }
                     break;
+                case 'astronaut':
+                    if (monster.chargeDelayOffset === undefined) {
+                        monster.chargeDelayOffset = Math.random() * 2000 + 1000; // 1000-3000ms
+                        monster.lastCharge = currentTime - monster.chargeCooldown + monster.chargeDelayOffset;
+                    }
+
+                    if (distSq > 0.25 && distSq < 200 && isVisibleToPlayer(monster)) {
+                        const timeSinceLastCharge = currentTime - (monster.lastCharge || currentTime - monster.chargeDelayOffset);
+                        const shouldCharge = timeSinceLastCharge >= monster.chargeCooldown;
+
+                        if (shouldCharge && !monster.isCharging) {
+                            const angle = radiansToDegrees(Math.atan2(dy, dx));
+                            monster.chargeAngle = angle;
+                            monster.isCharging = true;
+                            monster.lastCharge = currentTime;
+                            playSound('thrust-sound');
+                        }
+                        if (monster.isCharging) {
+                            // Charge the player using the predetermined charge angle
+                            const chargeSpeed = monster.speed * 3; // Charge faster than normal movement
+                            const chargeDx = Math.cos(degreeToRadians(monster.chargeAngle)) * chargeSpeed;
+                            const chargeDy = Math.sin(degreeToRadians(monster.chargeAngle)) * chargeSpeed;
+
+                            // Try to move in X direction with the charge angle
+                            const newX = monster.x + chargeDx;
+                            if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
+                                monster.x = newX;
+                            }
+
+                            // Try to move in Y direction with the charge angle
+                            const newY = monster.y + chargeDy;
+                            if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
+                                monster.y = newY;
+                            }
+
+                            if (monster.lastSmokeTime == 0 || currentTime - monster.lastSmokeTime >= 100) {
+                                var angle = radiansToDegrees(Math.atan2(dy, dx));
+                                const startX = monster.x + Math.cos(degreeToRadians(angle)) * -0.25;
+                                const startY = monster.y + Math.sin(degreeToRadians(angle)) * -0.25;
+                                game.sprites.push({ id: 'smoke-sprite', x: startX, y: startY, width: 200, height: 200, data: getTextureData({ id: 'smoke-sprite', width: 200, height: 200 }), spawnTime: Date.now(), cullTime: 400 });
+                                monster.lastSmokeTime = currentTime;
+                            }
+
+                            // If the astronaut has reached a certain threshold charging time, stop charging
+                            if (currentTime - monster.lastCharge >= 2000) {
+                                monster.isCharging = false;
+                            }
+                        } else {
+                            // If not charging, follow the player
+                            const distance = Math.sqrt(distSq);
+                            const invDist = 1 / distance;
+                            const dirX = dx * invDist * monster.speed;
+                            const dirY = dy * invDist * monster.speed;
+
+                            // Try to move in X direction
+                            const newX = monster.x + dirX;
+                            if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
+                                monster.x = newX;
+                            }
+
+                            // Try to move in Y direction
+                            const newY = monster.y + dirY;
+                            if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
+                                monster.y = newY;
+                            }
+                        }
+                    }
+                    if (distSq < 0.5 && (!monster.lastAttack || currentTime - monster.lastAttack >= monster.attackCooldown)) {
+                        // Attack the player
+                        game.player.health -= monster.damage;
+                        game.lastMonsterToHitPlayer = monster.type.charAt(0).toUpperCase() + monster.type.slice(1);
+                        monster.lastAttack = currentTime;
+                        // Play monster attack sound
+                        playSound('injured-sound');
+                        // Check if player died
+                        if (game.player.health <= 0) {
+                            playSound('death-sound');
+                            endGameDeath();
+                        }
+                    }
+                    break;
                 default:
                     if (distSq > 0.25 && distSq < 100) {
                         const distance = Math.sqrt(distSq);
