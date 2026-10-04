@@ -758,7 +758,7 @@ window.MonsterData = {
     },
     scarab: {
         type: 'scarab',
-        skin: 'scarab-sprite',
+        skin: 'scarabburrowed-sprite',
         audio: 'scarab',
         health: 800,
         speed: 0.04,
@@ -766,9 +766,19 @@ window.MonsterData = {
         width: 512,
         height: 512,
         data: null,
-        damage: 20,
+        damage: 5,
         lastAttack: 0,
-        attackCooldown: 1000
+        attackCooldown: 2000,
+        lastShot: 0,
+        burrowed: true,
+        healCooldown: 10000,
+        lastHeal: 0,
+        flee: false,
+        fleeTime: 0,
+        lastWanderTime: 0,
+        wanderCooldown: 9000,
+        dirX: 0,
+        dirY: 0
     },
     sphinx: {
         type: 'sphinx',

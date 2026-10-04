@@ -1756,7 +1756,7 @@ function updateGameObjects() {
         if (projectile.owner === 'player') {
             // Check collision with monsters
             for (const monster of game.monsters) {
-                if (!monster.isDead) {
+                if (!monster.isDead && !monster.burrowed) {
                     const dx = monster.x - projectile.x;
                     const dy = monster.y - projectile.y;
                     const distanceSq = dx * dx + dy * dy;
@@ -5733,6 +5733,161 @@ function updateGameObjects() {
                         }
                     }
                     break;
+                case 'scarab':
+                    const thedistance = Math.sqrt(distSq);
+                    const theinvDist = 1 / thedistance;
+                    const thedirX = dx * theinvDist * monster.speed;
+                    const thedirY = dy * theinvDist * monster.speed;
+                    if (monster.health < 220 && !monster.flee && (monster.fleeTime == 0 || currentTime - monster.fleeTime > 8000)) {
+                        monster.flee = true;
+                        monster.fleeTime = currentTime;
+                    } else if ((monster.flee && monster.health > 600) || (monster.flee && distSq < 50 && currentTime - monster.fleeTime > 8000)) {
+                        monster.flee = false;
+                    }
+                    if ((!monster.lastHeal || currentTime - monster.lastHeal >= monster.healCooldown) && monster.health <= 680) {
+                        monster.health += 120;
+                        monster.lastHeal = currentTime;
+                    }
+                    if (!monster.flee) {
+                        if (distSq < 100) {
+                            if (distSq > 6) {
+                                // TOO FAR → move toward player
+                                moveX = thedirX;
+                                moveY = thedirY;
+                                // Try to move in X direction
+                                const newX = monster.x + moveX;
+                                if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
+                                    monster.x = newX;
+                                }
+                                // Try to move in Y direction
+                                const newY = monster.y + moveY;
+                                if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
+                                    monster.y = newY;
+                                }
+                            } else {
+                                // IN RANGE → strafe sideways
+                                const perpX = -thedirY;
+                                const perpY = thedirX;
+                                // Optional: switch left/right occasionally
+                                monster.strafeDir = monster.strafeDir ?? (Math.random() < 0.5 ? -1 : 1);
+                                if (Math.random() < 0.01) {
+                                    monster.strafeDir *= -1;
+                                }
+                                moveX = perpX * monster.strafeDir * 0.25;
+                                moveY = perpY * monster.strafeDir * 0.25;
+                                // Try to move in X direction
+                                const newX = monster.x + moveX;
+                                if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
+                                    monster.x = newX;
+                                }
+                                // Try to move in Y direction
+                                const newY = monster.y + moveY;
+                                if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
+                                    monster.y = newY;
+                                }
+                                if (distSq < 6 && isVisibleToPlayer(monster)) {
+                                    if (!monster.lastShot || currentTime - monster.lastShot >= monster.attackCooldown) {
+                                        const angle = radiansToDegrees(Math.atan2(dy, dx));
+                                        game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'orb', game.projectileMap['orb'], 'monster', 0.1, monster.damage));
+                                        game.projectiles.push(new Projectile(monster.x, monster.y, angle + 2, 'orb', game.projectileMap['orb'], 'monster', 0.1, monster.damage));
+                                        game.projectiles.push(new Projectile(monster.x, monster.y, angle - 2, 'orb', game.projectileMap['orb'], 'monster', 0.1, monster.damage));
+                                        playSound('orb-sound');
+                                        monster.lastShot = currentTime;
+                                    }
+                                }
+                            }
+                        } else {
+                            // Pick a new random direction every wanderCooldown seconds
+                            if (!monster.lastWanderTime || currentTime - monster.lastWanderTime >= monster.wanderCooldown) {
+                                const angle = Math.random() * Math.PI * 2;
+                                monster.dirX = Math.cos(angle);
+                                monster.dirY = Math.sin(angle);
+
+                                monster.lastWanderTime = currentTime;
+                            }
+
+                            // Move using the stored random direction
+                            const mydirX = monster.dirX * 0.025;
+                            const mydirY = monster.dirY * 0.025;
+
+                            // Try to move in X direction
+                            const newX = monster.x + mydirX;
+                            if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
+                                monster.x = newX;
+                            } else {
+                                // Hit a wall → pick a new direction immediately
+                                monster.lastWanderTime = 0;
+                            }
+
+                            // Try to move in Y direction
+                            const newY = monster.y + mydirY;
+                            if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
+                                monster.y = newY;
+                            } else {
+                                // Hit a wall → pick a new direction immediately
+                                monster.lastWanderTime = 0;
+                            }
+                        }
+                    } else {
+                        // dirX, dirY = direction FROM monster TO player
+                        // So fleeing direction is the opposite:
+                        const fleeX = -thedirX;
+                        const fleeY = -thedirY;
+
+                        // Perpendicular (strafe)
+                        const perpX = -thedirY;
+                        const perpY = thedirX;
+                        // Control how much the monster flees vs strafes
+                        const fleeWeight = 0.8;   // mostly fleeing
+                        const strafeWeight = 0.2; // small sideways motion
+
+                        monster.strafeDir = monster.strafeDir ?? (Math.random() < 0.5 ? -1 : 1);
+                        if (Math.random() < 0.01) {
+                            monster.strafeDir *= -1;
+                        }
+
+                        // Blend the directions
+                        let moveX = (fleeX * fleeWeight) + (perpX * monster.strafeDir * strafeWeight);
+                        let moveY = (fleeY * fleeWeight) + (perpY * monster.strafeDir * strafeWeight);
+
+                        // Normalize so speed stays consistent
+                        const length = Math.hypot(moveX, moveY);
+                        if (length > 0) {
+                            moveX = (moveX / length) * monster.speed;
+                            moveY = (moveY / length) * monster.speed;
+                        }
+
+                        const newX = monster.x + moveX;
+                        if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
+                            monster.x = newX;
+                        }
+
+                        const newY = monster.y + moveY;
+                        if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
+                            monster.y = newY;
+                        }
+                    }
+                    if (distSq < 10 && monster.burrowed) {
+                        monster.burrowed = false;
+                        monster.skin = 'scarab-sprite';
+                        const monsterTexture = {
+                            id: monster.skin,
+                            width: monster.width,
+                            height: monster.height
+                        };
+                        monster.data = getTextureData(monsterTexture);
+                    }
+                    if (distSq > 10 && !monster.burrowed) {
+                        monster.burrowed = true;
+                        monster.skin = 'scarabburrowed-sprite';
+                        const monsterTexture = {
+                            id: monster.skin,
+                            width: monster.width,
+                            height: monster.height
+                        };
+                        monster.data = getTextureData(monsterTexture);
+                    }
+                    break;
                 default:
                     if (distSq > 0.25 && distSq < 100) {
                         const distance = Math.sqrt(distSq);
@@ -6721,7 +6876,7 @@ function drawSpriteInWorld(sprite) {
 
     if (sprite.type && sprite.health !== undefined && sprite.isDead === false) {
         // Only draw health bar if sprite is visible on screen
-        if (spriteX >= 0 && spriteX <= game.projection.width) {
+        if (spriteX >= 0 && spriteX <= game.projection.width && !sprite.burrowed) {
             // Health bar settings
             const barWidth = Math.max(24, Math.floor(spriteWidth * 0.7));
             const barHeight = 6;
