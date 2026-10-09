@@ -1614,8 +1614,7 @@ function updateMonsterGrid() {
 
 // Check if a position is occupied by another monster
 
-function isMonsterAtPosition(x, y, excludeMonster = null, allowedTypes = null) {
-    const checkRadius = 0.5;
+function isMonsterAtPosition(x, y, excludeMonster = null, allowedTypes = null, checkRadius = 0.5) {
     const gridX = Math.floor(x);
     const gridY = Math.floor(y);
     for (let cellX = gridX - 1; cellX <= gridX + 1; cellX++) {
@@ -1632,6 +1631,123 @@ function isMonsterAtPosition(x, y, excludeMonster = null, allowedTypes = null) {
         }
     }
     return false;
+}
+
+// Move prisoner monster toward target position using pathfinding
+
+function movePrisonerTowardTarget(monster, targetX, targetY, map) {
+    const mapHeight = map.length;
+    const mapWidth = map[0]?.length ?? 0;
+    const startX = Math.floor(monster.x);
+    const startY = Math.floor(monster.y);
+    const goalX = Math.floor(targetX);
+    const goalY = Math.floor(targetY);
+    if (goalX < 0 || goalX >= mapWidth || goalY < 0 || goalY >= mapHeight || map[goalY][goalX] === 2) return;
+
+    const goalKey = goalY * mapWidth + goalX;
+    const occupied = new Set();
+    for (const other of game.monsters) {
+        if (!other.isDead && other !== monster) {
+            occupied.add(Math.floor(other.y) * mapWidth + Math.floor(other.x));
+        }
+    }
+
+    const currentTime = Date.now();
+    const path = monster.prisonerPath;
+    const nextKey = path?.[0] ? path[0].y * mapWidth + path[0].x : null;
+    if (!path || monster.prisonerPathGoal !== goalKey || currentTime >= monster.prisonerPathTime || (nextKey !== null && occupied.has(nextKey) && nextKey !== goalKey)) {
+        const startKey = startY * mapWidth + startX;
+        const previous = new Int32Array(mapWidth * mapHeight);
+        previous.fill(-2);
+        const queue = new Int32Array(mapWidth * mapHeight);
+        let head = 0;
+        let tail = 0;
+        queue[tail++] = startKey;
+        previous[startKey] = -1;
+
+        while (head < tail && previous[goalKey] === -2) {
+            const current = queue[head++];
+            const x = current % mapWidth;
+            const y = Math.floor(current / mapWidth);
+            const neighbors = [current - 1, current + 1, current - mapWidth, current + mapWidth];
+            for (let i = 0; i < neighbors.length; i++) {
+                const next = neighbors[i];
+                const nextX = next % mapWidth;
+                const nextY = Math.floor(next / mapWidth);
+                if (nextX < 0 || nextX >= mapWidth || nextY < 0 || nextY >= mapHeight) continue;
+                if ((i === 0 && x === 0) || (i === 1 && x === mapWidth - 1)) continue;
+                if (previous[next] !== -2 || map[nextY][nextX] === 2 || (occupied.has(next) && next !== goalKey)) continue;
+                previous[next] = current;
+                queue[tail++] = next;
+            }
+        }
+
+        const newPath = [];
+        if (previous[goalKey] !== -2) {
+            for (let cell = goalKey; cell !== startKey; cell = previous[cell]) {
+                newPath.push({ x: cell % mapWidth, y: Math.floor(cell / mapWidth) });
+            }
+            newPath.reverse();
+        }
+        monster.prisonerPath = newPath;
+        monster.prisonerPathGoal = goalKey;
+        monster.prisonerPathTime = currentTime + 500;
+    }
+
+    while (monster.prisonerPath.length && Math.floor(monster.x) === monster.prisonerPath[0].x && Math.floor(monster.y) === monster.prisonerPath[0].y) {
+        monster.prisonerPath.shift();
+    }
+
+    let waypointX = targetX;
+    let waypointY = targetY;
+    let usingIntermediateWaypoint = false;
+    if (monster.prisonerPath.length) {
+        const waypoint = monster.prisonerPath[0];
+        if (waypoint.x !== goalX || waypoint.y !== goalY) {
+            waypointX = waypoint.x + 0.5;
+            waypointY = waypoint.y + 0.5;
+            usingIntermediateWaypoint = true;
+        }
+    } else if (startX !== goalX || startY !== goalY) {
+        return;
+    }
+
+    const dx = waypointX - monster.x;
+    const dy = waypointY - monster.y;
+    const distance = Math.hypot(dx, dy);
+    if (distance === 0) return;
+    const step = Math.min(monster.speed, distance);
+    let moveX = dx / distance;
+    let moveY = dy / distance;
+    if (usingIntermediateWaypoint) {
+        const targetDistance = Math.hypot(targetX - monster.x, targetY - monster.y);
+        if (targetDistance > 0) {
+            const targetDirX = (targetX - monster.x) / targetDistance;
+            const targetDirY = (targetY - monster.y) / targetDistance;
+            const forward = moveX * targetDirX + moveY * targetDirY;
+            const lateralX = moveX - targetDirX * forward;
+            const lateralY = moveY - targetDirY * forward;
+            moveX = targetDirX * forward + lateralX * 0.7;
+            moveY = targetDirY * forward + lateralY * 0.7;
+        }
+    }
+    const stepX = moveX * step;
+    const stepY = moveY * step;
+    const canMoveTo = (x, y) => {
+        const tileX = Math.floor(x);
+        const tileY = Math.floor(y);
+        return map[tileY] && map[tileY][tileX] !== 2 && !isMonsterAtPosition(x, y, monster, null, 0.25);
+    };
+    const candidates = [
+        { x: monster.x + stepX, y: monster.y + stepY },
+        { x: monster.x + stepX, y: monster.y },
+        { x: monster.x, y: monster.y + stepY }
+    ];
+    const destination = candidates.find(candidate => canMoveTo(candidate.x, candidate.y));
+    if (destination) {
+        monster.x = destination.x;
+        monster.y = destination.y;
+    }
 }
 
 // Remove dead monsters from the game.monsters array
@@ -5044,20 +5160,7 @@ function updateGameObjects() {
                             if (!RclosestEnemy || !Number.isFinite(RclosestEnemy.enemy.x) || !Number.isFinite(RclosestEnemy.enemy.y)) {
                                 //move towards player if no enemies
                                 if (distSq > 0.25 && distSq < 100 && isVisibleToPlayer(monster)) {
-                                    const distance = Math.sqrt(distSq);
-                                    const invDist = 1 / distance;
-                                    const dirX = dx * invDist * monster.speed;
-                                    const dirY = dy * invDist * monster.speed;
-                                    // Try to move in X direction
-                                    const newX = monster.x + dirX;
-                                    if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
-                                        monster.x = newX;
-                                    }
-                                    // Try to move in Y direction
-                                    const newY = monster.y + dirY;
-                                    if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
-                                        monster.y = newY;
-                                    }
+                                    movePrisonerTowardTarget(monster, game.player.x, game.player.y, map);
                                 }
                                 if (distSq < 0.5 && (!monster.lastAttack || currentTime - monster.lastAttack >= monster.attackCooldown)) {
                                     // Attack the player
@@ -5079,20 +5182,7 @@ function updateGameObjects() {
                                 const RenemyDistSq = Redx * Redx + Redy * Redy;
                                 if (distSq <= RenemyDistSq) {
                                     if (distSq > 0.25 && distSq < 100 && isVisibleToPlayer(monster)) {
-                                        const distance = Math.sqrt(distSq);
-                                        const invDist = 1 / distance;
-                                        const dirX = dx * invDist * monster.speed;
-                                        const dirY = dy * invDist * monster.speed;
-                                        // Try to move in X direction
-                                        const newX = monster.x + dirX;
-                                        if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
-                                            monster.x = newX;
-                                        }
-                                        // Try to move in Y direction
-                                        const newY = monster.y + dirY;
-                                        if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
-                                            monster.y = newY;
-                                        }
+                                        movePrisonerTowardTarget(monster, game.player.x, game.player.y, map);
                                     }
                                     if (distSq < 0.5 && (!monster.lastAttack || currentTime - monster.lastAttack >= monster.attackCooldown)) {
                                         // Attack the player
@@ -5109,20 +5199,7 @@ function updateGameObjects() {
                                     }
                                 } else {                                  
                                     if (RenemyDistSq > 0.25 && isVisibleToMonster(monster, RclosestEnemy.enemy)) {
-                                        const distance = Math.sqrt(RenemyDistSq);
-                                        const invDist = 1 / distance;
-                                        const dirX = Redx * invDist * monster.speed;
-                                        const dirY = Redy * invDist * monster.speed;
-                                        // Try to move in X direction
-                                        const newX = monster.x + dirX;
-                                        if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
-                                            monster.x = newX;
-                                        }
-                                        // Try to move in Y direction
-                                        const newY = monster.y + dirY;
-                                        if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
-                                            monster.y = newY;
-                                        }
+                                        movePrisonerTowardTarget(monster, RclosestEnemy.enemy.x, RclosestEnemy.enemy.y, map);
                                         if (RenemyDistSq < 0.5 && (!monster.lastAttack || currentTime - monster.lastAttack >= monster.attackCooldown)) {
                                             // Attack the monster
                                             RclosestEnemy.enemy.health -= monster.damage;
@@ -5163,20 +5240,7 @@ function updateGameObjects() {
                             }, null);
                             if (!PclosestEnemy || !Number.isFinite(PclosestEnemy.enemy.x) || !Number.isFinite(PclosestEnemy.enemy.y)) {
                                 if (distSq > 2) {
-                                    const distance = Math.sqrt(distSq);
-                                    const invDist = 1 / distance;
-                                    const dirX = dx * invDist * monster.speed;
-                                    const dirY = dy * invDist * monster.speed;
-                                    // Try to move in X direction
-                                    const newX = monster.x + dirX;
-                                    if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
-                                        monster.x = newX;
-                                    }
-                                    // Try to move in Y direction
-                                    const newY = monster.y + dirY;
-                                    if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
-                                        monster.y = newY;
-                                    }
+                                    movePrisonerTowardTarget(monster, game.player.x, game.player.y, map);
                                 }
                                 break; // NaN safeguard
                             } else {
@@ -5184,20 +5248,7 @@ function updateGameObjects() {
                                 const enemyY = PclosestEnemy.enemy.y - monster.y;
                                 const enemydistSq = enemyX * enemyX + enemyY * enemyY;
                                 if (enemydistSq > 0.25 && isVisibleToMonster(monster,PclosestEnemy.enemy)) {
-                                    const distance = Math.sqrt(enemydistSq);
-                                    const invDist = 1 / distance;
-                                    const dirX = enemyX * invDist * monster.speed;
-                                    const dirY = enemyY * invDist * monster.speed;
-                                    // Try to move in X direction
-                                    const newX = monster.x + dirX;
-                                    if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
-                                        monster.x = newX;
-                                    }
-                                    // Try to move in Y direction
-                                    const newY = monster.y + dirY;
-                                    if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
-                                        monster.y = newY;
-                                    }
+                                    movePrisonerTowardTarget(monster, PclosestEnemy.enemy.x, PclosestEnemy.enemy.y, map);
                                     if (enemydistSq < 0.5 && (!monster.lastAttack || currentTime - monster.lastAttack >= monster.attackCooldown)) {
                                         // Attack the monster
                                         PclosestEnemy.enemy.health -= monster.damage;
@@ -5205,20 +5256,7 @@ function updateGameObjects() {
                                         monster.lastAttack = currentTime;
                                     }
                                 } else if (distSq > 2) {
-                                    const distance = Math.sqrt(distSq);
-                                    const invDist = 1 / distance;
-                                    const dirX = dx * invDist * monster.speed;
-                                    const dirY = dy * invDist * monster.speed;
-                                    // Try to move in X direction
-                                    const newX = monster.x + dirX;
-                                    if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
-                                        monster.x = newX;
-                                    }
-                                    // Try to move in Y direction
-                                    const newY = monster.y + dirY;
-                                    if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
-                                        monster.y = newY;
-                                    }
+                                    movePrisonerTowardTarget(monster, game.player.x, game.player.y, map);
                                 }
                             }
                         } else {

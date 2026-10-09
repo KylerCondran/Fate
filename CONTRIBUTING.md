@@ -80,7 +80,6 @@
 - issue with sprite scaling
 - asteroids can go negative map coordinates and cause a NaN error, need to fix that
 - frogs all charge at same time
-- prisoner ai gets stuck on eachother
 - summoned allies can injure yetis
 - rockets dont explode on yetis
 - cell key stays upon death
