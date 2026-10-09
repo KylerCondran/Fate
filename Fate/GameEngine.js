@@ -5929,6 +5929,7 @@ function updateGameObjects() {
                         monster.isDead = true;
                         game.sprites.push({ id: 'enemyportal-sprite', x: monster.x, y: monster.y, width: 512, height: 512, data: getTextureData({ id: 'enemyportal-sprite', width: 512, height: 512 }), spawnTime: Date.now(), cullTime: 2000 });
                         game.wizardState.spawnChance = 2;
+                        showNotification('The Wizard has escaped!');
                         playSound('portal-sound');
                         break;
                     }
@@ -5956,20 +5957,9 @@ function updateGameObjects() {
                         const invDist = 1 / distance;
                         const dirX = dx * invDist;
                         const dirY = dy * invDist;
-                        if (distSq > 45) {
+                        if (distSq > 25) {
                             // TOO FAR → move toward player
-                            moveX = dirX * monster.speed;
-                            moveY = dirY * monster.speed;
-                            // Try to move in X direction
-                            const newX = monster.x + moveX;
-                            if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
-                                monster.x = newX;
-                            }
-                            // Try to move in Y direction
-                            const newY = monster.y + moveY;
-                            if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
-                                monster.y = newY;
-                            }
+                            moveMonsterTowardTarget(monster, game.player.x, game.player.y, map);
                         } else {
                             // IN RANGE → strafe sideways
                             const perpX = -dirY;
@@ -6357,6 +6347,7 @@ function movePlayer() {
             game.wizardState.activationTime = 0;
             game.wizardState.spawnDelay = 0;
             game.wizardState.spawnChance = 2;
+            showNotification('The Wizard has ambushed you!');
             playSound('portal-sound');
             const spot = validSpots[Math.floor(Math.random() * validSpots.length)];
             const wizard = { ...window.MonsterData.wizard, id: `monster_${game.monsterTotal}`, x: spot.x, y: spot.y, spawnTime: Date.now() };

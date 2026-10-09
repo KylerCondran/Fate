@@ -82,3 +82,4 @@
 - summoned allies can injure yetis
 - rockets dont explode on yetis
 - cell key stays upon death
+- acid and burning debris damage zones are not cleared on level reset

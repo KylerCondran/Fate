@@ -114,7 +114,7 @@ window.LevelData = [
         wall: 10,
         background: 0,
         startlocation: { x: 2, y: 2 },
-        startAngle: 0,
+        startAngle: 65,
         equippedweapon: 1,
         completed: false
     },
@@ -244,7 +244,7 @@ window.LevelData = [
         wall: 0,
         background: 1,
         startlocation: { x: 2, y: 9 },
-        startAngle: 0,
+        startAngle: 90,
         portalcoords: [
             { x: 2, y: 2, exitx: 6, exity: 9, exitangle: 0 },
             { x: 2, y: 17, exitx: 6, exity: 10, exitangle: 0 },
@@ -285,7 +285,7 @@ window.LevelData = [
         wall: 18,
         background: 1,
         startlocation: { x: 2, y: 2 },
-        startAngle: 0,
+        startAngle: 20,
         equippedweapon: 1,
         completed: false
     },
@@ -371,7 +371,7 @@ window.LevelData = [
         wall: 9,
         background: 3,
         startlocation: { x: 2, y: 2 },
-        startAngle: 0,
+        startAngle: 45,
         equippedweapon: 1,
         completed: false
     },
@@ -703,7 +703,7 @@ window.LevelData = [
         wall: 11,
         background: 0,
         startlocation: { x: 2, y: 2 },
-        startAngle: 0,
+        startAngle: 45,
         equippedweapon: 1,
         completed: false
     },
@@ -789,7 +789,7 @@ window.LevelData = [
         wall: 13,
         background: 3,
         startlocation: { x: 2, y: 2 },
-        startAngle: 0,
+        startAngle: 45,
         equippedweapon: 1,
         completed: false
     }
