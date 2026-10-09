@@ -38,6 +38,7 @@ let game = {
     playerFrozenTime: 0,
     playerFrozenDuration: 0,
     activeGravityWell: null,
+    sobekCurrent: null,
     wizardState: {
         killed: false,
         spawnChance: 0,
@@ -634,6 +635,7 @@ function loadLevel(levelIdx) {
     game.sprites = [];
     game.checkpoints = [];
     game.projectiles = [];
+    game.sobekCurrent = null;
     // Rebuild monsters and sprites from map
     game.monsterTotal = 0;
     game.monsterDefeated = 0;
@@ -1479,8 +1481,14 @@ class Projectile {
         this.type = type;
         this.texture = texture;
         this.damage = damage;
+        this.curveRate = 0;
+        this.curveTicks = 0;
     }
     update() {
+        if (this.curveRate && (this.curveDuration === undefined || this.curveTicks < this.curveDuration)) {
+            this.angle += this.curveRate;
+            this.curveTicks++;
+        }
         this.x += Math.cos(degreeToRadians(this.angle)) * this.speed;
         this.y += Math.sin(degreeToRadians(this.angle)) * this.speed;
     }
@@ -1749,6 +1757,8 @@ function moveMonsterTowardTarget(monster, targetX, targetY, map) {
         monster.y = destination.y;
     }
 }
+
+// Find a good hiding spot for a soldier monster to take cover from the player
 
 function findSoldierCover(monster, map) {
     const mapHeight = map.length;
@@ -4481,14 +4491,17 @@ function updateGameObjects() {
                     const celestialY = celestialOBJ.y - monster.y;
                     const celestialdistSq = celestialX * celestialX + celestialY * celestialY;
                     if (monster.type == 'moon' && celestialOBJ.health < 1600 && monster.invulnerable) {
+                        showNotification('Anubis unleashed the Moon! Destroy it fast!');
                         monster.invulnerable = false;
                         monster.speed = 0.06;
                     }
                     if (monster.type == 'sun' && celestialOBJ.health < 1100 && monster.invulnerable) {
+                        showNotification('Anubis unleashed the Sun! Destroy it fast!');
                         monster.invulnerable = false;
                         monster.speed = 0.06;
                     }
                     if (monster.type == 'saturn' && celestialOBJ.health < 600 && monster.invulnerable) {
+                        showNotification('Anubis unleashed Saturn! Destroy it fast!');
                         monster.invulnerable = false;
                         monster.speed = 0.06;
                     }
@@ -4617,6 +4630,7 @@ function updateGameObjects() {
                             updateMonsterGrid();
                         }
                         monster.shieldHealth = monster.maxShieldHealth;
+                        showNotification('Tutankhamun opened a Frog portal! Close it fast!');
                         playSound('portal-sound');
                     }
                     if (monster.health < 1000 && !monster.spawnMummyPortal) {
@@ -4637,6 +4651,7 @@ function updateGameObjects() {
                             updateMonsterGrid();
                         }
                         monster.shieldHealth = monster.maxShieldHealth;
+                        showNotification('Tutankhamun opened a Mummy portal! Close it fast!');
                         playSound('portal-sound');
                     }
                     if (monster.health < 500 && !monster.spawnKamikazePortal) {
@@ -4657,6 +4672,7 @@ function updateGameObjects() {
                             updateMonsterGrid();
                         }
                         monster.shieldHealth = monster.maxShieldHealth;
+                        showNotification('Tutankhamun opened a Kamikaze portal! Close it fast!');
                         playSound('portal-sound');
                     }
                     if (distSq < 64 && isVisibleToPlayer(monster)) {
@@ -4744,6 +4760,180 @@ function updateGameObjects() {
                         }
                     }
                     break;
+                case 'crocodile': {
+                    const current = game.sobekCurrent;
+                    let targetX = game.player.x;
+                    let targetY = game.player.y;
+                    if (current) {
+                        if (monster.orbitSlot === undefined) {
+                            monster.orbitSlot = (parseInt(String(monster.id).replace(/\D/g, ''), 10) || 0) % 6;
+                        }
+                        const orbitAngle = monster.orbitSlot * Math.PI / 3 + (current.telegraph ? 0 : current.progress * Math.PI * 2);
+                        targetX = current.x + Math.cos(orbitAngle) * 2.2;
+                        targetY = current.y + Math.sin(orbitAngle) * 2.2;
+                        monster.speed *= 1.5;
+                    }
+                    const targetDx = targetX - monster.x;
+                    const targetDy = targetY - monster.y;
+                    const targetDistSq = targetDx * targetDx + targetDy * targetDy;
+                    if (targetDistSq > 0.25 && targetDistSq < 300 && isVisibleToPlayer(monster)) {
+                        moveMonsterTowardTarget(monster, targetX, targetY, map);
+                    }
+                    if (current) monster.speed /= 1.5;
+
+                    if (distSq < 0.5 && (!monster.lastAttack || currentTime - monster.lastAttack >= monster.attackCooldown)) {
+                        game.player.health -= monster.damage;
+                        game.lastMonsterToHitPlayer = 'Crocodile';
+                        monster.lastAttack = currentTime;
+                        playSound('injured-sound');
+                        if (game.player.health <= 0) {
+                            playSound('death-sound');
+                            endGameDeath();
+                        }
+                    }
+                    break;
+                }
+                case 'sobek': {
+                    const sobekCanSeePlayer = distSq < 225 && isVisibleToPlayer(monster);
+
+                    if (monster.whirlpoolWindupUntil && currentTime >= monster.whirlpoolWindupUntil) {
+                        monster.whirlpoolWindupUntil = 0;
+                        monster.whirlpoolUntil = currentTime + 2800;
+                    }
+                    if (monster.whirlpoolUntil && currentTime >= monster.whirlpoolUntil) {
+                        monster.whirlpoolUntil = 0;
+                        game.sobekCurrent = null;
+                    }
+                    if (!monster.whirlpoolWindupUntil && !monster.whirlpoolUntil && sobekCanSeePlayer &&
+                        (!monster.lastWhirlpool || currentTime - monster.lastWhirlpool >= 9000)) {
+                        monster.whirlpoolX = game.player.x;
+                        monster.whirlpoolY = game.player.y;
+                        monster.whirlpoolWindupUntil = currentTime + 750;
+                        monster.lastWhirlpool = currentTime;
+                        playSound('splash-sound');
+                        showNotification('Sobek is twisting the waters! Escape the Whirlpool!');
+                    }
+
+                    if (monster.whirlpoolWindupUntil > currentTime) {
+                        game.sobekCurrent = {
+                            x: monster.whirlpoolX,
+                            y: monster.whirlpoolY,
+                            radius: 5,
+                            progress: 1 - (monster.whirlpoolWindupUntil - currentTime) / 750,
+                            telegraph: true
+                        };
+                    } else if (monster.whirlpoolUntil > currentTime) {
+                        const duration = 2800;
+                        const elapsed = duration - (monster.whirlpoolUntil - currentTime);
+                        game.sobekCurrent = {
+                            x: monster.whirlpoolX,
+                            y: monster.whirlpoolY,
+                            radius: 5,
+                            progress: elapsed / duration,
+                            telegraph: false
+                        };
+
+                        const currentX = monster.whirlpoolX - game.player.x;
+                        const currentY = monster.whirlpoolY - game.player.y;
+                        const currentDistance = Math.hypot(currentX, currentY);
+                        if (currentDistance < game.sobekCurrent.radius) {
+                            if (currentDistance > 0.25) {
+                                const radialX = currentX / currentDistance;
+                                const radialY = currentY / currentDistance;
+                                const strength = 0.075 * (0.4 + 0.6 * currentDistance / game.sobekCurrent.radius);
+                                const flowX = radialY * strength + radialX * strength * 0.25;
+                                const flowY = -radialX * strength + radialY * strength * 0.25;
+                                const newPlayerX = game.player.x + flowX;
+                                const newPlayerY = game.player.y + flowY;
+                                if (map[Math.floor(game.player.y)] && map[Math.floor(game.player.y)][Math.floor(newPlayerX)] !== 2) {
+                                    game.player.x = newPlayerX;
+                                }
+                                if (map[Math.floor(newPlayerY)] && map[Math.floor(newPlayerY)][Math.floor(game.player.x)] !== 2) {
+                                    game.player.y = newPlayerY;
+                                }
+                            }
+                            if (!monster.lastWhirlpoolDamage || currentTime - monster.lastWhirlpoolDamage >= 850) {
+                                monster.lastWhirlpoolDamage = currentTime;
+                                if (currentDistance < 1.8) {
+                                    game.player.health -= 12;
+                                    game.lastMonsterToHitPlayer = 'Sobeks Whirlpool';
+                                    playSound('injured-sound');
+                                }
+                                if (game.player.health <= 0) {
+                                    playSound('death-sound');
+                                    endGameDeath();
+                                }
+                            }
+                        }
+                    }
+
+                    if (sobekCanSeePlayer && distSq < 225 &&
+                        (!monster.lastShot || currentTime - monster.lastShot >= 2200)) {
+                        const angle = radiansToDegrees(Math.atan2(dy, dx)) + monster.spiralPhase;
+                        for (let i = 0; i < 4; i++) {
+                            const projectile = new Projectile(monster.x, monster.y, angle + i * 90, 'waterorb', game.projectileMap['waterorb'], 'monster', 0.025, 5);
+                            projectile.curveRate = 3;
+                            projectile.curveDuration = 100;
+                            game.projectiles.push(projectile);
+                        }
+                        monster.spiralPhase = (monster.spiralPhase + 18) % 360;
+                        playSound('waterorb-sound');
+                        monster.lastShot = currentTime;
+                    }
+
+                    if (distSq > 20 && distSq < 400 && isVisibleToPlayer(monster)) {
+                        moveMonsterTowardTarget(monster, game.player.x, game.player.y, map);
+                    }
+                    if (monster.health < 1450 && !monster.spawnPhaseOneCrocs) {
+                        monster.spawnPhaseOneCrocs = true;
+                        for (let i = 0; i < (2 * spawnModifier); i++) {
+                            const validSpots = getOpenSpawnPositions(Math.floor(monster.x), Math.floor(monster.y), 5);
+                            if (validSpots.length == 0) continue;
+                            const spot = validSpots[Math.floor(Math.random() * validSpots.length)];
+                            const crocs = { ...window.MonsterData.crocodile, id: `monster_${game.monsterTotal}`, x: spot.x, y: spot.y };
+                            const monsterTexture = {
+                                id: crocs.skin,
+                                width: crocs.width,
+                                height: crocs.height
+                            };
+                            crocs.data = getTextureData(monsterTexture);
+                            game.monsterTotal++;
+                            game.monsters.push(crocs);
+                            updateMonsterGrid();
+                        }
+                        playSound('portal-sound');
+                    }
+                    if (monster.health < 720 && !monster.spawnPhaseTwoCrocs) {
+                        monster.spawnPhaseTwoCrocs = true;
+                        for (let i = 0; i < (3 * spawnModifier); i++) {
+                            const validSpots = getOpenSpawnPositions(Math.floor(monster.x), Math.floor(monster.y), 5);
+                            if (validSpots.length == 0) continue;
+                            const spot = validSpots[Math.floor(Math.random() * validSpots.length)];
+                            const crocs = { ...window.MonsterData.crocodile, id: `monster_${game.monsterTotal}`, x: spot.x, y: spot.y };
+                            const monsterTexture = {
+                                id: crocs.skin,
+                                width: crocs.width,
+                                height: crocs.height
+                            };
+                            crocs.data = getTextureData(monsterTexture);
+                            game.monsterTotal++;
+                            game.monsters.push(crocs);
+                            updateMonsterGrid();
+                        }
+                        playSound('portal-sound');
+                    }
+                    if (distSq < 0.5 && (!monster.lastAttack || currentTime - monster.lastAttack >= monster.attackCooldown)) {
+                        game.player.health -= monster.damage;
+                        game.lastMonsterToHitPlayer = 'Sobek';
+                        monster.lastAttack = currentTime;
+                        playSound('injured-sound');
+                        if (game.player.health <= 0) {
+                            playSound('death-sound');
+                            endGameDeath();
+                        }
+                    }
+                    break;
+                }
                 case 'portal':
                     // SPAWN FROG
                     if (monster.spawnType == 'frog') {
@@ -6916,6 +7106,25 @@ function drawFloor(x1, wallHeight, rayAngle) {
                     Math.floor(color.b * (1 - ringGlow * 0.8) + 0 * ringGlow),
                     color.a
                 );
+            }
+        }
+
+        // Check if this floor tile is in the whirlpool well
+        if (game.sobekCurrent) {
+            const current = game.sobekCurrent;
+            const dx = tilex - current.x;
+            const dy = tiley - current.y;
+            const distanceToCurrent = Math.hypot(dx, dy);
+            if (distanceToCurrent < current.radius) {
+                const wellTexture = game.textures[10]; // water texture
+                const well_x = (Math.floor(tilex * wellTexture.width) + Math.floor(current.progress * 100)) % wellTexture.width;
+                const well_y = (Math.floor(tiley * wellTexture.height)) % wellTexture.height;
+                color = wellTexture.data[well_x + well_y * wellTexture.width];
+                //const intensity = current.telegraph ? Math.max(0, 1 - Math.abs(distanceToCurrent - current.radius * current.progress) / 0.35) * 0.65 : (0.14 + swirl * 0.22) * (1 - current.progress * 0.35);
+                //color = new Color(Math.floor(color.r * (1 - intensity)), Math.floor(color.g * (1 - intensity) + 45 * intensity), Math.floor(color.b * (1 - intensity) + 210 * intensity), color.a);
+                if (!current.telegraph && distanceToCurrent < 1.8) {
+                    color = new Color(Math.floor(color.r * 0.55 + 110), Math.floor(color.g * 0.55 + 20), Math.floor(color.b * 0.55 + 30), color.a);
+                }
             }
         }
 
