@@ -1633,9 +1633,9 @@ function isMonsterAtPosition(x, y, excludeMonster = null, allowedTypes = null, c
     return false;
 }
 
-// Move prisoner monster toward target position using pathfinding
+// Move monster toward target position using pathfinding
 
-function movePrisonerTowardTarget(monster, targetX, targetY, map) {
+function moveMonsterTowardTarget(monster, targetX, targetY, map) {
     const mapHeight = map.length;
     const mapWidth = map[0]?.length ?? 0;
     const startX = Math.floor(monster.x);
@@ -1653,9 +1653,9 @@ function movePrisonerTowardTarget(monster, targetX, targetY, map) {
     }
 
     const currentTime = Date.now();
-    const path = monster.prisonerPath;
+    const path = monster.navigationPath;
     const nextKey = path?.[0] ? path[0].y * mapWidth + path[0].x : null;
-    if (!path || monster.prisonerPathGoal !== goalKey || currentTime >= monster.prisonerPathTime || (nextKey !== null && occupied.has(nextKey) && nextKey !== goalKey)) {
+    if (!path || monster.navigationPathGoal !== goalKey || currentTime >= monster.navigationPathTime || (nextKey !== null && occupied.has(nextKey) && nextKey !== goalKey)) {
         const startKey = startY * mapWidth + startX;
         const previous = new Int32Array(mapWidth * mapHeight);
         previous.fill(-2);
@@ -1689,20 +1689,20 @@ function movePrisonerTowardTarget(monster, targetX, targetY, map) {
             }
             newPath.reverse();
         }
-        monster.prisonerPath = newPath;
-        monster.prisonerPathGoal = goalKey;
-        monster.prisonerPathTime = currentTime + 500;
+        monster.navigationPath = newPath;
+        monster.navigationPathGoal = goalKey;
+        monster.navigationPathTime = currentTime + 500;
     }
 
-    while (monster.prisonerPath.length && Math.floor(monster.x) === monster.prisonerPath[0].x && Math.floor(monster.y) === monster.prisonerPath[0].y) {
-        monster.prisonerPath.shift();
+    while (monster.navigationPath.length && Math.floor(monster.x) === monster.navigationPath[0].x && Math.floor(monster.y) === monster.navigationPath[0].y) {
+        monster.navigationPath.shift();
     }
 
     let waypointX = targetX;
     let waypointY = targetY;
     let usingIntermediateWaypoint = false;
-    if (monster.prisonerPath.length) {
-        const waypoint = monster.prisonerPath[0];
+    if (monster.navigationPath.length) {
+        const waypoint = monster.navigationPath[0];
         if (waypoint.x !== goalX || waypoint.y !== goalY) {
             waypointX = waypoint.x + 0.5;
             waypointY = waypoint.y + 0.5;
@@ -1748,6 +1748,57 @@ function movePrisonerTowardTarget(monster, targetX, targetY, map) {
         monster.x = destination.x;
         monster.y = destination.y;
     }
+}
+
+function findSoldierCover(monster, map) {
+    const mapHeight = map.length;
+    const mapWidth = map[0]?.length ?? 0;
+    const player = { x: game.player.x, y: game.player.y };
+    const wallOffsets = [[1, 0], [-1, 0], [0, 1], [0, -1]];
+    const peekOffsets = [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [1, -1], [-1, 1], [-1, -1]];
+    let bestCover = null;
+    let bestScore = Infinity;
+
+    for (let y = Math.max(1, Math.floor(monster.y) - 5); y < Math.min(mapHeight - 1, Math.floor(monster.y) + 6); y++) {
+        for (let x = Math.max(1, Math.floor(monster.x) - 5); x < Math.min(mapWidth - 1, Math.floor(monster.x) + 6); x++) {
+            if (map[y][x] === 2) continue;
+
+            const hide = { x: x + 0.5, y: y + 0.5 };
+            if (isMonsterAtPosition(hide.x, hide.y, monster)) continue;
+            if (!wallOffsets.some(([offsetX, offsetY]) => {
+                const wall = map[y + offsetY]?.[x + offsetX];
+                return wall === 2 || wall === 100;
+            })) continue;
+            if (isVisibleToMonster(hide, player)) continue;
+
+            const hideDx = hide.x - monster.x;
+            const hideDy = hide.y - monster.y;
+            const hideDistanceSq = hideDx * hideDx + hideDy * hideDy;
+            if (hideDistanceSq > 36) continue;
+
+            for (const [offsetX, offsetY] of peekOffsets) {
+                const peekX = x + offsetX + 0.5;
+                const peekY = y + offsetY + 0.5;
+                const peekTileX = Math.floor(peekX);
+                const peekTileY = Math.floor(peekY);
+                if (!map[peekTileY] || map[peekTileY][peekTileX] === 2 || isMonsterAtPosition(peekX, peekY, monster)) continue;
+                if (!isVisibleToMonster({ x: peekX, y: peekY }, player)) continue;
+
+                const playerDx = peekX - player.x;
+                const playerDy = peekY - player.y;
+                const playerDistanceSq = playerDx * playerDx + playerDy * playerDy;
+                if (playerDistanceSq > 100) continue;
+
+                const score = hideDistanceSq + playerDistanceSq * 0.02;
+                if (score < bestScore) {
+                    bestScore = score;
+                    bestCover = { hide, peek: { x: peekX, y: peekY } };
+                }
+            }
+        }
+    }
+
+    return bestCover;
 }
 
 // Remove dead monsters from the game.monsters array
@@ -2440,28 +2491,76 @@ function updateGameObjects() {
                     }
                     break;
                 case 'soldier':
-                    if (distSq < 64 && isVisibleToPlayer(monster)) {
-                        if (!monster.lastShot || currentTime - monster.lastShot >= monster.attackCooldown) {
+                    const playerPosition = { x: game.player.x, y: game.player.y };
+                    const coverIsExposed = monster.coverSpot && isVisibleToMonster(monster.coverSpot, playerPosition);
+                    if (!monster.nextCoverSearch || currentTime >= monster.nextCoverSearch || coverIsExposed) {
+                        const cover = findSoldierCover(monster, map);
+                        monster.nextCoverSearch = currentTime + 3000;
+                        if (cover) {
+                            const coverChanged = !monster.coverSpot ||
+                                monster.coverSpot.x !== cover.hide.x || monster.coverSpot.y !== cover.hide.y;
+                            monster.coverSpot = cover.hide;
+                            monster.peekSpot = cover.peek;
+                            if (coverChanged) {
+                                monster.coverState = 'seeking';
+                                monster.nextPeekTime = 0;
+                            }
+                        } else {
+                            monster.coverSpot = null;
+                            monster.peekSpot = null;
+                        }
+                    }
+
+                    if (monster.coverSpot && monster.peekSpot) {
+                        const coverDistance = Math.hypot(monster.coverSpot.x - monster.x, monster.coverSpot.y - monster.y);
+                        const peekDistance = Math.hypot(monster.peekSpot.x - monster.x, monster.peekSpot.y - monster.y);
+
+                        if (monster.coverState === 'seeking') {
+                            if (coverDistance > 0.2) {
+                                moveMonsterTowardTarget(monster, monster.coverSpot.x, monster.coverSpot.y, map);
+                            } else {
+                                monster.coverState = 'hiding';
+                                monster.nextPeekTime = currentTime + 800;
+                            }
+                        } else if (monster.coverState === 'hiding') {
+                            if (currentTime >= monster.nextPeekTime) {
+                                monster.coverState = 'peeking';
+                                monster.peekStartTime = 0;
+                            }
+                        } else if (monster.coverState === 'peeking') {
+                            if (peekDistance > 0.2) {
+                                moveMonsterTowardTarget(monster, monster.peekSpot.x, monster.peekSpot.y, map);
+                            } else if (!monster.peekStartTime) {
+                                monster.peekStartTime = currentTime;
+                            } else if (currentTime - monster.peekStartTime >= 650) {
+                                monster.coverState = 'retreating';
+                            }
+
+                            if (peekDistance <= 0.2 && distSq < 64 && isVisibleToPlayer(monster) &&
+                                (!monster.lastShot || currentTime - monster.lastShot >= monster.attackCooldown)) {
+                                const angle = radiansToDegrees(Math.atan2(dy, dx));
+                                game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'bullet', game.projectileMap['bullet'], 'monster', 0.2, monster.damage));
+                                playSound('shoot-sound');
+                                monster.lastShot = currentTime;
+                            }
+                        } else if (monster.coverState === 'retreating') {
+                            if (coverDistance > 0.2) {
+                                moveMonsterTowardTarget(monster, monster.coverSpot.x, monster.coverSpot.y, map);
+                            } else {
+                                monster.coverState = 'hiding';
+                                monster.nextPeekTime = currentTime + 800 + Math.random() * 700;
+                            }
+                        }
+                    } else {
+                        if (distSq < 64 && isVisibleToPlayer(monster) &&
+                            (!monster.lastShot || currentTime - monster.lastShot >= monster.attackCooldown)) {
                             const angle = radiansToDegrees(Math.atan2(dy, dx));
                             game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'bullet', game.projectileMap['bullet'], 'monster', 0.2, monster.damage));
                             playSound('shoot-sound');
                             monster.lastShot = currentTime;
                         }
-                    }
-                    if (distSq > 30 && distSq < 200) {
-                        const distance = Math.sqrt(distSq);
-                        const invDist = 1 / distance;
-                        const dirX = dx * invDist * monster.speed;
-                        const dirY = dy * invDist * monster.speed;
-                        // Try to move in X direction
-                        const newX = monster.x + dirX;
-                        if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
-                            monster.x = newX;
-                        }
-                        // Try to move in Y direction
-                        const newY = monster.y + dirY;
-                        if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
-                            monster.y = newY;
+                        if (distSq > 30 && distSq < 200) {
+                            moveMonsterTowardTarget(monster, game.player.x, game.player.y, map);
                         }
                     }
                     break;
@@ -5160,7 +5259,7 @@ function updateGameObjects() {
                             if (!RclosestEnemy || !Number.isFinite(RclosestEnemy.enemy.x) || !Number.isFinite(RclosestEnemy.enemy.y)) {
                                 //move towards player if no enemies
                                 if (distSq > 0.25 && distSq < 100 && isVisibleToPlayer(monster)) {
-                                    movePrisonerTowardTarget(monster, game.player.x, game.player.y, map);
+                                    moveMonsterTowardTarget(monster, game.player.x, game.player.y, map);
                                 }
                                 if (distSq < 0.5 && (!monster.lastAttack || currentTime - monster.lastAttack >= monster.attackCooldown)) {
                                     // Attack the player
@@ -5182,7 +5281,7 @@ function updateGameObjects() {
                                 const RenemyDistSq = Redx * Redx + Redy * Redy;
                                 if (distSq <= RenemyDistSq) {
                                     if (distSq > 0.25 && distSq < 100 && isVisibleToPlayer(monster)) {
-                                        movePrisonerTowardTarget(monster, game.player.x, game.player.y, map);
+                                        moveMonsterTowardTarget(monster, game.player.x, game.player.y, map);
                                     }
                                     if (distSq < 0.5 && (!monster.lastAttack || currentTime - monster.lastAttack >= monster.attackCooldown)) {
                                         // Attack the player
@@ -5199,7 +5298,7 @@ function updateGameObjects() {
                                     }
                                 } else {                                  
                                     if (RenemyDistSq > 0.25 && isVisibleToMonster(monster, RclosestEnemy.enemy)) {
-                                        movePrisonerTowardTarget(monster, RclosestEnemy.enemy.x, RclosestEnemy.enemy.y, map);
+                                        moveMonsterTowardTarget(monster, RclosestEnemy.enemy.x, RclosestEnemy.enemy.y, map);
                                         if (RenemyDistSq < 0.5 && (!monster.lastAttack || currentTime - monster.lastAttack >= monster.attackCooldown)) {
                                             // Attack the monster
                                             RclosestEnemy.enemy.health -= monster.damage;
@@ -5240,7 +5339,7 @@ function updateGameObjects() {
                             }, null);
                             if (!PclosestEnemy || !Number.isFinite(PclosestEnemy.enemy.x) || !Number.isFinite(PclosestEnemy.enemy.y)) {
                                 if (distSq > 2) {
-                                    movePrisonerTowardTarget(monster, game.player.x, game.player.y, map);
+                                    moveMonsterTowardTarget(monster, game.player.x, game.player.y, map);
                                 }
                                 break; // NaN safeguard
                             } else {
@@ -5248,7 +5347,7 @@ function updateGameObjects() {
                                 const enemyY = PclosestEnemy.enemy.y - monster.y;
                                 const enemydistSq = enemyX * enemyX + enemyY * enemyY;
                                 if (enemydistSq > 0.25 && isVisibleToMonster(monster,PclosestEnemy.enemy)) {
-                                    movePrisonerTowardTarget(monster, PclosestEnemy.enemy.x, PclosestEnemy.enemy.y, map);
+                                    moveMonsterTowardTarget(monster, PclosestEnemy.enemy.x, PclosestEnemy.enemy.y, map);
                                     if (enemydistSq < 0.5 && (!monster.lastAttack || currentTime - monster.lastAttack >= monster.attackCooldown)) {
                                         // Attack the monster
                                         PclosestEnemy.enemy.health -= monster.damage;
@@ -5256,7 +5355,7 @@ function updateGameObjects() {
                                         monster.lastAttack = currentTime;
                                     }
                                 } else if (distSq > 2) {
-                                    movePrisonerTowardTarget(monster, game.player.x, game.player.y, map);
+                                    moveMonsterTowardTarget(monster, game.player.x, game.player.y, map);
                                 }
                             }
                         } else {
