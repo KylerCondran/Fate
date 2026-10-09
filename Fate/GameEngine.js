@@ -1615,16 +1615,20 @@ function updateMonsterGrid() {
 // Check if a position is occupied by another monster
 
 function isMonsterAtPosition(x, y, excludeMonster = null, allowedTypes = null) {
-    const gridKey = `${Math.floor(x)}_${Math.floor(y)}`;
-    const nearby = game.monsterGrid[gridKey] || [];
-    
     const checkRadius = 0.5;
-    for (let monster of nearby) {
-        if (monster === excludeMonster) continue;
-        if (allowedTypes && !allowedTypes.includes(monster.type)) continue;
-        const distSq = (monster.x - x) ** 2 + (monster.y - y) ** 2;
-        if (distSq < checkRadius * checkRadius) {
-            return true;
+    const gridX = Math.floor(x);
+    const gridY = Math.floor(y);
+    for (let cellX = gridX - 1; cellX <= gridX + 1; cellX++) {
+        for (let cellY = gridY - 1; cellY <= gridY + 1; cellY++) {
+            const nearby = game.monsterGrid[`${cellX}_${cellY}`] || [];
+            for (let monster of nearby) {
+                if (monster === excludeMonster) continue;
+                if (allowedTypes && !allowedTypes.includes(monster.type)) continue;
+                const distSq = (monster.x - x) ** 2 + (monster.y - y) ** 2;
+                if (distSq < checkRadius * checkRadius) {
+                    return true;
+                }
+            }
         }
     }
     return false;
@@ -1938,12 +1942,23 @@ function updateGameObjects() {
                 if (projectile.type === 'rocket') playSound('explosion-sound');
                 projectilesToRemove.add(i);
             }
-        } 
+        }
     }
+
     // Remove marked projectiles
     game.projectiles = game.projectiles.filter((_, idx) => !projectilesToRemove.has(idx));
     // Remove expired sprites with a culltime and spawn time
     updateSpriteList();
+
+    // Build pack membership once per frame for coordinated hunter behavior
+    const packHunterTypes = new Set(['wolf', 'hyena', 'tiger', 'lion']);
+    const packHuntersByType = new Map();
+    for (const monster of game.monsters) {
+        if (!monster.isDead && packHunterTypes.has(monster.type)) {
+            if (!packHuntersByType.has(monster.type)) packHuntersByType.set(monster.type, []);
+            packHuntersByType.get(monster.type).push(monster);
+        }
+    }
 
     // Update monster positions and check for attacks
     for (let monster of game.monsters) {
@@ -5888,6 +5903,69 @@ function updateGameObjects() {
                         monster.data = getTextureData(monsterTexture);
                     }
                     break;
+                case 'wolf':
+                case 'hyena':
+                case 'tiger':
+                case 'lion': {
+                    const pack = packHuntersByType.get(monster.type);
+                    const packIndex = pack.indexOf(monster);
+                    const flankAngle = degreeToRadians(game.player.angle) + packIndex * Math.PI * 2 / pack.length;
+                    const flankX = game.player.x + Math.cos(flankAngle) * 0.85;
+                    const flankY = game.player.y + Math.sin(flankAngle) * 0.85;
+                    let moveX;
+                    let moveY;
+                    const visibleToPlayer = distSq < 100 && isVisibleToPlayer(monster);
+
+                    if (distSq < 36 && visibleToPlayer) {
+                        if (monster.nextPounce === undefined) {
+                            monster.nextPounce = currentTime + packIndex * 350;
+                        }
+                        if (currentTime >= monster.nextPounce) {
+                            monster.pounceUntil = currentTime + 450;
+                            monster.nextPounce = currentTime + 3200;
+                        }
+                    }
+
+                    if (monster.pounceUntil > currentTime && distSq > 0) {
+                        const distance = Math.sqrt(distSq);
+                        const pounceSpeed = monster.speed * 1.5;
+                        moveX = dx / distance * pounceSpeed;
+                        moveY = dy / distance * pounceSpeed;
+                    } else if (distSq < 100) {
+                        const targetX = visibleToPlayer ? flankX : game.player.x;
+                        const targetY = visibleToPlayer ? flankY : game.player.y;
+                        const targetDx = targetX - monster.x;
+                        const targetDy = targetY - monster.y;
+                        const targetDistance = Math.hypot(targetDx, targetDy);
+                        if (targetDistance > 0.15) {
+                            moveX = targetDx / targetDistance * monster.speed;
+                            moveY = targetDy / targetDistance * monster.speed;
+                        }
+                    }
+
+                    if (moveX !== undefined) {
+                        const newX = monster.x + moveX;
+                        if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
+                            monster.x = newX;
+                        }
+                        const newY = monster.y + moveY;
+                        if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
+                            monster.y = newY;
+                        }
+                    }
+
+                    if (distSq < 0.5 && (!monster.lastAttack || currentTime - monster.lastAttack >= monster.attackCooldown)) {
+                        game.player.health -= monster.damage;
+                        game.lastMonsterToHitPlayer = monster.type.charAt(0).toUpperCase() + monster.type.slice(1);
+                        monster.lastAttack = currentTime;
+                        playSound('injured-sound');
+                        if (game.player.health <= 0) {
+                            playSound('death-sound');
+                            endGameDeath();
+                        }
+                    }
+                    break;
+                }
                 default:
                     if (distSq > 0.25 && distSq < 100) {
                         const distance = Math.sqrt(distSq);
@@ -6775,7 +6853,7 @@ function drawSprites() {
         const distSq = (game.player.x - sprite.x) ** 2 + (game.player.y - sprite.y) ** 2;
         if (distSq > game.objectCullDistance) continue;
         if (sprite.data && isVisibleToPlayer(sprite)) {
-            const distance = Math.sqrt(Math.pow(game.player.x - sprite.x, 2) + Math.pow(game.player.y - sprite.y, 2));
+            const distance = Math.sqrt(distSq);
             spritesToDraw.push({ sprite, distance, isMonster: false });
         }
     }
@@ -6785,7 +6863,7 @@ function drawSprites() {
         const distSq = (game.player.x - monster.x) ** 2 + (game.player.y - monster.y) ** 2;
         if (distSq > game.objectCullDistance) continue;
         if (!monster.isDead && monster.data && isVisibleToPlayer(monster)) {
-            const distance = Math.sqrt(Math.pow(game.player.x - monster.x, 2) + Math.pow(game.player.y - monster.y, 2));
+            const distance = Math.sqrt(distSq);
             spritesToDraw.push({ sprite: monster, distance, isMonster: true });
         }
     }
@@ -6794,7 +6872,7 @@ function drawSprites() {
     for (let projectile of game.projectiles) {
         const distSq = (game.player.x - projectile.x) ** 2 + (game.player.y - projectile.y) ** 2;
         if (distSq > game.objectCullDistance) continue;
-        const distance = Math.sqrt(Math.pow(game.player.x - projectile.x, 2) + Math.pow(game.player.y - projectile.y, 2));
+        const distance = Math.sqrt(distSq);
         spritesToDraw.push({
             sprite: {
                 x: projectile.x,
