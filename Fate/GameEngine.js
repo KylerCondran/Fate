@@ -733,6 +733,8 @@ function loadLevel(levelIdx) {
             switch (objectValue) {
                 case 0:
                     emptyPositions.push({ i, j });
+                    // Clear acid and burning debris damage zones if present from previous level
+                    if (map[i][j] == 44 || map[i][j] == 42) { map[i][j] = 0; }
                     break;
                 case 1:
                     switch (game.levels[levelIdx].name) {
