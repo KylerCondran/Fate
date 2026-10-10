@@ -2512,6 +2512,13 @@ function updateGameObjects() {
                                 monster.coverSpot.x !== cover.hide.x || monster.coverSpot.y !== cover.hide.y;
                             monster.coverSpot = cover.hide;
                             monster.peekSpot = cover.peek;
+                            if (distSq < 84 && isVisibleToPlayer(monster) &&
+                                (!monster.lastShot || currentTime - monster.lastShot >= monster.attackCooldown)) {
+                                const angle = radiansToDegrees(Math.atan2(dy, dx));
+                                game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'bullet', game.projectileMap['bullet'], 'monster', 0.2, monster.damage));
+                                playSound('shoot-sound');
+                                monster.lastShot = currentTime;
+                            }
                             if (coverChanged) {
                                 monster.coverState = 'seeking';
                                 monster.nextPeekTime = 0;
@@ -2563,7 +2570,7 @@ function updateGameObjects() {
                             }
                         }
                     } else {
-                        if (distSq < 64 && isVisibleToPlayer(monster) &&
+                        if (distSq < 84 && isVisibleToPlayer(monster) &&
                             (!monster.lastShot || currentTime - monster.lastShot >= monster.attackCooldown)) {
                             const angle = radiansToDegrees(Math.atan2(dy, dx));
                             game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'bullet', game.projectileMap['bullet'], 'monster', 0.2, monster.damage));
