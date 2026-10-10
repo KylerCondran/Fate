@@ -92,7 +92,7 @@ let game = {
         x: 2,
         y: 2,
         angle: 0,
-        radius: 20,
+        radius: 10,
         health: 100,
         maxHealth: 100,
         speed: {
