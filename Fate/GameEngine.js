@@ -2373,43 +2373,105 @@ function updateGameObjects() {
                         }
                     }
                     break;
-                case 'alien':
-                    if (distSq < 64 && isVisibleToPlayer(monster)) {
-                        if (monster.variant === 'alien2') {
-                            const delay = monster.shotsInBurst < 3 ? 500 : monster.attackCooldown;
-                            if (!monster.lastShot || currentTime - monster.lastShot >= delay) {
-                                const angle = radiansToDegrees(Math.atan2(dy, dx));
-                                game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'laser', game.projectileMap['laserpurple'], 'monster', 0.2, monster.damage));
-                                playSound('laser-sound');
-                                monster.lastShot = currentTime;
-                                monster.shotsInBurst++;
-                                if (monster.shotsInBurst > 3) {
-                                    monster.shotsInBurst = 1;
+                case 'alien':                
+                    if (monster.variant === 'alien2') {
+                        if (distSq < 200) {
+                            if (distSq < 64 && isVisibleToPlayer(monster)) {
+                                const delay = monster.shotsInBurst < 3 ? 500 : monster.attackCooldown;
+                                if (!monster.lastShot || currentTime - monster.lastShot >= delay) {
+                                    const angle = radiansToDegrees(Math.atan2(dy, dx));
+                                    game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'laser', game.projectileMap['laserpurple'], 'monster', 0.2, monster.damage));
+                                    playSound('laser-sound');
+                                    monster.lastShot = currentTime;
+                                    monster.shotsInBurst++;
+                                    if (monster.shotsInBurst > 3) {
+                                        monster.shotsInBurst = 1;
+                                    }
+                                }
+                            }
+                            if (distSq > 20) {
+                                moveMonsterTowardTarget(monster, game.player.x, game.player.y, map);
+                            }
+                        }
+                    } else {
+                        const playerPosition2 = { x: game.player.x, y: game.player.y };
+                        const coverIsExposed2 = monster.coverSpot && isVisibleToMonster(monster.coverSpot, playerPosition2);
+                        if (!monster.nextCoverSearch || currentTime >= monster.nextCoverSearch || coverIsExposed2) {
+                            const cover = findSoldierCover(monster, map);
+                            monster.nextCoverSearch = currentTime + 3000;
+                            if (cover) {
+                                const coverChanged = !monster.coverSpot ||
+                                    monster.coverSpot.x !== cover.hide.x || monster.coverSpot.y !== cover.hide.y;
+                                monster.coverSpot = cover.hide;
+                                monster.peekSpot = cover.peek;
+                                if (distSq < 64 && isVisibleToPlayer(monster) &&
+                                    (!monster.lastShot || currentTime - monster.lastShot >= monster.attackCooldown)) {
+                                    const angle = radiansToDegrees(Math.atan2(dy, dx));
+                                    game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'laser', game.projectileMap['laser'], 'monster', 0.2, monster.damage));
+                                    playSound('laser-sound');
+                                    monster.lastShot = currentTime;
+                                }
+                                if (coverChanged) {
+                                    monster.coverState = 'seeking';
+                                    monster.nextPeekTime = 0;
+                                }
+                            } else {
+                                monster.coverSpot = null;
+                                monster.peekSpot = null;
+                            }
+                        }
+
+                        if (monster.coverSpot && monster.peekSpot) {
+                            const coverDistance = Math.hypot(monster.coverSpot.x - monster.x, monster.coverSpot.y - monster.y);
+                            const peekDistance = Math.hypot(monster.peekSpot.x - monster.x, monster.peekSpot.y - monster.y);
+
+                            if (monster.coverState === 'seeking') {
+                                if (coverDistance > 0.2) {
+                                    moveMonsterTowardTarget(monster, monster.coverSpot.x, monster.coverSpot.y, map);
+                                } else {
+                                    monster.coverState = 'hiding';
+                                    monster.nextPeekTime = currentTime + 800;
+                                }
+                            } else if (monster.coverState === 'hiding') {
+                                if (currentTime >= monster.nextPeekTime) {
+                                    monster.coverState = 'peeking';
+                                    monster.peekStartTime = 0;
+                                }
+                            } else if (monster.coverState === 'peeking') {
+                                if (peekDistance > 0.2) {
+                                    moveMonsterTowardTarget(monster, monster.peekSpot.x, monster.peekSpot.y, map);
+                                } else if (!monster.peekStartTime) {
+                                    monster.peekStartTime = currentTime;
+                                } else if (currentTime - monster.peekStartTime >= 650) {
+                                    monster.coverState = 'retreating';
+                                }
+
+                                if (peekDistance <= 0.2 && distSq < 64 && isVisibleToPlayer(monster) &&
+                                    (!monster.lastShot || currentTime - monster.lastShot >= monster.attackCooldown)) {
+                                    const angle = radiansToDegrees(Math.atan2(dy, dx));
+                                    game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'laser', game.projectileMap['laser'], 'monster', 0.2, monster.damage));
+                                    playSound('laser-sound');
+                                    monster.lastShot = currentTime;
+                                }
+                            } else if (monster.coverState === 'retreating') {
+                                if (coverDistance > 0.2) {
+                                    moveMonsterTowardTarget(monster, monster.coverSpot.x, monster.coverSpot.y, map);
+                                } else {
+                                    monster.coverState = 'hiding';
+                                    monster.nextPeekTime = currentTime + 800 + Math.random() * 700;
                                 }
                             }
                         } else {
-                            if (!monster.lastShot || currentTime - monster.lastShot >= monster.attackCooldown) {
+                            if (distSq < 64 && isVisibleToPlayer(monster) &&
+                                (!monster.lastShot || currentTime - monster.lastShot >= monster.attackCooldown)) {
                                 const angle = radiansToDegrees(Math.atan2(dy, dx));
                                 game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'laser', game.projectileMap['laser'], 'monster', 0.2, monster.damage));
                                 playSound('laser-sound');
                                 monster.lastShot = currentTime;
                             }
-                        }
-                    }
-                    if (distSq > 30 && distSq < 200) {
-                        const distance = Math.sqrt(distSq);
-                        const invDist = 1 / distance;
-                        const dirX = dx * invDist * monster.speed;
-                        const dirY = dy * invDist * monster.speed;
-                        // Try to move in X direction
-                        const newX = monster.x + dirX;
-                        if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
-                            monster.x = newX;
-                        }
-                        // Try to move in Y direction
-                        const newY = monster.y + dirY;
-                        if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
-                            monster.y = newY;
+                            if (distSq > 30 && distSq < 200) {
+                                moveMonsterTowardTarget(monster, game.player.x, game.player.y, map);
+                            }
                         }
                     }
                     break;
