@@ -2313,6 +2313,7 @@ function updateGameObjects() {
                     case 'wizard':
                         game.sprites.push({ id: 'bones-sprite', x: monster.x, y: monster.y, width: 256, height: 256, data: getTextureData({ id: 'bones-sprite', width: 256, height: 256 }), spawnTime: Date.now() });
                         game.wizardState.killed = true;
+                        showNotification('The Wizard has been killed!');
                         break;
                     case 'dinosauregg':
                         game.monsterTotal++;
