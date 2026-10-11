@@ -4883,6 +4883,7 @@ function updateGameObjects() {
                         monster.whirlpoolWindupUntil = currentTime + 750;
                         monster.lastWhirlpool = currentTime;
                         playSound('splash-sound');
+                        game.sprites.push({ id: 'whirlpool-sprite', x: monster.whirlpoolX, y: monster.whirlpoolY, width: 512, height: 512, data: getTextureData({ id: 'whirlpool-sprite', width: 512, height: 512 }), spawnTime: Date.now(), cullTime: 2800, spriteScale: 3.0 });
                         showNotification('Sobek is twisting the waters! Escape the Whirlpool!');
                     }
 
