@@ -354,6 +354,20 @@ let game = {
             height: 16,
             id: "door-texture",
             data: null
+        },
+        {
+            number: 25,
+            width: 16,
+            height: 16,
+            id: "castle-texture",
+            data: null
+        },
+        {
+            number: 26,
+            width: 16,
+            height: 16,
+            id: "scales-texture",
+            data: null
         }
     ],
     projectileTextures: [
@@ -504,6 +518,13 @@ let game = {
             width: 360,
             height: 88,
             id: "egypt",
+            data: null
+        },
+        {
+            number: 5,
+            width: 360,
+            height: 88,
+            id: "treasureroom",
             data: null
         }
     ]
@@ -6799,6 +6820,7 @@ function movePlayer() {
                 if (!mainLoop) main();
                 window.addEventListener('blur', pauseGame);
                 playSound('portal-sound');
+                showNotification('Collect the loot and escape!');
                 break;
             // Wizard Treasure Room Exit Portal
             case 97:
