@@ -1155,5 +1155,19 @@ window.MonsterData = {
         damage: 20,
         lastShot: 0,
         attackCooldown: 1500
+    },
+    hydra: {
+        type: 'hydra',
+        skin: 'hydra-sprite',
+        audio: 'hydra',
+        health: 250000,
+        speed: 0.02,
+        isDead: false,
+        width: 512,
+        height: 512,
+        data: null,
+        damage: 100,
+        lastAttack: 0,
+        attackCooldown: 1000
     }
 };

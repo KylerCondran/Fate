@@ -64,7 +64,6 @@
 - spyro egg thief?
 - more enemies freeze player, teleport player, steal weapons, steal health, steal ammo
 - scarab steals a random weapon, creates mimics of himself
-- killing the wizard spawns a portal which teleports to a secret room with lots of ammo and powerups
 - projectile reflect
 - animations for enemies, planets crumble, purple magic spawn animations
 - acid and burning debris should have melee attack

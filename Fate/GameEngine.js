@@ -769,6 +769,9 @@ function loadLevel(levelIdx) {
                         case "Prison":
                             game.sprites.push({ id: "table-sprite", x: j, y: i, width: 512, height: 512, data: null, spriteScale: 2.0 });
                             break;
+                        case "Wizard Treasure Room":
+                            game.sprites.push({ id: "treasurepile-sprite", x: j, y: i, width: 512, height: 512, data: null, spriteScale: 3.0 });
+                            break;
                         default:
                             game.sprites.push({ id: "tree-sprite", x: j, y: i, width: 8, height: 16, data: null, spriteScale: 2.0 });
                             break;
@@ -1244,6 +1247,19 @@ function loadLevel(levelIdx) {
                 case 94:
                     const wizard = { ...window.MonsterData.wizard, id: `monster_${game.monsterTotal}`, x: j, y: i, spawnTime: Date.now() };
                     game.monsters.push(wizard);
+                    break;
+                case 95:
+                    //wizard treasure room entrance portal
+                    game.sprites.push({ id: "portal-sprite", x: j, y: i, width: 512, height: 512, data: null, spriteScale: 1.5 });
+                    break;
+                case 96:
+                    const hydra = { ...window.MonsterData.hydra, id: `monster_${game.monsterTotal}`, x: j, y: i, spawnTime: Date.now() };
+                    game.monsters.push(hydra);
+                    game.monsterTotal++;
+                    break;
+                case 97:
+                    //wizard treasure room exit portal
+                    game.sprites.push({ id: "portal-sprite", x: j, y: i, width: 512, height: 512, data: null, spriteScale: 1.5 });
                     break;
                 default:
                     break;
@@ -2315,6 +2331,12 @@ function updateGameObjects() {
                     case 'wizard':
                         game.sprites.push({ id: 'bones-sprite', x: monster.x, y: monster.y, width: 256, height: 256, data: getTextureData({ id: 'bones-sprite', width: 256, height: 256 }), spawnTime: Date.now() });
                         game.wizardState.killed = true;
+                        const portalvalidSpots = getOpenSpawnPositions(Math.floor(monster.x), Math.floor(monster.y), 3);
+                        if (portalvalidSpots.length == 0) continue;
+                        const portalspot = portalvalidSpots[Math.floor(Math.random() * portalvalidSpots.length)];
+                        game.sprites.push({ id: 'portal-sprite', x: portalspot.x, y: portalspot.y, width: 512, height: 512, data: getTextureData({ id: 'portal-sprite', width: 512, height: 512 }), spawnTime: Date.now(), spriteScale: 1.5 }); 
+                        game.levels[game.currentLevel].map[Math.floor(portalspot.y)][Math.floor(portalspot.x)] = 95;
+                        playSound('portal-sound');
                         showNotification('The Wizard has been killed!');
                         break;
                     case 'dinosauregg':
@@ -6767,6 +6789,22 @@ function movePlayer() {
                 game.pickupCollected++;
                 game.keysUnlocked.cellkey = true;
                 break;
+            // Wizard Treasure Room Entrance Portal
+            case 95:
+                if (!mainLoop) return;
+                clearInterval(mainLoop);
+                mainLoop = null;
+                window.removeEventListener('blur', pauseGame);
+                loadLevel(18);
+                if (!mainLoop) main();
+                window.addEventListener('blur', pauseGame);
+                playSound('portal-sound');
+                break;
+            // Wizard Treasure Room Exit Portal
+            case 97:
+                playSound('portal-sound');
+                game.monsterDefeated++;
+                break;
             // Locked Door
             case 100:
                 if (game.keysUnlocked.cellkey) {
@@ -7887,6 +7925,7 @@ function createStartScreen() {
     const btnContainer = overlay.querySelector('#level-buttons');
     let currentRow;
     game.levels.forEach((level, idx) => {
+        if (game.levels[idx].name == 'Wizard Treasure Room') { return; }
         if (idx % 3 === 0) {
             currentRow = document.createElement('tr');
             btnContainer.appendChild(currentRow);
@@ -8052,7 +8091,7 @@ function endGame() {
     mainLoop = null;
     window.removeEventListener('blur', pauseGame);
     createWinScreen();
-    if (game.currentLevel != game.levels.length - 4 && game.currentLevel != game.levels.length - 3 && game.currentLevel != game.levels.length - 2 && game.currentLevel != game.levels.length - 1) {
+    if (game.currentLevel != game.levels.length - 5 && game.currentLevel != game.levels.length - 4 && game.currentLevel != game.levels.length - 3 && game.currentLevel != game.levels.length - 2 && game.currentLevel != game.levels.length - 1) {
         game.levels[game.currentLevel + 1].unlocked = true;
     }
     game.levels[game.currentLevel].completed = true;
