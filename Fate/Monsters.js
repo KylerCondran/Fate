@@ -1168,6 +1168,10 @@ window.MonsterData = {
         data: null,
         damage: 100,
         lastAttack: 0,
-        attackCooldown: 1000
+        attackCooldown: 1000,
+        lastScream: 0,
+        screamCooldown: 16000,
+        lastShot: 0,
+        rangedCooldown: 5000
     }
 };

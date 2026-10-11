@@ -3320,7 +3320,7 @@ function updateGameObjects() {
                                 }
                             }
                             const angle = radiansToDegrees(Math.atan2(dy, dx));
-                            game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'fireball', game.projectileMap['fireball'], 'monster', 0.2, monster.damage));
+                            game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'fireball', game.projectileMap['fireball'], 'monster', 0.1, monster.damage));
                             playSound('fireball-sound');
                             monster.lastShot = currentTime;
                         }
@@ -6399,6 +6399,50 @@ function updateGameObjects() {
                     }
                     break;
                 }
+                case 'hydra':
+                    if (isVisibleToPlayer(monster)) {
+                        const distance = Math.sqrt(distSq);
+                        const invDist = 1 / distance;
+                        const dirX = dx * invDist * monster.speed;
+                        const dirY = dy * invDist * monster.speed;
+                        // Try to move in X direction
+                        const newX = monster.x + dirX;
+                        if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster)) {
+                            monster.x = newX;
+                        }
+                        // Try to move in Y direction
+                        const newY = monster.y + dirY;
+                        if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster)) {
+                            monster.y = newY;
+                        }
+                    }
+                    if (distSq < 0.5 && (!monster.lastAttack || currentTime - monster.lastAttack >= monster.attackCooldown)) {
+                        // Attack the player
+                        game.player.health -= monster.damage;
+                        game.lastMonsterToHitPlayer = monster.type.charAt(0).toUpperCase() + monster.type.slice(1);
+                        monster.lastAttack = currentTime;
+                        // Play monster attack sound
+                        playSound('injured-sound');
+                        // Check if player died
+                        if (game.player.health <= 0) {
+                            playSound('death-sound');
+                            endGameDeath();
+                        }
+                    }
+                    if (distSq < 80) {
+                        if (!monster.lastShot || currentTime - monster.lastShot >= monster.rangedCooldown) {
+                            const angle = radiansToDegrees(Math.atan2(dy, dx));
+                            game.projectiles.push(new Projectile(monster.x, monster.y, angle, 'fireball', game.projectileMap['fireball'], 'monster', 0.1, monster.damage));
+                            playSound('fireball-sound');
+                            monster.lastShot = currentTime;
+                        }
+                    }
+                    if (distSq < 100 && (!monster.lastScream || currentTime - monster.lastScream >= monster.screamCooldown)) {
+                        monster.lastScream = currentTime;
+                        // Play monster scream sound
+                        playSound('hydra-scream');
+                    }
+                    break;
                 default:
                     if (distSq > 0.25 && distSq < 100) {
                         const distance = Math.sqrt(distSq);
