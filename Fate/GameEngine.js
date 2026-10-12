@@ -368,6 +368,13 @@ let game = {
             height: 16,
             id: "scales-texture",
             data: null
+        },
+        {
+            number: 27,
+            width: 16,
+            height: 16,
+            id: "greybrick-texture",
+            data: null
         }
     ],
     projectileTextures: [
@@ -488,71 +495,71 @@ let game = {
         {
             number: 0,
             width: 360,
-            height: 60,
-            id: "sunny",
+            height: 89,
+            id: "jungle",
             data: null
         },
         {
             number: 1,
             width: 360,
-            height: 60,
-            id: "night",
+            height: 89,
+            id: "hell",
             data: null
         },
         {
             number: 2,
             width: 360,
             height: 89,
-            id: "snowy",
+            id: "ocean",
             data: null
         },
         {
             number: 3,
             width: 360,
-            height: 60,
-            id: "space",
+            height: 89,
+            id: "arctic",
             data: null
         },
         {
             number: 4,
             width: 360,
             height: 89,
-            id: "egypt",
+            id: "labyrinth",
             data: null
         },
         {
             number: 5,
             width: 360,
-            height: 88,
-            id: "treasureroom",
+            height: 89,
+            id: "heaven",
             data: null
         },
         {
             number: 6,
             width: 360,
             height: 89,
-            id: "jungle",
+            id: "deathpit",
             data: null
         },
         {
             number: 7,
             width: 360,
             height: 89,
-            id: "savannah",
+            id: "ninjadojo",
             data: null
         },
         {
             number: 8,
             width: 360,
             height: 89,
-            id: "prison",
+            id: "armybase",
             data: null
         },
         {
             number: 9,
             width: 360,
             height: 89,
-            id: "ocean",
+            id: "space",
             data: null
         },
         {
@@ -566,35 +573,49 @@ let game = {
             number: 11,
             width: 360,
             height: 89,
-            id: "heaven",
+            id: "prison",
             data: null
         },
         {
             number: 12,
             width: 360,
             height: 89,
-            id: "hell",
+            id: "jurassic",
             data: null
         },
         {
             number: 13,
             width: 360,
             height: 89,
-            id: "labyrinth",
+            id: "egypt",
             data: null
         },
         {
             number: 14,
             width: 360,
             height: 89,
-            id: "armageddon",
+            id: "grassy",
             data: null
         },
         {
             number: 15,
             width: 360,
             height: 89,
-            id: "grassy",
+            id: "savannah",
+            data: null
+        },
+        {
+            number: 16,
+            width: 360,
+            height: 89,
+            id: "armageddon",
+            data: null
+        },
+        {
+            number: 17,
+            width: 360,
+            height: 88,
+            id: "castle",
             data: null
         }
     ]

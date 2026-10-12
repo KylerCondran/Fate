@@ -38,13 +38,13 @@
 - army vs terminators
 - medieval castle, knights, archers, catapults
 - zombies, apocalyptic city, barricades, cars, tanks
-- proper tree sprite
-- arctic/night background needs work
+- proper tree sprite - change tree on jungle level
 - boss mode when you beat the game
 - more ammo dispursed around levels / enemies drop ammo
 - secret area flag
 - total monster count for each level
 - zones where movement speed is slowed
+- heaven background fix, forest change tile textures
 
 # Weapon Ideas
 
