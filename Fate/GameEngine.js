@@ -502,7 +502,7 @@ let game = {
         {
             number: 2,
             width: 360,
-            height: 60,
+            height: 89,
             id: "snowy",
             data: null
         },
@@ -516,7 +516,7 @@ let game = {
         {
             number: 4,
             width: 360,
-            height: 88,
+            height: 89,
             id: "egypt",
             data: null
         },
@@ -525,6 +525,76 @@ let game = {
             width: 360,
             height: 88,
             id: "treasureroom",
+            data: null
+        },
+        {
+            number: 6,
+            width: 360,
+            height: 89,
+            id: "jungle",
+            data: null
+        },
+        {
+            number: 7,
+            width: 360,
+            height: 89,
+            id: "savannah",
+            data: null
+        },
+        {
+            number: 8,
+            width: 360,
+            height: 89,
+            id: "prison",
+            data: null
+        },
+        {
+            number: 9,
+            width: 360,
+            height: 89,
+            id: "ocean",
+            data: null
+        },
+        {
+            number: 10,
+            width: 360,
+            height: 89,
+            id: "forest",
+            data: null
+        },
+        {
+            number: 11,
+            width: 360,
+            height: 89,
+            id: "heaven",
+            data: null
+        },
+        {
+            number: 12,
+            width: 360,
+            height: 89,
+            id: "hell",
+            data: null
+        },
+        {
+            number: 13,
+            width: 360,
+            height: 89,
+            id: "labyrinth",
+            data: null
+        },
+        {
+            number: 14,
+            width: 360,
+            height: 89,
+            id: "armageddon",
+            data: null
+        },
+        {
+            number: 15,
+            width: 360,
+            height: 89,
+            id: "grassy",
             data: null
         }
     ]
