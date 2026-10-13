@@ -81,3 +81,4 @@
 - summoned allies can injure yetis
 - rockets dont explode on yetis
 - cell key stays upon death
+- can see enemy projectiles through walls

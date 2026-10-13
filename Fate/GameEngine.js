@@ -884,6 +884,12 @@ function loadLevel(levelIdx) {
                         case "Wizard Treasure Room":
                             game.sprites.push({ id: "treasurepile-sprite", x: j, y: i, width: 512, height: 512, data: null, spriteScale: 3.0 });
                             break;
+                        case "Jungle":
+                            game.sprites.push({ id: "jungletree-sprite", x: j, y: i, width: 512, height: 512, data: null, spriteScale: 2.0 });
+                            break;
+                        case "Forest":
+                            game.sprites.push({ id: "pinetree-sprite", x: j, y: i, width: 512, height: 512, data: null, spriteScale: 3.0 });
+                            break;
                         default:
                             game.sprites.push({ id: "tree-sprite", x: j, y: i, width: 8, height: 16, data: null, spriteScale: 2.0 });
                             break;
@@ -8082,7 +8088,7 @@ function createStartScreen() {
     const btnContainer = overlay.querySelector('#level-buttons');
     let currentRow;
     game.levels.forEach((level, idx) => {
-        if (game.levels[idx].name == 'Wizard Treasure Room') { return; }
+        if (game.levels[idx].name == 'Wizard Treasure Room' && !game.developerMode) { return; }
         if (idx % 3 === 0) {
             currentRow = document.createElement('tr');
             btnContainer.appendChild(currentRow);
