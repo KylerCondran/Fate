@@ -5215,35 +5215,42 @@ function updateGameObjects() {
                     }
                     break;
                 case 'frog':
-                    if (isVisibleToPlayer(monster)) {
-                        if (!monster.lastCharge || currentTime - monster.lastCharge >= monster.chargeCooldown) {
+                    if (monster.chargeDelayOffset === undefined) {
+                        monster.chargeDelayOffset = Math.random() * 1000 + 500; // 500-1500ms
+                        monster.lastCharge = currentTime - monster.chargeCooldown + monster.chargeDelayOffset;
+                    }
+                    if (distSq > 0.25 && isVisibleToPlayer(monster)) {
+                        const timeSinceLastCharge = currentTime - (monster.lastCharge || currentTime - monster.chargeDelayOffset);
+                        const shouldCharge = timeSinceLastCharge >= monster.chargeCooldown;
+
+                        if (shouldCharge && !monster.isCharging) {
                             const angle = radiansToDegrees(Math.atan2(dy, dx));
                             monster.chargeAngle = angle;
                             monster.isCharging = true;
                             monster.lastCharge = currentTime;
                         }
-                    }
-                    if (monster.isCharging) {
-                        // Charge the player using the predetermined charge angle
-                        const chargeSpeed = monster.speed * 2; // Charge faster than normal movement
-                        const chargeDx = Math.cos(degreeToRadians(monster.chargeAngle)) * chargeSpeed;
-                        const chargeDy = Math.sin(degreeToRadians(monster.chargeAngle)) * chargeSpeed;
+                        if (monster.isCharging) {
+                            // Charge the player using the predetermined charge angle
+                            const chargeSpeed = monster.speed * 2; // Charge faster than normal movement
+                            const chargeDx = Math.cos(degreeToRadians(monster.chargeAngle)) * chargeSpeed;
+                            const chargeDy = Math.sin(degreeToRadians(monster.chargeAngle)) * chargeSpeed;
 
-                        // Try to move in X direction with the charge angle
-                        const newX = monster.x + chargeDx;
-                        if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster, ['frog'])) {
-                            monster.x = newX;
-                        }
+                            // Try to move in X direction with the charge angle
+                            const newX = monster.x + chargeDx;
+                            if (map[Math.floor(monster.y)][Math.floor(newX)] !== 2 && !isMonsterAtPosition(newX, monster.y, monster, ['frog'])) {
+                                monster.x = newX;
+                            }
 
-                        // Try to move in Y direction with the charge angle
-                        const newY = monster.y + chargeDy;
-                        if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster, ['frog'])) {
-                            monster.y = newY;
-                        }
+                            // Try to move in Y direction with the charge angle
+                            const newY = monster.y + chargeDy;
+                            if (map[Math.floor(newY)][Math.floor(monster.x)] !== 2 && !isMonsterAtPosition(monster.x, newY, monster, ['frog'])) {
+                                monster.y = newY;
+                            }
 
-                        // If the frog has reached a certain threshold charging time, stop charging
-                        if (currentTime - monster.lastCharge >= 500) {
-                            monster.isCharging = false;
+                            // If the frog has reached a certain threshold charging time, stop charging
+                            if (currentTime - monster.lastCharge >= 500) {
+                                monster.isCharging = false;
+                            }
                         }
                     }
                     if (distSq < 0.5 && (!monster.lastAttack || currentTime - monster.lastAttack >= monster.attackCooldown)) {
