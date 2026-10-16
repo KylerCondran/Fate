@@ -8,7 +8,7 @@
 
 # To Do
 
-- [ ] Design Levels
+- [x] ~~Design Levels~~
 - [x] ~~Explosions~~
 - [x] ~~Win/Loss Screen~~
 - [x] ~~Player Taking Damage~~
@@ -38,13 +38,13 @@
 - army vs terminators
 - medieval castle, knights, archers, catapults
 - zombies, apocalyptic city, barricades, cars, tanks
-- proper tree sprite - change tree on jungle level
 - boss mode when you beat the game
 - more ammo dispursed around levels / enemies drop ammo
-- secret area flag
+- secret area flag - wolfenstein esque
 - total monster count for each level
 - zones where movement speed is slowed
 - heaven background fix, forest change tile textures
+- minimap
 
 # Weapon Ideas
 
@@ -55,6 +55,7 @@
 - freeze gun
 - rocket knockback?
 - replace pistol with yeti pistol when acquired
+- a legendary hammer
 
 # Enemy Ideas
 
@@ -71,7 +72,8 @@
 - egyptian gods drop ankh on death
 - crab ally
 - fling aliens on ufo explosion
-- enemies aggro if attacked
+- enemies aggro if attacked - to prevent range cheesing
+- give astronaut a weapon
 
 # Issues / Bugs
 

@@ -124,7 +124,7 @@ git clone https://github.com/KylerCondran/Fate.git
 	</li>
 	<li>Secret Levels
 		<ul>
-			<li>???</li>
+			<li>Find Keys and Open Chests to Unlock Secret Levels</li>
 		</ul>
 	</li>
 </ul>
@@ -158,6 +158,10 @@ Available upon completing all levels:
   <li>Rapid Fire</li>
   <li>Random Enemies</li>
 </ul>
+
+## Wizard Ambushes
+
+There is a small but increasing chance as levels are completed that a Wizard will randomly spawn and ambush the player. The Wizard will attack the player with powerful Magic. After 20 seconds the Wizard will flee, killing the Wizard opens a portal to a secret treasure room filled with ammo and loot, but be careful... the treasure is guarded by a powerful enemy.
 
 ## Inspiration
 

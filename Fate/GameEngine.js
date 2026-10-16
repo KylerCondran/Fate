@@ -1425,6 +1425,8 @@ function resetGameState() {
     game.weaponsUnlocked.trident = false;
     game.keysUnlocked.cowkey = false;
     game.keysUnlocked.monkeykey = false;
+    game.keysUnlocked.goatkey = false;
+    game.keysUnlocked.cellkey = false;
     game.playerFrozen = false;
     game.playerFrozenTime = 0;
     game.player.speed.movement = 0.08;
