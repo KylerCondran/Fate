@@ -375,6 +375,20 @@ let game = {
             height: 16,
             id: "greybrick-texture",
             data: null
+        },
+        {
+            number: 28,
+            width: 16,
+            height: 16,
+            id: "darkgrass-texture",
+            data: null
+        },
+        {
+            number: 29,
+            width: 16,
+            height: 16,
+            id: "woodgrain-texture",
+            data: null
         }
     ],
     projectileTextures: [

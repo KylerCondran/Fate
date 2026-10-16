@@ -421,8 +421,8 @@ window.LevelData = [
             [2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2]
         ],
         unlocked: false,
-        floor: 4,
-        wall: 6,
+        floor: 28,
+        wall: 29,
         background: 10,
         startlocation: { x: 18, y: 18 },
         startAngle: 0,

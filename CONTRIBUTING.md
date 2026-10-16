@@ -43,7 +43,6 @@
 - secret area flag - wolfenstein esque
 - total monster count for each level
 - zones where movement speed is slowed
-- forest change tile textures
 - minimap
 
 # Weapon Ideas
